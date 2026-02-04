@@ -1,2 +1,3 @@
 GET /path//path2 HTTP/1.1\r
 Host: localhost:8080\r
+\r

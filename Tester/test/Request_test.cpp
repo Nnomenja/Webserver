@@ -210,6 +210,12 @@ INSTANTIATE_TEST_SUITE_P(
         T_TRQ{
             readTestFile(RequestInValidPath + "requestLine_01.txt")
         },
+        T_TRQ{
+            readTestFile(RequestInValidPath + "requestLine_02.txt")
+        },
+        T_TRQ{
+            readTestFile(RequestInValidPath + "requestLine_03.txt")
+        },
         /**============================================
          *               METHOD
          *=============================================**/

@@ -391,30 +391,35 @@ void Request::readHeader()
 	while (1)
 	{
 		c = readByte();
-		if (!c)
-			throw BadRequest();
+		if (!c && !side)
+			return;
 		if (c == ':' && !side)
 		{
 			c = readByte();
 			if (c != ' ')
 				throw BadRequest();
-			side = !side;
+			side = true;
 			key = tmp.str();
 			tmp.clear();
 			tmp.str("");
 		}
-		else if (c == '\n' || c == '\r')
+		else if (c == '\r')
 		{
-			value = tmp.str();
-			if (toLowerCase(key) == "host")
-				_headers[key] = value;
-			tmp.clear();
-			tmp.str("");
 			c =  readByte();
 			if (c == '\n')
-				break;
+			{
+				value = tmp.str();
+				if (value.empty())
+					return;
+				if (toLowerCase(key) == "host")
+					_headers[key] = value;
+				tmp.clear();
+				tmp.str("");
+			}
 			else
+			{
 				throw BadRequest();
+			}
 		}
 		else
 			tmp << c;
