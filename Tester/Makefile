@@ -26,10 +26,6 @@ SRC = \
 OBJ = $(SRC:.cpp=.o)
 NAME = gtest
 
-test_init : 
-	cd ..; git clone https://github.com/google/googletest.git;\
-	cd googletest; mkdir build; cd build; cmake ..; make
-
 all: $(NAME)
 
 $(NAME): $(OBJ)
@@ -47,5 +43,9 @@ fclean: clean
 	rm -f $(NAME)
 
 re: fclean all
+
+test_init : 
+	cd ..; git clone https://github.com/google/googletest.git;\
+	cd googletest; mkdir build; cd build; cmake ..; make
 
 .PHONY: all clean fclean re
