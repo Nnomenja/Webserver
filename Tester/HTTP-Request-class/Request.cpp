@@ -1,7 +1,7 @@
 #include "./Request.hpp"
 
 
-Request::Request(std::string &value, int receivedBytes):_buffer(value), _receivedByte(receivedBytes),_i(0), _hasPourcentEncode(false), _hasQuery(false)
+Request::Request(std::string &value, int receivedBytes):_buffer(value), _receivedByte(receivedBytes),_i(0), _hasPourcentEncode(false), _hasQuery(false), _hasContentLength(false)
 {
 	/*------- Request Line -------*/
 	setMethod();
@@ -11,7 +11,6 @@ Request::Request(std::string &value, int receivedBytes):_buffer(value), _receive
 	setHttpVersion();
 	normalizePathname();
 	DecodePourcentEncode();
-
 	/*------- Request Header -------*/
 	readHeader();
 	setHost();
@@ -77,9 +76,10 @@ bool  Request::checkQueryPourcentEncoded(char c) const
   return (other.find(c) != std::string::npos);
 }
 
-bool Request::checkHeaderEncode() const
+bool Request::checkHeaderEncode(char c) const
 {
-	return (false);
+	std::string other = "!#$%&'*+-.^_`|~:";
+	return (std::isalnum(c) || other.find(c) != std::string::npos);
 }
 
 std::string &Request::toLowerCase(std::string &src) const
@@ -412,18 +412,36 @@ void Request::readHeader()
 				if (value.empty())
 					return;
 				if (toLowerCase(key) == "host")
+				{
 					_headers[key] = value;
+					setHost();
+				}
+				else if (toLowerCase(key) == "content-length")
+				{
+					_hasContentLength = true;
+					_headers[key] = value;
+					setContentLength();
+				}
 				tmp.clear();
 				tmp.str("");
+				key = "";
+				side = false;
 			}
 			else
 			{
 				throw BadRequest();
 			}
 		}
+		// else if (!checkHeaderEncode(c))
+		// {
+		// 	c = readByte();
+		// 	std::cout << "Bug: " << static_cast<char>(c) << std::endl;
+		// 	throw BadRequest();
+		// }
 		else
 			tmp << c;
 	}
+	
 }
 
 void Request::setHost()
@@ -464,6 +482,25 @@ void Request::setHost()
 	this->_port = port;
 }
 
+void Request::setContentLength()
+{
+	int i;
+	std::string value = _headers["content-length"];
+	ssize_t	res = 0;
+
+	i = -1;
+	while (value[++i])
+	{
+		if (!isdigit(value[i]))
+			throw BadRequest();
+		res *= 10;
+		res += value[i] + '0';
+		if (res > 1000000)
+			throw BadRequest();
+	}
+	_contentLength = res;
+}
+
 /**========================================================================
  *                           GETTERS
  *========================================================================**/
@@ -489,6 +526,11 @@ bool Request::getHasQuery() const
 }
 
 int Request::getPort() const
+{
+	return (_port);
+}
+
+int Request::getContentLength() const
 {
 	return (_port);
 }

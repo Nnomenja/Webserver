@@ -41,10 +41,11 @@ class Request {
         std::string 	    _httpVersion;
         bool                _hasPourcentEncode;
         bool			    _hasQuery;
+        bool			    _hasContentLength;
+        ssize_t             _contentLength;
 
         int                             _port;
         std::map<std::string, std::string> _headers;
-    
         /*------- Utils -------*/
         bool    checkHeaderLineEncode(char c) const;
         bool    checkPathEncode(char c) const;
@@ -54,7 +55,7 @@ class Request {
         int     HexaToInt(char c) const;
 		bool	isHexa(char c) const;
         char    PourcentHexaToChar(char first, char second) const;
-        bool    checkHeaderEncode() const;
+        bool    checkHeaderEncode(char c) const;
         std::string &toLowerCase(std::string &src) const;
         /*------- Request Line -------*/
         void    setPathname();
@@ -70,6 +71,7 @@ class Request {
         /*------- Header -------*/
         void    readHeader();
         void    setHost();
+        void    setContentLength();
 	public:
 
         /*------- Getters -------*/
@@ -78,6 +80,7 @@ class Request {
         std::string getHTTPversion() const;
         bool        getHasQuery() const;
         int         getPort() const;
+        int         getContentLength() const;
 
         class NotImplementedMethod: public std::exception{
             const char *what () const throw();
