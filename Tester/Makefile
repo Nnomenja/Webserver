@@ -20,8 +20,8 @@ SRC = \
 	./main_test.cpp\
 	./HTTP-Request-class/Request.cpp\
 	./Ft-read-test-file/readTestFile.cpp\
-	./test/Request_test.cpp
-
+	./test/Request/400.cpp \
+	./test/Request/501.cpp
 
 OBJ = $(SRC:.cpp=.o)
 NAME = gtest

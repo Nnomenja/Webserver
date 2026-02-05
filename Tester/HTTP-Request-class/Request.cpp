@@ -128,9 +128,8 @@ void Request::setMethod()
             else
             {
               this->_method = *it;
-              // if (this->_method != "GET" && this->_method != "POST" && this->_method != "DELETE" )
-              //   throw NotImplementedMethod();
-            //   std::cout << "Method: " << this->_method << std::endl;
+              if (this->_method != "GET" && this->_method != "POST" && this->_method != "DELETE" )
+                throw NotImplementedMethod();
               return;
             }
           }

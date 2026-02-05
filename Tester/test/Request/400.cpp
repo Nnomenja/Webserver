@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "../Ft-read-test-file/Test.hpp"
+#include "../../Ft-read-test-file/Test.hpp"
 #include <string>
 #include <sstream>
 
@@ -18,14 +18,8 @@ typedef struct S_TRQ
     std::string contents;
 } T_TRQ;
 
-
-std::string RequestValidPath = "./File-teste/Valid/"; 
-std::string RequestInValidPath = "./File-teste/Invalid/";
-
-//===========
-
-std::string BodyRequestValidPath = "./File-teste/Valid/body/"; 
-std::string BodyRequestInValidPath = "./File-teste/Invalid/body/";
+std::string RequestValidPath = "./File-teste/400/Valid/"; 
+std::string RequestInValidPath = "./File-teste/400/Invalid/";
 
 /**------------------------------------------------------------------------
  *                           PrintTo
