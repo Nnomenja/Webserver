@@ -530,9 +530,14 @@ int Request::getPort() const
 	return (_port);
 }
 
+bool Request::getHasContentLength() const
+{
+	return (_hasContentLength);
+}
+
 int Request::getContentLength() const
 {
-	return (_port);
+	return (_contentLength);
 }
 
 /**========================================================================

@@ -10,6 +10,7 @@ typedef struct S_SRQ
     std::string pathname;
     std::string httpVesion;
     int         port;
+    int         contentLength;
 } T_SRQ;
 
 typedef struct S_TRQ
@@ -65,6 +66,8 @@ TEST_P(RequestTestSuccess, Success) {
         EXPECT_TRUE(req.getPathName() == GetParam().pathname);
         EXPECT_TRUE(req.getHTTPversion() == GetParam().httpVesion);
         EXPECT_TRUE(req.getPort() == GetParam().port);
+        EXPECT_TRUE(req.getHasContentLength() ? req.getContentLength() == GetParam().contentLength: true );
+            
     });
 }
 
@@ -93,21 +96,24 @@ INSTANTIATE_TEST_SUITE_P(
             "GET",
             "/",
             "1.1",
-            8080
+            8080,
+            -1
         },
         T_SRQ{
             readTestFile(RequestValidPath + "method_1.txt"),
             "POST",
             "/",
             "1.1",
-            8080
+            8080,
+            -1
         },
         T_SRQ{
             readTestFile(RequestValidPath + "method_2.txt"),
             "DELETE",
             "/",
             "1.1",
-            8080
+            8080,
+            -1
         },
         
         /**============================================
@@ -120,7 +126,8 @@ INSTANTIATE_TEST_SUITE_P(
                 "GET",
                 "/path",
                 "1.1",
-                8080
+                8080,
+                -1
             },
             /*------- With query -------*/    
             T_SRQ{
@@ -128,7 +135,8 @@ INSTANTIATE_TEST_SUITE_P(
                 "GET",
                 "/path",
                 "1.1",
-                8080
+                8080,
+                -1
             },
             /*------- Successive slash -------*/    
             T_SRQ{
@@ -136,7 +144,8 @@ INSTANTIATE_TEST_SUITE_P(
                  "GET",
                 "/path/path2",
                 "1.1",
-                8080
+                8080,
+                -1
             },
             /*------- Normalisation -------*/    
             T_SRQ{
@@ -144,35 +153,40 @@ INSTANTIATE_TEST_SUITE_P(
                 "GET",
                 "/path",
                 "1.1",
-                8080
+                8080,
+                -1
             },
             T_SRQ{
                 readTestFile(RequestValidPath + "path_5.txt"),
                 "GET",
                 "/path",
                 "1.1",
-                8080
+                8080,
+                -1
             },
             T_SRQ{
                 readTestFile(RequestValidPath + "path_6.txt"),
                 "GET",
                 "/path",
                 "1.1",
-                8080
+                8080,
+                -1
             },
             T_SRQ{
                 readTestFile(RequestValidPath + "path_7.txt"),
                 "GET",
                 "/path/path",
                 "1.1",
-                8080
+                8080,
+                -1
             },
             T_SRQ{
                 readTestFile(RequestValidPath + "path_8.txt"),
                 "GET",
                 "/path3/path4",
                 "1.1",
-                8080
+                8080,
+                -1
             },
             /*------- Pourcent format Encode -------*/    
             T_SRQ{
@@ -180,7 +194,8 @@ INSTANTIATE_TEST_SUITE_P(
                 "GET",
                 "/path#path",
                 "1.1",
-                8080
+                8080,
+                -1
             },
         /**============================================
          *               Header
@@ -190,21 +205,24 @@ INSTANTIATE_TEST_SUITE_P(
             "GET",
             "/path",
             "1.1",
-            8080
+            8080,
+            -1
         },
         T_SRQ{
             readTestFile(RequestValidPath + "header_01.txt"),
             "GET",
             "/path",
             "1.1",
-            8080
+            8080,
+            6400
         },
         T_SRQ{
             readTestFile(RequestValidPath + "header_02.txt"),
             "GET",
             "/path",
             "1.1",
-            8080
+            8080,
+            1000000
         }
     )
 );

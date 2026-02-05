@@ -25,7 +25,7 @@
 #include <sys/socket.h>
 
 #define BUFFER_MAX 4000
-
+#define CONTENT_LENGTH_MAX 1000000
 #define CRLF "\r\n"
 
 class Request {
@@ -81,6 +81,7 @@ class Request {
         bool        getHasQuery() const;
         int         getPort() const;
         int         getContentLength() const;
+        bool        getHasContentLength() const;
 
         class NotImplementedMethod: public std::exception{
             const char *what () const throw();
