@@ -299,6 +299,15 @@ INSTANTIATE_TEST_SUITE_P(
         },
         T_TRQ{
             readTestFile(RequestInValidPath + "httpVersion_01.txt")
+        },
+        /**============================================
+         *               HEADER
+         *=============================================**/
+        T_TRQ{
+            readTestFile(RequestInValidPath + "header_00.txt")
+        },
+        T_TRQ{
+            readTestFile(RequestInValidPath + "header_01.txt")
         }
     )
 );
