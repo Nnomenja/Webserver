@@ -494,8 +494,8 @@ void Request::setContentLength()
 		if (!isdigit(value[i]))
 			throw BadRequest();
 		res *= 10;
-		res += value[i] + '0';
-		if (res > 1000000)
+		res += value[i] - '0';
+		if (res > CONTENT_LENGTH_MAX)
 			throw BadRequest();
 	}
 	_contentLength = res;
