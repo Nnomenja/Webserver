@@ -198,6 +198,13 @@ INSTANTIATE_TEST_SUITE_P(
             "/path",
             "1.1",
             8080
+        },
+        T_SRQ{
+            readTestFile(RequestValidPath + "header_02.txt"),
+            "GET",
+            "/path",
+            "1.1",
+            8080
         }
     )
 );
