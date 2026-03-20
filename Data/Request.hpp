@@ -1,0 +1,34 @@
+#ifndef REQUEST_HPP
+#define REQUEST_HPP
+
+#include <string>
+#include <vector>
+#include <map>
+
+class Request {
+    private:
+        std::string							_method;
+        std::string							_pathname;
+        std::string							_file;
+        std::string							_tmp;
+        std::string							_httpVersion;
+        bool								_hasPourcentEncode;
+        bool								_hasQuery;
+        bool								_hasContentLength;
+        bool								_hasContentType;
+        size_t								_contentLength;
+        int									_port;
+        std::string							_body;
+        bool								_hasBody;
+        std::vector<std::string>			_contentType;
+        std::map<std::string, std::string>	_headers;
+    public:
+        Request();
+        Request(const Request& other);
+        Request& operator=(const Request& other);
+        ~Request();
+
+		
+};
+
+#endif
