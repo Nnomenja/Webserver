@@ -18,6 +18,7 @@ typedef struct SSocketInfo
 	int				fd;
 	sockaddrIn		addr;
 	socklen_t		addrlen;
+	int				serverFd;
 } SocketInfo;
 
 class Socket

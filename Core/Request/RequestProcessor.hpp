@@ -1,0 +1,24 @@
+#ifndef REQUESTPROCESSOR_HPP
+#define REQUESTPROCESSOR_HPP
+
+#include "IRequestStrategy.hpp"
+#include "../../Enum/EndpointType.hpp"
+#include <iostream>
+
+class Client;
+class RequestProcessor {
+	private:
+		IRequestStrategy* createStrategy(EndpointType type);
+	public:
+		RequestProcessor();
+		RequestProcessor(const RequestProcessor& other);
+		RequestProcessor& operator=(const RequestProcessor& other);
+		~RequestProcessor();
+
+		/**
+		 * @brief Process request and store the accoring data in client
+		 */
+		void processRequest(Client& client);
+};
+
+#endif

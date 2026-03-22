@@ -5,8 +5,8 @@
 */
 
 # include "ClientSocket.hpp"
-# include "../utils/utils.hpp"
-# include "../Data/Client.hpp"
+# include "../../utils/utils.hpp"
+# include "../../Data/Client.hpp"
 
 # include <unistd.h>
 # include <cerrno>
@@ -66,6 +66,12 @@ int ClientSocket::getFdAcceptor( void ) const
 	return (_fdAcceptor);
 }
 
+int ClientSocket::getBufferSize(void) const
+{
+	return (_size);
+}
+
+
 /* ************************************************************************** */
 /*                                Setters                                     */
 /* ************************************************************************** */
@@ -80,20 +86,26 @@ void ClientSocket::setStartTime(uint64_t value)
 	_start_time_ms = value;
 }
 
+void ClientSocket::setBufferSize(size_t value)
+{
+	_size = value;
+}
+
 /* ************************************************************************** */
 /*                             Other Methods                                  */
 /* ************************************************************************** */
 
-std::string ClientSocket::recv(unsigned int count)
+std::string ClientSocket::recv(unsigned int count, bool *end)
 {
 	CHARARRAY(buff, count);
 
 	int bytes = ::read(_socketFd, buff, count);
 
-	if (bytes < 0 && errno == EAGAIN)
-		throw Eagain();
-	if (bytes == 0)
+	if (bytes < 0)
+	{
+		*end = true;
 		return ("");
+	}
 	return (std::string(buff, bytes));
 }
 
@@ -103,7 +115,7 @@ ssize_t ClientSocket::send(const std::string& buff)
 						, buff.c_str()
 						, buff.size()
 						, MSG_DONTWAIT);
-	if (sent < 0 && (errno == EAGAIN || errno == EWOULDBLOCK))
+	if (sent < 0)
 		throw Eagain();
 	return (sent);
 }

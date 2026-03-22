@@ -5,8 +5,8 @@
 */
 
 
-# include "./Core/Webserv.hpp"
-# include "./Core/Signal.hpp"
+# include "./Core/Network/Webserv.hpp"
+# include "./Core/Network/Signal.hpp"
 
 volatile sig_atomic_t stop = 0;
 

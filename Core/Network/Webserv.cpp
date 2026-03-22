@@ -1,14 +1,10 @@
-/*
-   File: Webserv.cpp
-   By: Azaria
-   Created: 2026/02/25 09:49:55
-*/
+#include "Webserv.hpp"
+#include "../Request/HttpRequestParser.hpp"
+#include "../../Data/Request.hpp"
+#include "../../Data/Client.hpp"
+#include "../Request/RequestProcessor.hpp"
+#include <signal.h>
 
-# include "Webserv.hpp"
-# include "../Data/Request.hpp"
-# include "../Data/Client.hpp"
-
-# include <signal.h>
 extern volatile sig_atomic_t stop;
 
 /* ************************************************************************** */
@@ -72,9 +68,10 @@ void Webserv::removeSocket(int fd)
 // SIMULATION ->
 typedef struct UnitConfSimul
 {
-    std::string host;
-    int port;
-    int methods;
+    std::string 	host;
+    int 			port;
+    int 			methods;
+	EndpointType	type;
 } UnitConfSimul_t;
 
 void initSimulData(std::vector<UnitConfSimul_t> &configsSimul)
@@ -85,10 +82,12 @@ void initSimulData(std::vector<UnitConfSimul_t> &configsSimul)
     u.host = "0.0.0.0";
     u.port = 2000;
     u.methods = GET + POST;
+	u.type = STATIC;
     configsSimul.push_back(u);
     // n = 2
 	u.host = "0.0.0.0";
     u.port = 2001;
+	u.type = STATIC;
     u.methods = GET + POST + DELETE;
     configsSimul.push_back(u);
 }
@@ -202,6 +201,7 @@ bool Webserv::createServerSockets( void )
                 << std::endl
                 << "    Host = " << host << std::endl
                 << "    port = " << port << std::endl
+                << "    fd = " << tmp->getSocketFd() << std::endl
                 << "    No blocking" << std::endl
                 << std::endl;
     }
@@ -234,7 +234,11 @@ ServerSocket* Webserv::getServerSocket(int fd) const
 
 void Webserv::run(void)
 {
-	int epollTimeOut = 0;
+	RequestProcessor	process;
+	ServerSocket* 		serverSocket;
+	SocketInfo			tmp;
+
+	int epollTimeOut 	= 0;
 
 	while (!stop)
 	{
@@ -249,45 +253,66 @@ void Webserv::run(void)
 		{
 			int currentFd = _epoll.getEvents()[i].data.fd;
 
-            ServerSocket* serverSocket = getServerSocket(currentFd);
+            serverSocket = getServerSocket(currentFd);
+			// 1. Socket's type is server
 			if (serverSocket)
 			{
-				Client clientData;
-				clientData.setClientInfo(serverSocket->accept());
-
-				if (clientData.getCLientInfo().fd < 0)
+				tmp = serverSocket->accept();
+				if (tmp.fd < 0)
 					return ;
-				_epoll.registerFd(clientData.getCLientInfo().fd, EPOLLIN | EPOLLET);
-				_clients[clientData.getCLientInfo().fd] = clientData;
+				_epoll.registerFd(tmp.fd, EPOLLIN | EPOLLET);
+				_clients[tmp.fd];
+				tmp.serverFd = serverSocket->getSocketFd();
+				_clients[tmp.fd].setClientInfo(tmp);
+				std::cout << "[" << tmp.fd << "]: new client from server fd: " << tmp.serverFd << std::endl;
 			}
+
+			// 2. Socket's type is client
 			else
 			{
+				// 3. An error occurs in socket event
 				if ((_epoll.getEvents()[i].events & (EPOLLERR | EPOLLHUP)))
 				{
 					removeSocket(currentFd);
+					std::cout << "[" << currentFd << "]: disconnected" << std::endl;
 					continue;
 				}
+
+				//4. Ready to read
 				if (_epoll.getEvents()[i].events & EPOLLIN)
 				{
-					ClientSocket client(_clients[currentFd]);
-
-					if (!readClientBuffer(client))
+					ClientSocket client_socket(_clients[currentFd]);
+					
+					if (!readClientBuffer(client_socket))
 						continue;
-
-					// http tache ------------------------------------------
-					http(client);
-					// ------------------------------------------------------
-
-					writeClientResponse(client);
+					std::cout << "POLLIN" << std::endl;
+					process.processRequest(_clients[currentFd]);
+					_epoll.modify(client_socket.getSocketFd(), EPOLLOUT);
+					std::cout << "[" << client_socket.getSocketFd() << "]: read successfull" << std::endl;
 				}
-				if (_epoll.getEvents()[i].events & EPOLLOUT)
+	
+				//5. Ready to write
+				else if (_epoll.getEvents()[i].events & EPOLLOUT)
 				{
-					ClientSocket client(_clients[currentFd]);
-					writeClientResponse(client);
+					 // because there are not request process strategy implemented 
+					ClientSocket client_socket(_clients[currentFd]);
+					
+					// Client		_clients[currentFd];
+
+					/**========================================================================
+					 * todo                             TODO
+					 *   - set client_socket buffer by client.getResponse();
+					 *   - set client_socket buffer size by client.getResponse size
+					 *========================================================================**/
+					std::cout << "POLLOUT" << std::endl;
+					http(client_socket); // this is an example of response because there are not strategy request implemented
+
+					writeClientResponse(client_socket);
+					std::cout << "[" << currentFd << "]: write successfull" << std::endl;
 				}
 			}
 		}
-		
+	
 		/**
 		 * To enforce request header and body timeouts, the server iterates over each client, 
 		 * comparing the client's start time with the current time and 
@@ -304,12 +329,14 @@ void Webserv::run(void)
 		{
 			int tmp;
 
-			bool check = verify_deadline_ms(it->second.getStartTime(), 5000); 
-			if (check)
+			bool check = verify_deadline_ms(it->second.getStartTime(), 50000); 
+			if (it->second.req.getParseState() != COMPLETE && check)
 			{
+				std::cout << "nbr: " << _clients.size() << std::endl;
 				tmp = it->first;
 				it++;
 				removeSocket(tmp);
+				std::cout << "[" << tmp << "]: timeout" << std::endl;
 			}
 			else
 				++it;
@@ -317,32 +344,40 @@ void Webserv::run(void)
 	}
 }
 
+
 bool Webserv::readClientBuffer(ClientSocket& client)
 {
-	int maxReadBytes = MAXREADBYTES;
+	int				maxReadBytes = MAXREADBYTES;
+	Client			clientHttp = _clients[client.getSocketFd()];
+	bool			end = false;
 
-	client.setBlocking(false);	
+	client.setBlocking(false);
 	while (true)
 	{
 		std::string data;
 
+		data = client.recv(maxReadBytes, &end);
+		if (end)
+			return (false);
+		if (data.empty())
+		{
+			std::cout << "Client disconnected: "<< client.getSocketFd()  << std::endl;
+			removeSocket(client.getSocketFd());
+			std::cout << "Numbers of client: " << _clients.size() << std::endl;
+			return (false);
+		}
+		client.appendBuffer(data);
 		try
 		{
-			data = client.recv(maxReadBytes);
-			if (data.empty())
-			{
-				std::cout << "Data empty" << std::endl;
-				client.close();
-				_clients.erase(client.getSocketFd());
-				return (true);
-			}
-			client.appendBuffer(data);
-			std::cout << client.getBuffer() << std::endl;
+			HttpRequestParser	parse;
+			parse.parse(clientHttp.req);
+			// return (true); //temporary  prevent infinity loop
 		}
-		catch(const ClientSocket::Eagain& e)
+		catch(const ServerException& e)
 		{
-			std::cout << "Data Eagain" << std::endl;
-			return (false);
+			clientHttp.res.setStatusCode(e.getCode());
+			clientHttp.setEndpointType(ERROR);
+			return (true);
 		}
 	}
 	return (true);
@@ -374,6 +409,7 @@ void	Webserv::writeClientResponse(ClientSocket& client)
 		}
 		catch(const ClientSocket::Eagain& e)
 		{
+			std::cout << "EAGAIN" << std::endl;
 			_epoll.modify(client.getSocketFd(), EPOLLOUT);
 			_clients[client.getSocketFd()].getBuffer() = response;
 			return ;

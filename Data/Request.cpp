@@ -1,6 +1,6 @@
 #include "Request.hpp"
 
-Request::Request(){
+Request::Request():_state(METHOD){
 };
 
 Request::Request(const Request& other){
@@ -14,3 +14,14 @@ Request& Request::operator=(const Request& other){
 };
 
 Request::~Request(){};
+
+
+RequestParserState Request::getParseState() const
+{
+  return (_state);
+}
+
+void Request::setParseState(RequestParserState value)
+{
+    _state = value;
+}

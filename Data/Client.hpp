@@ -1,9 +1,11 @@
 #ifndef CLIENT_HPP
 #define CLIENT_HPP
 
-# include "../Core/Socket.hpp"
+# include "../Core/Network/Socket.hpp"
 # include "./Request.hpp"
 # include "./Response.hpp"
+# include "../Enum/EndpointType.hpp"
+
 
 class Request;
 class Response;
@@ -13,6 +15,7 @@ class Client {
         int			_fd;
         std::string	_buffer;
         uint64_t	_start_time_ms;
+        EndpointType  _type;
 
     public:
         Client();
@@ -27,8 +30,10 @@ class Client {
         int			getFd() const;
         std::string	getBuffer() const;
         uint64_t	getStartTime() const;
+        EndpointType  getEndpointType() const;
 
         void        setClientInfo(SocketInfo value);
+        void        setEndpointType(EndpointType  type);
 
         void        refreshStartTime();
 };

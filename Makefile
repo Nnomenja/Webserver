@@ -6,27 +6,9 @@ CORE_DIR = Core
 DATA_DIR = Data
 OBJS_DIR = objs
 UTILS_DIR = utils
+EXCEPTION_DIR = Exception
 
-CONFIG_SRCS = $(addprefix $(CORE_DIR)/, \
-				Config.cpp\
-				Validator.cpp\
-			)
-
-HTTP_REQUEST_SRCS = $(addprefix $(DATA_DIR)/, \
-				Request.cpp \
-				Client.cpp \
-				Response.cpp \
-			)
-SOCKET_SRCS = $(addprefix $(CORE_DIR)/, \
-			Signal.cpp\
-			Socket.cpp\
-			ClientSocket.cpp\
-			ServerSocket.cpp\
-			Epoll.cpp\
-			Webserv.cpp\
-			)
-
-UTILS_SRC = $(addprefix $(UTILS_DIR)/, \
+UTILS_SRCS = $(addprefix $(UTILS_DIR)/, \
 			getFileContent.cpp \
 			number_utils.cpp \
 			time.cpp \
@@ -34,11 +16,46 @@ UTILS_SRC = $(addprefix $(UTILS_DIR)/, \
 			path_utils.cpp \
 		)
 
+NETWORK_SRCS = $(addprefix $(CORE_DIR)/Network/, \
+				ClientSocket.cpp \
+				Epoll.cpp \
+				ServerSocket.cpp \
+				Signal.cpp \
+				Socket.cpp \
+				Webserv.cpp \
+			)
+REQUEST_SRCS = $(addprefix $(CORE_DIR)/Request/, \
+				DynamicStrategy.cpp \
+				HttpRequestParser.cpp \
+				Redirectionrategy.cpp \
+				RequestProcessor.cpp \
+				StaticStrategy.cpp \
+				ErrorStrategy.cpp \
+				DirectoryStrategy.cpp \
+			)
+
+SETTINGS_SRCS = $(addprefix $(CORE_DIR)/Settings/, \
+				Config.cpp \
+				Validator.cpp \
+			)
+
+DATA_SRCS = $(addprefix $(DATA_DIR)/, \
+				Client.cpp \
+				Request.cpp \
+				Response.cpp \
+			)
+
+EXCEPTION_SRC = $(addprefix $(EXCEPTION_DIR)/, \
+				ServerException.cpp  \
+			)
+
 SRC = main.cpp
-SRC += $(CONFIG_SRCS)
-SRC += $(HTTP_REQUEST_SRCS)
-SRC += $(SOCKET_SRCS)
-SRC += $(UTILS_SRC)
+SRC += $(SETTINGS_SRCS)
+SRC += $(REQUEST_SRCS)
+SRC += $(NETWORK_SRCS)
+SRC += $(UTILS_SRCS)
+SRC += $(DATA_SRCS)
+SRC += $(EXCEPTION_SRC)
 
 OBJS = $(SRC:%.cpp=$(OBJS_DIR)/%.o)
 

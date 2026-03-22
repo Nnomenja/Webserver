@@ -10,11 +10,11 @@
 # include <vector>
 # include <ctime>
 
-# include "./Config.hpp"
+# include "../Settings/Config.hpp"
 # include "./Epoll.hpp"
 # include "./ServerSocket.hpp"
 # include "./ClientSocket.hpp"
-# include "./ParseRequest.hpp"
+# include "../../Exception/ServerException.hpp"
 
 class Webserv
 {
@@ -33,6 +33,11 @@ class Webserv
         
         bool            createServerSockets( void );
         ServerSocket*   getServerSocket(int fd) const;
+
+        /**
+         * @brief Reads stream data from the client and passes it to `HttpRequestParser`.
+         * @return `true` if the request is complete and no errors occur (e.g., parsing or blocking); otherwise `false`.
+        */
         bool            readClientBuffer(ClientSocket& client);
         void            writeClientResponse(ClientSocket& client);
 		void		    http(ClientSocket& client);
@@ -45,8 +50,6 @@ class Webserv
         int							_serverSocketsNumber;
         std::vector<ServerSocket*>	_serverSockets;
         std::map<int, Client>       _clients;
-        ParseRequest				*_parse;
-
 };
 
 #endif /* WEBSERV_HPP */

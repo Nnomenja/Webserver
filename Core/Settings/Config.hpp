@@ -1,7 +1,7 @@
 #ifndef CONFIG_HPP
 #define CONFIG_HPP
 
-#include "../utils/utils.hpp"
+#include "../../utils/utils.hpp"
 #include "Validator.hpp"
 
 #include <vector>

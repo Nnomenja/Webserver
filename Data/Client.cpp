@@ -44,6 +44,11 @@ uint64_t Client::getStartTime() const
   return (_start_time_ms);
 }
 
+EndpointType Client::getEndpointType() const
+{
+  return (_type);
+}
+
 /**============================================
  *               SETTERS
  *=============================================**/
@@ -53,6 +58,10 @@ void Client::setClientInfo(SocketInfo value)
   _clientInfo = value;
 }
 
+void Client::setEndpointType(EndpointType type)
+{
+  _type = type;
+}
 /**============================================
  *               UTILS
  *=============================================**/

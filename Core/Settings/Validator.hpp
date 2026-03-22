@@ -1,7 +1,7 @@
 #ifndef VALIDATOR_HPP
 #define VALIDATOR_HPP
 
-#include "../utils/utils.hpp"
+#include "../../utils/utils.hpp"
 
 class Validator
 {
