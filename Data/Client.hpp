@@ -32,6 +32,7 @@ class Client {
         uint64_t	    getStartTime() const;
         UnitConf_t    	getEndpoint() const;
 
+        void            setFd(int fd);
         void			setEndpoint(UnitConf_t  value);
 		void			setEndpointType(EndpointType type);
 		void			setBuffer(std::string &value);

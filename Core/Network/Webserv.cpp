@@ -257,6 +257,7 @@ void Webserv::run(void)
 					return ;
 				_epoll.registerFd(tmp.fd, EPOLLIN | EPOLLET);
 				_clients[tmp.fd];
+				_clients[tmp.fd].setFd(tmp.fd);
 				_clients[tmp.fd].setEndpoint(_config.findEndpointByFd(tmp.serverFd));
 				std::cout << "client:" << tmp.fd << " Server: " << serverSocket->getSocketFd() << std::endl;
 				std::cout << "[" << tmp.fd << "]: new client from server fd: " << tmp.serverFd << std::endl;
@@ -359,6 +360,7 @@ bool Webserv::readtHttpRequest(Client &client)
 	std::string		data;
 	std::string		contents;
 
+	std::cout <<  "read client fd: " << client.getFd() << std::endl;
 	while (true)
 	{
 		data = _epoll.read(client.getFd(), &end);
@@ -375,7 +377,6 @@ bool Webserv::readtHttpRequest(Client &client)
 		{
 			HttpRequestParser	parse;
 			parse.parse(client.req);
-			
 		}
 		catch(const ServerException& e)
 		{

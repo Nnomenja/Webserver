@@ -71,6 +71,11 @@ void Client::setBufferSize(size_t value)
 	_bufferSize = value;
 }
 
+void Client::setFd(int fd)
+{
+	_fd = fd;
+}
+
 /**============================================
  *               UTILS
  *=============================================**/

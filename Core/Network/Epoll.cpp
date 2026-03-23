@@ -124,7 +124,7 @@ std::string Epoll::read(const int fd, bool *end)
 	
 	int bytes = ::read(fd, buff, MAXREADBYTES);
 
-	if (bytes < 0)
+	if (bytes <= 0)
 	{
 		*end = true;
 		return ("");
