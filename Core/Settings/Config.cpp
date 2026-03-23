@@ -209,3 +209,13 @@ int Config::getN() const
 {
     return (n);
 }
+
+UnitConf_t Config::findEndpointByFd(int fd)
+{
+    return (_endpoints[fd]);
+}
+
+void Config::setEndpointByFd(UnitConf_t &value, int fd)
+{
+    _endpoints[fd] = value;
+}

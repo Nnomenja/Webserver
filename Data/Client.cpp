@@ -11,7 +11,6 @@ Client::Client(const Client& other){
 
 Client& Client::operator=(const Client& other){
   if (this != &other) {
-    _clientInfo = other._clientInfo;
     _fd = other._fd;
     _buffer = other._buffer;
     _start_time_ms = other._start_time_ms;
@@ -24,11 +23,6 @@ Client::~Client(){};
 /**============================================
  *               GETTERS
  *=============================================**/
-
-SocketInfo Client::getCLientInfo() const
-{
-  return (_clientInfo);
-}
 
 int Client::getFd() const
 {
@@ -44,24 +38,39 @@ uint64_t Client::getStartTime() const
   return (_start_time_ms);
 }
 
-EndpointType Client::getEndpointType() const
+UnitConf_t Client::getEndpoint() const
 {
-  return (_type);
+  return (_endpoint);
+}
+
+size_t Client::getBufferSize() const
+{
+	return (_bufferSize);
 }
 
 /**============================================
  *               SETTERS
  *=============================================**/
 
-void Client::setClientInfo(SocketInfo value)
+void Client::setEndpoint(UnitConf_t value)
 {
-  _clientInfo = value;
+  _endpoint = value;
 }
-
 void Client::setEndpointType(EndpointType type)
 {
-  _type = type;
+  _endpoint.type = type;
 }
+
+void Client::setBuffer(std::string &value)
+{
+	_buffer = value;
+}
+
+void Client::setBufferSize(size_t value)
+{
+	_bufferSize = value;
+}
+
 /**============================================
  *               UTILS
  *=============================================**/

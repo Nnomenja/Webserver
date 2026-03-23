@@ -11,8 +11,6 @@
 # include <unistd.h>
 # include <fcntl.h>
 
-# include "ClientSocket.hpp"
-
 /* ************************************************************************** */
 /*                            Canonical Form                                  */
 /* ************************************************************************** */
@@ -101,6 +99,7 @@ SocketInfo 	ServerSocket::accept( void )
 
 	if (info.fd < 0)
         std::cerr << "Error: accept failed" << std::endl;
+	info.serverFd = _socketFd;
 	return (info);
 }
 

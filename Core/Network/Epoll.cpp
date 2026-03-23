@@ -1,12 +1,10 @@
-/*
-   File: Epoll.cpp
-   By: Azaria
-   Created: 2026/02/20 10:29:01
-*/
-
-# include "Epoll.hpp"
-# include <unistd.h>
-# include <iostream>
+#include "Epoll.hpp"
+#include <unistd.h>
+#include <cstring>
+#include <iostream>
+#include <unistd.h>
+#include "Webserv.hpp"
+#include <sys/socket.h>
 
 /* ************************************************************************** */
 /*                            Canonical Form                                  */
@@ -118,4 +116,23 @@ void Epoll::close( void )
 {
 	if (_epollFd >= 0)
 		::close(_epollFd);
+}
+
+std::string Epoll::read(const int fd, bool *end)
+{
+	char buff[MAXREADBYTES] = {0};
+	
+	int bytes = ::read(fd, buff, MAXREADBYTES);
+
+	if (bytes < 0)
+	{
+		*end = true;
+		return ("");
+	}
+	return (std::string(buff, bytes));
+}
+
+void Epoll::send(const int fd,const std::string &buff,const size_t lenght)
+{
+	::send(fd, buff.c_str(), lenght, MSG_DONTWAIT);
 }

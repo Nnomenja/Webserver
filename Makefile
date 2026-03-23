@@ -17,7 +17,6 @@ UTILS_SRCS = $(addprefix $(UTILS_DIR)/, \
 		)
 
 NETWORK_SRCS = $(addprefix $(CORE_DIR)/Network/, \
-				ClientSocket.cpp \
 				Epoll.cpp \
 				ServerSocket.cpp \
 				Signal.cpp \

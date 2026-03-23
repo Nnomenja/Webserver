@@ -13,9 +13,11 @@
 # include "../Settings/Config.hpp"
 # include "./Epoll.hpp"
 # include "./ServerSocket.hpp"
-# include "./ClientSocket.hpp"
 # include "../../Exception/ServerException.hpp"
 
+#define MAXREADBYTES 1024
+
+class Client;
 class Webserv
 {
     public :
@@ -38,10 +40,11 @@ class Webserv
          * @brief Reads stream data from the client and passes it to `HttpRequestParser`.
          * @return `true` if the request is complete and no errors occur (e.g., parsing or blocking); otherwise `false`.
         */
-        bool            readClientBuffer(ClientSocket& client);
-        void            writeClientResponse(ClientSocket& client);
-		void		    http(ClientSocket& client);
-        void            removeSocket(int fd);
+        bool            readtHttpRequest(Client& client);
+        void            sendHttpResponse(Client& client);
+        void            removeClientHttp(int fd);
+
+		void		    simulateClient(Client& client);
 
         bool						_isAlreadyInit;
         std::string					_fileConfigName;
