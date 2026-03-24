@@ -2,6 +2,7 @@
 #include "../utils/utils.hpp"
 
 Client::Client(){
+  std::cout << "Create client" << std::endl;
   this->_start_time_ms = get_time_ms();
 };
 

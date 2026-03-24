@@ -256,7 +256,15 @@ void Webserv::run(void)
 				if (tmp.fd < 0)
 					return ;
 				_epoll.registerFd(tmp.fd, EPOLLIN | EPOLLET);
+				{
+					std::cout << "---------x--------" <<std::endl;
+					_clients[tmp.fd];
+ 					std::cout << "-----------x------" <<std::endl;
+				}
+				
+				std::cout << "-----------------" <<std::endl;
 				_clients[tmp.fd];
+				std::cout << "-----------------" <<std::endl;
 				_clients[tmp.fd].setFd(tmp.fd);
 				_clients[tmp.fd].setEndpoint(_config.findEndpointByFd(tmp.serverFd));
 				std::cout << "client:" << tmp.fd << " Server: " << serverSocket->getSocketFd() << std::endl;
@@ -267,7 +275,7 @@ void Webserv::run(void)
 			else
 			{
 
-				Client client = _clients[currentFd];
+				Client &client = _clients[currentFd];
 
 				/**============================================
 				 *               SOCKET ERROR
@@ -316,6 +324,7 @@ void Webserv::run(void)
 					simulateClient(client); // this is an example of response because there are not strategy request implemented
 
 					sendHttpResponse(client);
+					removeClientHttp(client.getFd());
 					std::cout << "[" << currentFd << "]: write successfull" << std::endl;
 				}
 			}
@@ -339,7 +348,7 @@ void Webserv::run(void)
 			int tmp;
 
 			bool check = verify_deadline_ms(it->second.getStartTime(), 50000); 
-			if (it->second.req.getParseState() != COMPLETE && check)
+			if (it->second.req.getParserState()->getParserStateName() != COMPLETE && check)
 			{
 				std::cout << "nbr: " << _clients.size() << std::endl;
 				tmp = it->first;
@@ -364,8 +373,6 @@ bool Webserv::readtHttpRequest(Client &client)
 	while (true)
 	{
 		data = _epoll.read(client.getFd(), &end);
-		if (end)
-			return (false);
 		if (data.empty())
 		{
 			std::cout << "Client disconnected: "<< client.getFd()  << std::endl;
@@ -375,8 +382,15 @@ bool Webserv::readtHttpRequest(Client &client)
 		}
 		try
 		{
+			std::cout << "Buff: " << data << std::endl;
 			HttpRequestParser	parse;
 			parse.parse(client.req);
+
+			if (parse.finished())
+			{
+				std::cout << "Finished" << std::endl;
+				return (true);
+			}
 		}
 		catch(const ServerException& e)
 		{
@@ -384,6 +398,8 @@ bool Webserv::readtHttpRequest(Client &client)
 			client.setEndpointType(ERROR);
 			return (true);
 		}
+		if (end)
+			return (false);
 	}
 	return (true);
 }

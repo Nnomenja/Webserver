@@ -1,9 +1,9 @@
-#include "RequestProcessor.hpp"
-#include "StaticStrategy.hpp"
-#include "DynamicStrategy.hpp"
-#include "RedirectionStrategy.hpp"
-#include "ErrorStrategy.hpp"
-#include "DirectoryStrategy.hpp"
+#include "./RequestProcessor.hpp"
+#include "./RequestProcessStrategy/StaticStrategy.hpp"
+#include "./RequestProcessStrategy/DynamicStrategy.hpp"
+#include "./RequestProcessStrategy/RedirectionStrategy.hpp"
+#include "./RequestProcessStrategy/ErrorStrategy.hpp"
+#include "./RequestProcessStrategy/DirectoryStrategy.hpp"
 
 #include "../../Data/Client.hpp"
 

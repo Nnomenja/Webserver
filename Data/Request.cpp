@@ -1,27 +1,38 @@
 #include "Request.hpp"
+#include "../Core/Request/RequestParserState/MethodParser.hpp"
+#include "../Core/Request/RequestParserState/ARequestParserState.hpp"
 
-Request::Request():_state(METHOD){
+#include <iostream>
+
+Request::Request():_parserState(new MethodParser()){
+  _i++;
+  std::cout << "Count: " << _i << std::endl;
 };
 
 Request::Request(const Request& other){
+  std::cout << "Copy" << std::endl;
   *this = other; 
 };
 
 Request& Request::operator=(const Request& other){
+  std::cout << "Copy assignment" << std::endl;
   if (this != &other) {
   }
   return *this;
 };
 
-Request::~Request(){};
+Request::~Request(){
+  delete _parserState;
+};
 
-
-RequestParserState Request::getParseState() const
+ARequestParserState *Request::getParserState() const
 {
-  return (_state);
+  return (_parserState);
 }
 
-void Request::setParseState(RequestParserState value)
+void Request::setParseState(ARequestParserState *state)
 {
-    _state = value;
+    _parserState = state;
 }
+
+int Request::_i = 0;

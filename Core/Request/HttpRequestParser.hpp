@@ -1,7 +1,7 @@
 #ifndef HTTPREQUESTPARSER_HPP
 #define HTTPREQUESTPARSER_HPP
 
-#include "../../Data/Request.hpp"
+#include "../../Data/Client.hpp"
 
 /**
  * @brief  HttpRequestParser.cpp
@@ -9,8 +9,8 @@
  */
 
 class HttpRequestParser {
-    private:
-
+	private:
+		bool	_finished;
     public:
         HttpRequestParser();
         HttpRequestParser(const HttpRequestParser& other);
@@ -24,6 +24,7 @@ class HttpRequestParser {
          * 		3. In the case where
          */
         void    parse(Request &req);
+		bool	finished();	
 
 };
 

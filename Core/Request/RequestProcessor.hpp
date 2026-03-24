@@ -1,7 +1,7 @@
 #ifndef REQUESTPROCESSOR_HPP
 #define REQUESTPROCESSOR_HPP
 
-#include "IRequestStrategy.hpp"
+#include "./RequestProcessStrategy/IRequestStrategy.hpp"
 #include "../../Enum/EndpointType.hpp"
 #include <iostream>
 

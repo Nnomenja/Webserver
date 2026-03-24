@@ -120,15 +120,14 @@ void Epoll::close( void )
 
 std::string Epoll::read(const int fd, bool *end)
 {
-	char buff[MAXREADBYTES] = {0};
-	
-	int bytes = ::read(fd, buff, MAXREADBYTES);
+	char buff[MAXREADBYTES];
+	ssize_t bytes;
 
-	if (bytes <= 0)
-	{
+	::bzero((void *)buff, MAXREADBYTES);
+	bytes = ::read(fd, buff, MAXREADBYTES);
+
+	if (buff[MAXREADBYTES - 1] == 0)
 		*end = true;
-		return ("");
-	}
 	return (std::string(buff, bytes));
 }
 
