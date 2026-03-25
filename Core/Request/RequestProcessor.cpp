@@ -28,8 +28,10 @@ void RequestProcessor::processRequest(Client *client)
 	IRequestStrategy	*strategy = createStrategy(client->getEndpoint().type);
 	strategy->process(client);
 	delete strategy;
-	delete [] client->getRequest();
-	delete [] client->getResponse();
+	// if (client->getRequest())
+	// 	delete  client->getRequest();
+	// if (client->getResponse())
+	// 	delete  client->getResponse();
 }
 
 IRequestStrategy *RequestProcessor::createStrategy(EndpointType type)

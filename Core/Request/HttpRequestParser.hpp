@@ -9,8 +9,8 @@
  */
 
 class HttpRequestParser {
-	private:
-		bool	_finished;
+    private:
+      bool	_finished;
     public:
         HttpRequestParser();
         HttpRequestParser(const HttpRequestParser& other);

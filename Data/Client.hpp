@@ -20,6 +20,7 @@ class Client {
 
         Request		        *_req;
 		Response	        *_res;
+        bool                _parsed;
 
         Client(const Client& other);
         Client& operator=(const Client& other);
@@ -41,7 +42,10 @@ class Client {
 		void				setEndpointType(EndpointType type);
 		void				setBuffer(std::string &value);
 		void				setBufferSize(size_t value);
+
         void        		refreshStartTime();
+        void                parsed();
+        bool                isParsed() const;
 };
 
 #endif

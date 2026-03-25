@@ -32,7 +32,7 @@ void HttpRequestParser::parse(Request *req)
 	else
 	{
 		std::cout << "Decrementing.."<< std::endl;
-		// req.decrement();
+		req->decrement();
 	}
   // if parsing is compled
   (void)req;

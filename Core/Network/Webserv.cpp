@@ -36,8 +36,8 @@ Webserv::~Webserv()
 		std::cout << "closing" << std::endl;
 		for (std::map<int, Client *>::iterator it = _clients.begin(); it != _clients.end(); ++it)
 		{
-		std::cout << "closing: " << it->second->getFd()<< std::endl;
-		// delete it->second;
+				std::cout << "closing: " << it->second->getFd()<< std::endl;
+				delete it->second;
 			// if (it->second)
 				// delete [] it->second;
 		}
@@ -72,7 +72,7 @@ Webserv::Webserv(const std::string& fileConfigName)
 void Webserv::removeClientHttp(int fd)
 {
 	::close(fd);
-	delete [] _clients[fd];
+	delete  _clients[fd];
 	_clients.erase(fd);
 	_epoll.unregister(fd);
 }
@@ -239,7 +239,6 @@ ServerSocket* Webserv::getServerSocket(int fd) const
 
 void Webserv::run(void)
 {
-	RequestProcessor	process;
 	ServerSocket* 		serverSocket;
 	SocketInfo			tmp;
 
@@ -311,7 +310,7 @@ void Webserv::run(void)
 				{
 					if (!readtHttpRequest(client))
 						continue;
-		
+					RequestProcessor	process;
 					// Process request
 					std::cout << "POLLIN" << std::endl;
 					process.processRequest(_clients[currentFd]);
@@ -362,8 +361,8 @@ void Webserv::run(void)
 		{
 			int tmp;
 
-			bool check = verify_deadline_ms(it->second->getStartTime(), 50000); 
-			if (it->second->getRequest()->getParserState()->getParserStateName() != COMPLETE && check)
+			bool check = verify_deadline_ms(it->second->getStartTime(), 5000); 
+			if (!it->second->isParsed() && check)
 			{
 				std::cout << "nbr: " << _clients.size() << std::endl;
 				tmp = it->first;
@@ -374,12 +373,7 @@ void Webserv::run(void)
 			else
 				++it;
 		}
-	}
-	for (size_t i = 0; i < _clients.size(); i++)
-	{
-		delete [] _clients[i];
-	}
-	
+	}	
 }
 
 
@@ -408,6 +402,7 @@ bool Webserv::readtHttpRequest(Client* client)
 
 			if (parse.finished())
 			{
+				client->parsed();
 				std::cout << "Finished" << std::endl;
 				return (true);
 			}
@@ -420,7 +415,10 @@ bool Webserv::readtHttpRequest(Client* client)
 			return (true);
 		}
 		if (end)
+		{
+			std::cout << "End buff,,,,,,," << std::endl;
 			return (false);
+		}
 	}
 	return (true);
 }

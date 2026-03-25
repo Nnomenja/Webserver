@@ -1,7 +1,7 @@
 #include "Client.hpp"
 #include "../utils/utils.hpp"
 
-Client::Client():_start_time_ms(get_time_ms()), _req(new Request()), _res(new Response()){
+Client::Client():_start_time_ms(get_time_ms()), _req(new Request()), _res(new Response()), _parsed(false){
   std::cout << "Create client" << std::endl;
 //   this->_start_time_ms = get_time_ms();
 };
@@ -27,9 +27,10 @@ Client& Client::operator=(const Client& other){
 };
 
 Client::~Client(){
-	std::cout << "Destroy client" << std::endl;
-	delete [] _req;
-	delete [] _res;
+	if (_req)
+		delete  _req;
+	if (_res)
+		delete _res;
 };
 
 /**============================================
@@ -105,4 +106,15 @@ void Client::setFd(int fd)
  void Client::refreshStartTime()
 {
   _start_time_ms =  get_time_ms();
+}
+
+
+bool Client::isParsed() const
+{
+	return (_parsed);
+}
+
+void Client::parsed()
+{
+	_parsed = true;
 }

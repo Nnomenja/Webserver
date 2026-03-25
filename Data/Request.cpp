@@ -22,7 +22,7 @@ Request& Request::operator=(const Request& other){
 };
 
 Request::~Request(){
-  delete _parserState;
+	delete _parserState;
 };
 
 ARequestParserState *Request::getParserState() const
