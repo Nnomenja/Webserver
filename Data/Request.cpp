@@ -4,9 +4,8 @@
 
 #include <iostream>
 
-Request::Request():_parserState(new MethodParser()){
-  _i++;
-  std::cout << "Request: " << _i << std::endl;
+Request::Request():_index(0){
+	_parserState = new MethodParser(this);
 };
 
 Request::Request(const Request& other){
@@ -30,9 +29,27 @@ ARequestParserState *Request::getParserState() const
   return (_parserState);
 }
 
-void Request::setParseState(ARequestParserState *state)
+size_t Request::getParserIndex() const
 {
-    _parserState = state;
+	return (_index);
 }
 
-int Request::_i = 0;
+void Request::incrementParserIndex()
+{
+	_index++;
+}
+void Request::resetParserIndex()
+{
+	_index = 0;
+}
+
+void Request::setParseState(ARequestParserState *state)
+{
+	if (_parserState)
+		delete _parserState;
+    _parserState = state;
+}
+void Request::setBuffer(std::string &value)
+{
+	_buffer = value; 
+}

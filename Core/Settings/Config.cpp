@@ -87,7 +87,7 @@ void Config::parseFileContent()
         UnitConf_t u;
         u.host = "-";
         u.port = -1;
-        u.methods = 0;
+        // u.methods = 0;
         // here
         configs.push_back(u);
     }

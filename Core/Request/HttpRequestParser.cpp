@@ -1,5 +1,6 @@
 #include "HttpRequestParser.hpp"
 #include "./RequestParserState/ARequestParserState.hpp"
+#include "./RequestParserState/UriParser.hpp"
 
 HttpRequestParser::HttpRequestParser():_finished(false){
 
@@ -22,19 +23,22 @@ HttpRequestParser::~HttpRequestParser(){
 
 void HttpRequestParser::parse(Request *req)
 {
-//   switch (req.getParserState().)
-//   {
-	
-//   }
-	std::cout << "I: " << req->getI() << std::endl;
-	if (req->getI() == 0)
-		_finished = true;
-	else
+	ARequestParserState	*parseState = req->getParserState(); 
+	RequestParserStateName name = parseState->getParserStateName(); 
+	switch (name)
 	{
-		std::cout << "Decrementing.."<< std::endl;
-		req->decrement();
+		case METHOD:
+			parseState->execute();
+			req->setParseState(new UriParser(req));
+			//fallthrough
+		case URI :
+			req->getParserState()->execute();
+			//fallthrough
+		default:
+			req->setParseState(NULL);
+			_finished = true;
+			break;
 	}
-  // if parsing is compled
   (void)req;
 }
 

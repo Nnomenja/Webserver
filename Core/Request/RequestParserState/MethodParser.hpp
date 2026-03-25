@@ -5,10 +5,9 @@
 
 class MethodParser: public ARequestParserState {
 	private:
-		size_t 		_i;
 		bool		_finished;
 	public:
-		MethodParser();
+		MethodParser(Request *target);
 		~MethodParser();
 
 		bool	completed() const;

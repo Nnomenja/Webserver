@@ -1,10 +1,10 @@
 #include "MethodParser.hpp"
 
 
-MethodParser::MethodParser():ARequestParserState(METHOD), _i(0){
-	_i++;
+MethodParser::MethodParser(Request *target):ARequestParserState(METHOD, target){
 };
-MethodParser::~MethodParser(){};
+MethodParser::~MethodParser(){
+};
 
 bool MethodParser::completed() const
 {
@@ -13,5 +13,5 @@ bool MethodParser::completed() const
 
 void MethodParser::execute() const
 {
-	
+	std::cout << "MethodParser executing..." << std::endl;
 }

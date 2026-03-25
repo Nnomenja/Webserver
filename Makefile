@@ -54,6 +54,7 @@ REQUEST_PROCESS_STRATEGY = $(addprefix $(CORE_DIR)/Request/RequestProcessStrateg
 REQUEST_PARSE_STATE = $(addprefix $(CORE_DIR)/Request/RequestParserState/, \
 				ARequestParserState.cpp \
 				MethodParser.cpp \
+				UriParser.cpp \
 			)
 
 SRC = main.cpp

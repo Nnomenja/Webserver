@@ -23,6 +23,7 @@ typedef struct UnitConf
     int             port;
     int             methods;
     EndpointType    type;
+    std::vector<std::string> method_arr;
 } UnitConf_t;
 
 class Config

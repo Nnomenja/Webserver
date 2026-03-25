@@ -87,12 +87,17 @@ void initSimulData(std::vector<UnitConf_t> &configsSimul)
     u.host = "0.0.0.0";
     u.port = 2000;
     u.methods = GET + POST;
+	u.method_arr.push_back("GET");
+	u.method_arr.push_back("POST");
 	u.type = STATIC;
     configsSimul.push_back(u);
     // n = 2
 	u.host = "0.0.0.0";
     u.port = 2001;
 	u.type = STATIC;
+	u.method_arr.push_back("GET");
+	u.method_arr.push_back("POST");
+	u.method_arr.push_back("DELETE");
     u.methods = GET + POST + DELETE;
     configsSimul.push_back(u);
 }
@@ -361,7 +366,7 @@ void Webserv::run(void)
 		{
 			int tmp;
 
-			bool check = verify_deadline_ms(it->second->getStartTime(), 5000); 
+			bool check = verify_deadline_ms(it->second->getStartTime(), 50000); 
 			if (!it->second->isParsed() && check)
 			{
 				std::cout << "nbr: " << _clients.size() << std::endl;
@@ -387,6 +392,7 @@ bool Webserv::readtHttpRequest(Client* client)
 	while (true)
 	{
 		data = _epoll.read(client->getFd(), &end);
+		client->getRequest()->setBuffer(data);
 		if (data.empty())
 		{
 			std::cout << "Client disconnected: "<< client->getFd()  << std::endl;

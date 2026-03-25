@@ -26,9 +26,10 @@ class Request {
         // bool								_hasBody;
         // std::vector<std::string>			_contentType;
         // std::map<std::string, std::string>	_headers;
-        ARequestParserState                  *_parserState;
+        size_t                              _index;
+        ARequestParserState					*_parserState;
+        std::string							_buffer;
 
-        static int _i;
         Request(const Request& other);
         Request& operator=(const Request& other);
     public:
@@ -36,11 +37,15 @@ class Request {
         ~Request();
 
         ARequestParserState*	getParserState() const;
+		size_t					getParserIndex() const;
 
-		void				setParseState(ARequestParserState *state);
-        void            decrement() {_i--;};
-        int            getI() const {return _i;};
-        //simulation
+		void					setParseState(ARequestParserState *state);
+		void					setBuffer(std::string &value);
+		
+		
+		void					incrementParserIndex();
+		void					resetParserIndex();
+		
 };
 
 #endif
