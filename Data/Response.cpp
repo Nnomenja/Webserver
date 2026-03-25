@@ -1,9 +1,14 @@
 #include "Response.hpp"
 
-Response::Response():_status_code(0){};
+#include <iostream>
+
+Response::Response():_status_code(0){
+	std::cout << "Response called" << std::endl;
+};
 
 Response::Response(const Response& other){
 	*this = other;
+
 };
 
 Response& Response::operator=(const Response& other){
@@ -14,12 +19,12 @@ Response& Response::operator=(const Response& other){
 
 Response::~Response(){};
 
-void Response::setStatusCode(int code)
+void Response::setStatusCode(const int code)
 {
 	_status_code = code;
 }
 
-void Response::setStatusName(std::string &name)
+void Response::setStatusName(const std::string &name)
 {
 	_status_name = name;
 }

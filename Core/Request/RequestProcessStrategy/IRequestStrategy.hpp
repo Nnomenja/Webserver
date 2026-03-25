@@ -7,7 +7,7 @@ class IRequestStrategy {
 public:
     virtual ~IRequestStrategy() {}
 
-    virtual void process(Client& client) = 0;
+    virtual void process(Client* client) = 0;
 };
 
 #endif

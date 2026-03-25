@@ -1,13 +1,17 @@
 #include "Client.hpp"
 #include "../utils/utils.hpp"
 
-Client::Client(){
+Client::Client():_start_time_ms(get_time_ms()), _req(new Request()), _res(new Response()){
   std::cout << "Create client" << std::endl;
-  this->_start_time_ms = get_time_ms();
+//   this->_start_time_ms = get_time_ms();
 };
 
 Client::Client(const Client& other){
-  *this = other;
+	std::cout << "Copy client" << std::endl;
+	_fd = other._fd;
+    _buffer = other._buffer;
+    _start_time_ms = other._start_time_ms;
+	// *this = other;
 };
 
 Client& Client::operator=(const Client& other){
@@ -15,11 +19,18 @@ Client& Client::operator=(const Client& other){
     _fd = other._fd;
     _buffer = other._buffer;
     _start_time_ms = other._start_time_ms;
+    // req = other.req;
+    // res = other.res;
   }
+	std::cout << "Copy Assignmnt" << std::endl;
   return *this;
 };
 
-Client::~Client(){};
+Client::~Client(){
+	std::cout << "Destroy client" << std::endl;
+	delete [] _req;
+	delete [] _res;
+};
 
 /**============================================
  *               GETTERS
@@ -29,9 +40,9 @@ int Client::getFd() const
 {
   return (_fd);
 }
-std::string Client::getBuffer() const
+std::string Client::getResponseHttp() const
 {
-  return (_buffer);
+	return (_buffer);
 }
 
 uint64_t Client::getStartTime() const
@@ -44,9 +55,19 @@ UnitConf_t Client::getEndpoint() const
   return (_endpoint);
 }
 
-size_t Client::getBufferSize() const
+size_t Client::getResponseHttpSize() const
 {
 	return (_bufferSize);
+}
+
+Request *Client::getRequest()
+{
+	return (_req);
+}
+
+Response *Client::getResponse()
+{
+	return (_res);
 }
 
 /**============================================

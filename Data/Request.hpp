@@ -29,17 +29,17 @@ class Request {
         ARequestParserState                  *_parserState;
 
         static int _i;
-    public:
-        Request();
         Request(const Request& other);
         Request& operator=(const Request& other);
+    public:
+        Request();
         ~Request();
 
         ARequestParserState*	getParserState() const;
 
 		void				setParseState(ARequestParserState *state);
         void            decrement() {_i--;};
-        int            getI() {return _i;};
+        int            getI() const {return _i;};
         //simulation
 };
 

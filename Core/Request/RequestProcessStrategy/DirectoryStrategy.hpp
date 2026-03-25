@@ -5,8 +5,8 @@
 #include <iostream>
 
 class DirectoryStrategy : public IRequestStrategy {
-public:
-    void process(Client& client);
+    public:
+        void process(Client* client);
 };
 
 #endif

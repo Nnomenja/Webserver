@@ -6,7 +6,7 @@
 
 Request::Request():_parserState(new MethodParser()){
   _i++;
-  std::cout << "Count: " << _i << std::endl;
+  std::cout << "Request: " << _i << std::endl;
 };
 
 Request::Request(const Request& other){

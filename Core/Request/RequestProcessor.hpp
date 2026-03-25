@@ -18,7 +18,7 @@ class RequestProcessor {
 		/**
 		 * @brief Process request and store the accoring data in client
 		 */
-		void processRequest(Client& client);
+		void processRequest(Client* client);
 };
 
 #endif

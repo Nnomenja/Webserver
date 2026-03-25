@@ -6,7 +6,7 @@
 
 class RedirectionStrategy : public IRequestStrategy {
 public:
-    void process(Client& client);
+    void process(Client* client);
 };
 
 #endif

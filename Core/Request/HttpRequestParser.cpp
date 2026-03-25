@@ -20,19 +20,19 @@ HttpRequestParser::~HttpRequestParser(){
 };
 
 
-void HttpRequestParser::parse(Request &req)
+void HttpRequestParser::parse(Request *req)
 {
 //   switch (req.getParserState().)
 //   {
 	
 //   }
-	std::cout << "I: " << req.getI() << std::endl;
-	if (req.getI() == 0)
+	std::cout << "I: " << req->getI() << std::endl;
+	if (req->getI() == 0)
 		_finished = true;
 	else
 	{
 		std::cout << "Decrementing.."<< std::endl;
-		req.decrement();
+		// req.decrement();
 	}
   // if parsing is compled
   (void)req;

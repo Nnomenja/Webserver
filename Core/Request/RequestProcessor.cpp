@@ -23,11 +23,13 @@ RequestProcessor& RequestProcessor::operator=(const RequestProcessor& other){
 
 RequestProcessor::~RequestProcessor(){};
 
-void RequestProcessor::processRequest(Client &client)
+void RequestProcessor::processRequest(Client *client)
 {
-	IRequestStrategy	*strategy = createStrategy(client.getEndpoint().type);
+	IRequestStrategy	*strategy = createStrategy(client->getEndpoint().type);
 	strategy->process(client);
 	delete strategy;
+	delete [] client->getRequest();
+	delete [] client->getResponse();
 }
 
 IRequestStrategy *RequestProcessor::createStrategy(EndpointType type)

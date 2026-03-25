@@ -9,8 +9,6 @@
 
 # include "Socket.hpp"
 
-class ClientSocket;
-
 class ServerSocket : public Socket
 {
 	public :

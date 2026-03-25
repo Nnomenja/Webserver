@@ -18,20 +18,23 @@ class Client {
         uint64_t			_start_time_ms;
         UnitConf_t		    _endpoint;
 
-    public:
-        Client();
+        Request		        *_req;
+		Response	        *_res;
+
         Client(const Client& other);
         Client& operator=(const Client& other);
+    public:
+        Client();
         ~Client();
 
-        Request		        req;
-		Response	        res;
-
         int			    	getFd() const;
-        std::string	    	getBuffer() const;
-        size_t		    	getBufferSize() const;
+        std::string	    	getResponseHttp() const;
+        size_t		    	getResponseHttpSize() const;
         uint64_t	    	getStartTime() const;
         UnitConf_t    		getEndpoint() const;
+
+        Request             *getRequest();
+        Response            *getResponse();
 
         void            	setFd(int fd);
         void				setEndpoint(UnitConf_t  value);
