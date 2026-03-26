@@ -16,8 +16,8 @@ class Response {
         int            getStatusCode(void) const;
         std::string    getStatusName(void) const;
 
-        void    setStatusCode(int code);
-        void    setStatusName(std::string &name);
+        void    setStatusCode(const int code);
+        void    setStatusName(const std::string &name);
 };
 
 #endif

@@ -1,6 +1,8 @@
 #include "HttpRequestParser.hpp"
+#include "./RequestParserState/ARequestParserState.hpp"
+#include "./RequestParserState/UriParser.hpp"
 
-HttpRequestParser::HttpRequestParser(){
+HttpRequestParser::HttpRequestParser():_finished(false){
 
 
 };
@@ -19,8 +21,28 @@ HttpRequestParser::~HttpRequestParser(){
 };
 
 
-void HttpRequestParser::parse(Request &req)
+void HttpRequestParser::parse(Request *req)
 {
-	(void)req;
-  req.setParseState(COMPLETE);
+	ARequestParserState	*parseState = req->getParserState(); 
+	RequestParserStateName name = parseState->getParserStateName(); 
+	switch (name)
+	{
+		case METHOD:
+			parseState->execute();
+			req->setParseState(new UriParser(req));
+			//fallthrough
+		case URI :
+			req->getParserState()->execute();
+			//fallthrough
+		default:
+			req->setParseState(NULL);
+			_finished = true;
+			break;
+	}
+  (void)req;
+}
+
+bool HttpRequestParser::finished()
+{
+  return (_finished);
 }

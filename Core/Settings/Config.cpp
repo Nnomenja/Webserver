@@ -87,7 +87,7 @@ void Config::parseFileContent()
         UnitConf_t u;
         u.host = "-";
         u.port = -1;
-        u.methods = 0;
+        // u.methods = 0;
         // here
         configs.push_back(u);
     }
@@ -208,4 +208,14 @@ std::vector<UnitConf_t> Config::getConfigs() const
 int Config::getN() const
 {
     return (n);
+}
+
+UnitConf_t Config::findEndpointByFd(int fd)
+{
+    return (_endpoints[fd]);
+}
+
+void Config::setEndpointByFd(UnitConf_t &value, int fd)
+{
+    _endpoints[fd] = value;
 }

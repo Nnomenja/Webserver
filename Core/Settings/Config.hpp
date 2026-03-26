@@ -3,7 +3,7 @@
 
 #include "../../utils/utils.hpp"
 #include "Validator.hpp"
-
+#include "../../Enum/EndpointType.hpp"
 #include <vector>
 #include <exception>
 #include <sstream>
@@ -19,9 +19,11 @@ enum HttpMethod
 
 typedef struct UnitConf
 {
-    std::string host;
-    int port;
-    int methods;
+    std::string     host;
+    int             port;
+    int             methods;
+    EndpointType    type;
+    std::vector<std::string> method_arr;
 } UnitConf_t;
 
 class Config
@@ -29,8 +31,9 @@ class Config
 private:
     std::string fileContent;
     int n;
-    std::vector<std::string> serverBlocks;
-    std::vector<UnitConf_t> configs;
+    std::vector<std::string>    serverBlocks;
+    std::vector<UnitConf_t>     configs;
+    std::map<int, UnitConf_t>   _endpoints;
 public:
     Config();
     Config(std::string filename);
@@ -57,7 +60,10 @@ public:
 
 
     std::vector<UnitConf_t> getConfigs() const;
-    int getN() const;
+    int                     getN() const;
+    UnitConf_t              findEndpointByFd(int fd);
+    
+    void                    setEndpointByFd(UnitConf_t &value, int fd);
 };
 
 #endif

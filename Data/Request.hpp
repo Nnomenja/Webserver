@@ -5,8 +5,10 @@
 #include <vector>
 #include <map>
 
-#include "../Enum/RequestParserState.hpp"
+#include "../Enum/RequestParserStateName.hpp"
+#include "../Core/Request/RequestParserState/ARequestParserState.hpp"
 
+class ARequestParserState;
 class Request {
     private:
         // std::string							_method;
@@ -24,17 +26,25 @@ class Request {
         // bool								_hasBody;
         // std::vector<std::string>			_contentType;
         // std::map<std::string, std::string>	_headers;
-        RequestParserState                      _state;
-    public:
-        Request();
+        size_t                              _index;
+        ARequestParserState					*_parserState;
+        std::string							_buffer;
+
         Request(const Request& other);
         Request& operator=(const Request& other);
+    public:
+        Request();
         ~Request();
 
-        RequestParserState  getParseState(void) const;
-        
-        void                setParseState(RequestParserState value);
+        ARequestParserState*	getParserState() const;
+		size_t					getParserIndex() const;
 
+		void					setParseState(ARequestParserState *state);
+		void					setBuffer(std::string &value);
+		
+		
+		void					incrementParserIndex();
+		void					resetParserIndex();
 		
 };
 

@@ -17,7 +17,6 @@ UTILS_SRCS = $(addprefix $(UTILS_DIR)/, \
 		)
 
 NETWORK_SRCS = $(addprefix $(CORE_DIR)/Network/, \
-				ClientSocket.cpp \
 				Epoll.cpp \
 				ServerSocket.cpp \
 				Signal.cpp \
@@ -25,13 +24,8 @@ NETWORK_SRCS = $(addprefix $(CORE_DIR)/Network/, \
 				Webserv.cpp \
 			)
 REQUEST_SRCS = $(addprefix $(CORE_DIR)/Request/, \
-				DynamicStrategy.cpp \
 				HttpRequestParser.cpp \
-				Redirectionrategy.cpp \
 				RequestProcessor.cpp \
-				StaticStrategy.cpp \
-				ErrorStrategy.cpp \
-				DirectoryStrategy.cpp \
 			)
 
 SETTINGS_SRCS = $(addprefix $(CORE_DIR)/Settings/, \
@@ -49,6 +43,20 @@ EXCEPTION_SRC = $(addprefix $(EXCEPTION_DIR)/, \
 				ServerException.cpp  \
 			)
 
+REQUEST_PROCESS_STRATEGY = $(addprefix $(CORE_DIR)/Request/RequestProcessStrategy/, \
+				DynamicStrategy.cpp \
+				Redirectionrategy.cpp \
+				StaticStrategy.cpp \
+				ErrorStrategy.cpp \
+				DirectoryStrategy.cpp \
+			)
+
+REQUEST_PARSE_STATE = $(addprefix $(CORE_DIR)/Request/RequestParserState/, \
+				ARequestParserState.cpp \
+				MethodParser.cpp \
+				UriParser.cpp \
+			)
+
 SRC = main.cpp
 SRC += $(SETTINGS_SRCS)
 SRC += $(REQUEST_SRCS)
@@ -56,6 +64,8 @@ SRC += $(NETWORK_SRCS)
 SRC += $(UTILS_SRCS)
 SRC += $(DATA_SRCS)
 SRC += $(EXCEPTION_SRC)
+SRC += $(REQUEST_PROCESS_STRATEGY)
+SRC += $(REQUEST_PARSE_STATE)
 
 OBJS = $(SRC:%.cpp=$(OBJS_DIR)/%.o)
 

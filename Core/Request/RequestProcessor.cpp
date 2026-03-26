@@ -1,9 +1,9 @@
-#include "RequestProcessor.hpp"
-#include "StaticStrategy.hpp"
-#include "DynamicStrategy.hpp"
-#include "RedirectionStrategy.hpp"
-#include "ErrorStrategy.hpp"
-#include "DirectoryStrategy.hpp"
+#include "./RequestProcessor.hpp"
+#include "./RequestProcessStrategy/StaticStrategy.hpp"
+#include "./RequestProcessStrategy/DynamicStrategy.hpp"
+#include "./RequestProcessStrategy/RedirectionStrategy.hpp"
+#include "./RequestProcessStrategy/ErrorStrategy.hpp"
+#include "./RequestProcessStrategy/DirectoryStrategy.hpp"
 
 #include "../../Data/Client.hpp"
 
@@ -23,11 +23,15 @@ RequestProcessor& RequestProcessor::operator=(const RequestProcessor& other){
 
 RequestProcessor::~RequestProcessor(){};
 
-void RequestProcessor::processRequest(Client &client)
+void RequestProcessor::processRequest(Client *client)
 {
-	IRequestStrategy	*strategy = createStrategy(client.getEndpointType());
+	IRequestStrategy	*strategy = createStrategy(client->getEndpoint().type);
 	strategy->process(client);
 	delete strategy;
+	// if (client->getRequest())
+	// 	delete  client->getRequest();
+	// if (client->getResponse())
+	// 	delete  client->getResponse();
 }
 
 IRequestStrategy *RequestProcessor::createStrategy(EndpointType type)

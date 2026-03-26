@@ -1,7 +1,7 @@
 #ifndef REQUESTPROCESSOR_HPP
 #define REQUESTPROCESSOR_HPP
 
-#include "IRequestStrategy.hpp"
+#include "./RequestProcessStrategy/IRequestStrategy.hpp"
 #include "../../Enum/EndpointType.hpp"
 #include <iostream>
 
@@ -18,7 +18,7 @@ class RequestProcessor {
 		/**
 		 * @brief Process request and store the accoring data in client
 		 */
-		void processRequest(Client& client);
+		void processRequest(Client* client);
 };
 
 #endif

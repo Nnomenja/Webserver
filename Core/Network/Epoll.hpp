@@ -8,6 +8,7 @@
 #define EPOLL_HPP
 
 # include <vector>
+# include <string>
 # include <sys/epoll.h>
 # define MAX_EVENTS 10
 
@@ -17,17 +18,19 @@ class Epoll
 		Epoll();
 		~Epoll();
 
-		int getEpollFd( void ) const;
-		std::vector<struct epoll_event>& getEvents( void );
-		void setMaxEvent(int maxEvent);
+		int 								getEpollFd( void ) const;
+		std::vector<struct epoll_event>& 	getEvents( void );
+		void								setMaxEvent(int maxEvent);
 
-		bool epollCreate( void );
-        bool registerFd(int fd, unsigned int event);
-		int	wait(int timeout);
-		bool modify(int fd, unsigned int event);
-		bool unregister(int fd);
-		void	close( void );
+		bool								epollCreate( void );
+        bool								registerFd(int fd, unsigned int event);
+		int									wait(int timeout);
+		bool 								modify(int fd, unsigned int event);
+		bool 								unregister(int fd);
+		void								close( void );
 
+		std::string							read(const int fd, bool *end);
+		void								send(const int fd, const std::string &buff, const size_t lenght);
 
 	private :
 		Epoll(const Epoll& epollType);

@@ -1,42 +1,49 @@
 #include "Client.hpp"
 #include "../utils/utils.hpp"
 
-Client::Client(){
-  this->_start_time_ms = get_time_ms();
+Client::Client():_start_time_ms(get_time_ms()), _req(new Request()), _res(new Response()), _parsed(false){
+  std::cout << "Create client" << std::endl;
+//   this->_start_time_ms = get_time_ms();
 };
 
 Client::Client(const Client& other){
-  *this = other;
+	std::cout << "Copy client" << std::endl;
+	_fd = other._fd;
+    _buffer = other._buffer;
+    _start_time_ms = other._start_time_ms;
+	// *this = other;
 };
 
 Client& Client::operator=(const Client& other){
   if (this != &other) {
-    _clientInfo = other._clientInfo;
     _fd = other._fd;
     _buffer = other._buffer;
     _start_time_ms = other._start_time_ms;
+    // req = other.req;
+    // res = other.res;
   }
+	std::cout << "Copy Assignmnt" << std::endl;
   return *this;
 };
 
-Client::~Client(){};
+Client::~Client(){
+	if (_req)
+		delete  _req;
+	if (_res)
+		delete _res;
+};
 
 /**============================================
  *               GETTERS
  *=============================================**/
 
-SocketInfo Client::getCLientInfo() const
-{
-  return (_clientInfo);
-}
-
 int Client::getFd() const
 {
   return (_fd);
 }
-std::string Client::getBuffer() const
+std::string Client::getResponseHttp() const
 {
-  return (_buffer);
+	return (_buffer);
 }
 
 uint64_t Client::getStartTime() const
@@ -44,24 +51,54 @@ uint64_t Client::getStartTime() const
   return (_start_time_ms);
 }
 
-EndpointType Client::getEndpointType() const
+UnitConf_t Client::getEndpoint() const
 {
-  return (_type);
+  return (_endpoint);
+}
+
+size_t Client::getResponseHttpSize() const
+{
+	return (_bufferSize);
+}
+
+Request *Client::getRequest()
+{
+	return (_req);
+}
+
+Response *Client::getResponse()
+{
+	return (_res);
 }
 
 /**============================================
  *               SETTERS
  *=============================================**/
 
-void Client::setClientInfo(SocketInfo value)
+void Client::setEndpoint(UnitConf_t value)
 {
-  _clientInfo = value;
+  _endpoint = value;
 }
-
 void Client::setEndpointType(EndpointType type)
 {
-  _type = type;
+  _endpoint.type = type;
 }
+
+void Client::setBuffer(std::string &value)
+{
+	_buffer = value;
+}
+
+void Client::setBufferSize(size_t value)
+{
+	_bufferSize = value;
+}
+
+void Client::setFd(int fd)
+{
+	_fd = fd;
+}
+
 /**============================================
  *               UTILS
  *=============================================**/
@@ -69,4 +106,15 @@ void Client::setEndpointType(EndpointType type)
  void Client::refreshStartTime()
 {
   _start_time_ms =  get_time_ms();
+}
+
+
+bool Client::isParsed() const
+{
+	return (_parsed);
+}
+
+void Client::parsed()
+{
+	_parsed = true;
 }
