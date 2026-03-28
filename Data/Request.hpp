@@ -26,9 +26,13 @@ class Request {
         // bool								_hasBody;
         // std::vector<std::string>			_contentType;
         // std::map<std::string, std::string>	_headers;
+
         size_t                              _index;
         ARequestParserState					*_parserState;
         std::string							_buffer;
+
+        /*==== Request line ====*/
+        HttpMethod                          _method;
 
         Request(const Request& other);
         Request& operator=(const Request& other);
@@ -38,11 +42,15 @@ class Request {
 
         ARequestParserState*	getParserState() const;
 		size_t					getParserIndex() const;
+		std::string             getBuffer() const;
+        HttpMethod              getMethod() const;
 
-		void					setParseState(ARequestParserState *state);
+
+        void					setParseState(ARequestParserState *state);
 		void					setBuffer(std::string &value);
-		
-		
+    
+        void                    setMethod(HttpMethod value);
+
 		void					incrementParserIndex();
 		void					resetParserIndex();
 		

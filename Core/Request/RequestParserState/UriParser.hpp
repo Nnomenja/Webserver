@@ -7,11 +7,11 @@ class UriParser: public ARequestParserState {
 	private:
 		bool		_finished;
 	public:
-		UriParser(Request *target);
+		UriParser(Request *target, UnitConf_t endpoint);
 		~UriParser();
 
 		bool	completed() const;
-		void	execute() const;
+		void	execute();
 };
 
 #endif

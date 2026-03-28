@@ -4,8 +4,8 @@
 
 #include <iostream>
 
-Request::Request():_index(0){
-	_parserState = new MethodParser(this);
+Request::Request():_index(0), _parserState(NULL), _method(GET){
+
 };
 
 Request::Request(const Request& other){
@@ -24,6 +24,10 @@ Request::~Request(){
 	delete _parserState;
 };
 
+/**============================================
+ *               GETTERS
+ *=============================================**/
+
 ARequestParserState *Request::getParserState() const
 {
   return (_parserState);
@@ -33,6 +37,20 @@ size_t Request::getParserIndex() const
 {
 	return (_index);
 }
+
+std::string Request::getBuffer() const
+{
+  return (_buffer);
+}
+
+HttpMethod Request::getMethod() const
+{
+	return (_method);
+}
+
+/**============================================
+ *               SETTERS
+ *=============================================**/
 
 void Request::incrementParserIndex()
 {
@@ -52,4 +70,10 @@ void Request::setParseState(ARequestParserState *state)
 void Request::setBuffer(std::string &value)
 {
 	_buffer = value; 
+}
+
+
+void Request::setMethod(HttpMethod value)
+{
+	_method = value;
 }

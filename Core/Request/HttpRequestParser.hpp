@@ -23,8 +23,8 @@ class HttpRequestParser {
          * 		2. Apply parsing  in the according method
          * 		3. In the case where
          */
-        void    parse(Request *req);
-		bool	finished();	
+        void    parse(Request *req, UnitConf_t endpoint);
+        bool	finished();	
 
 };
 

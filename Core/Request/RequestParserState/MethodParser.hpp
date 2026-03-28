@@ -5,13 +5,14 @@
 
 class MethodParser: public ARequestParserState {
 	private:
-		bool		_finished;
+		int							_i;
+
+		HttpMethod					detectMethod(std::string &value) const;						
 	public:
-		MethodParser(Request *target);
+		MethodParser(Request *target, UnitConf_t endpoint);
 		~MethodParser();
 
-		bool	completed() const;
-		void	execute() const;
+		void	execute();
 };
 
 #endif

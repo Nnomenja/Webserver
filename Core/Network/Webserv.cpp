@@ -404,7 +404,7 @@ bool Webserv::readtHttpRequest(Client* client)
 		{
 			std::cout << "Buff: " << data << std::endl;
 			HttpRequestParser	parse;
-			parse.parse(client->getRequest());
+			parse.parse(client->getRequest(), client->getEndpoint());
 
 			if (parse.finished())
 			{
@@ -418,6 +418,7 @@ bool Webserv::readtHttpRequest(Client* client)
 			client->getResponse()->setStatusCode(e.getCode());
 			client->getResponse()->setStatusName(e.getName());
 			client->setEndpointType(ERROR);
+			std::cout << "REQUEST ERROR: " << e.what() << std::endl;
 			return (true);
 		}
 		if (end)

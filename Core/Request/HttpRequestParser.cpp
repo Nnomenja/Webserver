@@ -1,6 +1,7 @@
 #include "HttpRequestParser.hpp"
 #include "./RequestParserState/ARequestParserState.hpp"
 #include "./RequestParserState/UriParser.hpp"
+#include "./RequestParserState/MethodParser.hpp"
 
 HttpRequestParser::HttpRequestParser():_finished(false){
 
@@ -21,25 +22,40 @@ HttpRequestParser::~HttpRequestParser(){
 };
 
 
-void HttpRequestParser::parse(Request *req)
+void HttpRequestParser::parse(Request *req, UnitConf_t endpoint)
 {
-	ARequestParserState	*parseState = req->getParserState(); 
-	RequestParserStateName name = parseState->getParserStateName(); 
-	switch (name)
+	ARequestParserState	*parseState = req->getParserState();
+	RequestParserStateName name;
+	if (parseState == NULL)
 	{
-		case METHOD:
-			parseState->execute();
-			req->setParseState(new UriParser(req));
-			//fallthrough
-		case URI :
-			req->getParserState()->execute();
-			//fallthrough
-		default:
-			req->setParseState(NULL);
-			_finished = true;
-			break;
+		req->setParseState(new MethodParser(req, endpoint));
+		name  = METHOD;
+		parseState = req->getParserState();
 	}
-  (void)req;
+	else
+		name = parseState->getParserStateName();
+	try
+	{
+		switch (name)
+		{
+			case METHOD:
+				parseState->execute();
+				req->setParseState(new UriParser(req, endpoint));
+				//fallthrough
+			case URI :
+				req->getParserState()->execute();
+				//fallthrough
+			default:
+				req->setParseState(NULL);
+				_finished = true;
+				break;
+		}
+	}
+	catch(const ARequestParserState::EagainParser& e)
+	{
+		std::cout << e.what() << std::endl;
+		return;
+	}
 }
 
 bool HttpRequestParser::finished()
