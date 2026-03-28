@@ -1,9 +1,15 @@
 #include "MethodParser.hpp"
 #include "../../Settings/Config.hpp"
 #include "../../../Exception/BadRequestException.hpp"
+#include "../../../Exception/NotImplement.hpp"
 
 MethodParser::MethodParser(Request *target, UnitConf_t	 endpoint):ARequestParserState(METHOD, target, endpoint), _i(0){
-
+	_methods.push_back("GET");
+	_methods.push_back("POST");
+	_methods.push_back("PATH");
+	_methods.push_back("PUT");
+	_methods.push_back("DELETE");
+	_methods.push_back("UPDATE");
 };
 MethodParser::~MethodParser(){
 };
@@ -22,16 +28,19 @@ void MethodParser::execute()
 	
 	std::cout << "...MethodParser executing..." << std::endl;
 	std::vector<std::string>::iterator it;
-
+	HttpMethod method;
 	for (size_t i = _target->getParserIndex(); i < _target->getBuffer().size(); i++)
 	{
-		it = _endpoint.method_arr.begin();
-		while (it != _endpoint.method_arr.end())
+		it = _methods.begin();
+		while (it != _methods.end())
 		{
-			if ((*it)[_i] == '\0' && _target->getBuffer()[i] == ' ' && _endpoint.method_arr.size() == 1)
+			if ((*it)[_i] == '\0' && _target->getBuffer()[i] == ' ' && _methods.size() == 1)
 			{
 				std::cout << "Accepted method-> " << (*it) << std::endl;
-				_target->setMethod(detectMethod(*it));
+				method = detectMethod(*it);
+				if ((*it) != "GET" && (*it) != "POST" && (*it) != "DELETE")
+					throw NotImplement();
+				_target->setMethod(method);
 				skipSeparator();
 				return;
 			}
@@ -39,9 +48,9 @@ void MethodParser::execute()
 				++it;
 			else
 			{
-				it = _endpoint.method_arr.erase(it);
+				it = _methods.erase(it);
 			}
-			if (!_endpoint.method_arr.size())
+			if (!_methods.size())
 				throw BadRequestException();
 		}
 		_target->incrementParserIndex();
