@@ -6,11 +6,6 @@ UriParser::UriParser(Request *target, UnitConf_t endpoint):ARequestParserState(U
 UriParser::~UriParser(){
 };
 
-bool UriParser::completed() const
-{
-	return (_finished);
-}
-
 void UriParser::execute()
 {
 	std::cout << "Uri executing..." << std::endl;

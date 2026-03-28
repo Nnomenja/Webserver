@@ -18,8 +18,9 @@ class ARequestParserState
         virtual ~ARequestParserState();
         ARequestParserState(RequestParserStateName value, Request *target, UnitConf_t endpoint);
 
-        virtual bool    completed() const = 0;
         virtual void	execute() = 0;
+        
+        virtual void    skipSeparator();
 
         RequestParserStateName  getParserStateName() const;
 

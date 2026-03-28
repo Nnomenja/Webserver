@@ -43,6 +43,11 @@ std::string Request::getBuffer() const
   return (_buffer);
 }
 
+size_t Request::getBufferSize() const
+{
+	return (_buffer_size);
+}
+
 HttpMethod Request::getMethod() const
 {
 	return (_method);
@@ -69,7 +74,8 @@ void Request::setParseState(ARequestParserState *state)
 }
 void Request::setBuffer(std::string &value)
 {
-	_buffer = value; 
+	_buffer = value;
+	_buffer_size = value.length();
 }
 
 

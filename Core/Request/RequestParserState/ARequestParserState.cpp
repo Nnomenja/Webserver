@@ -14,3 +14,17 @@ ARequestParserState::~ARequestParserState()
 {
 
 }
+
+void ARequestParserState::skipSeparator()
+{
+	std::cout << "...Skip parse executing..." << std::endl;
+  for (size_t i = _target->getParserIndex(); i < _target->getBufferSize(); i++)
+  {
+    if (_target->getBuffer()[i] != ' ')
+        return;
+    i++;
+    _target->incrementParserIndex();
+  }
+  _target->resetParserIndex();
+  throw EagainParser();
+}

@@ -30,6 +30,7 @@ class Request {
         size_t                              _index;
         ARequestParserState					*_parserState;
         std::string							_buffer;
+        size_t                              _buffer_size;
 
         /*==== Request line ====*/
         HttpMethod                          _method;
@@ -44,7 +45,7 @@ class Request {
 		size_t					getParserIndex() const;
 		std::string             getBuffer() const;
         HttpMethod              getMethod() const;
-
+        size_t                  getBufferSize() const;
 
         void					setParseState(ARequestParserState *state);
 		void					setBuffer(std::string &value);

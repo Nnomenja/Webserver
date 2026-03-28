@@ -32,6 +32,7 @@ void MethodParser::execute()
 			{
 				std::cout << "Accepted method-> " << (*it) << std::endl;
 				_target->setMethod(detectMethod(*it));
+				skipSeparator();
 				return;
 			}
 			if ((*it)[_i] == _target->getBuffer()[i])
