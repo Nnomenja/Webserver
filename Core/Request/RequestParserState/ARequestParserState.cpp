@@ -22,7 +22,6 @@ void ARequestParserState::skipSeparator()
   {
     if (_target->getBuffer()[i] != ' ')
         return;
-    i++;
     _target->incrementParserIndex();
   }
   _target->resetParserIndex();
