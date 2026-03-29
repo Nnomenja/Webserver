@@ -71,6 +71,8 @@ void UriParser::execute()
 		{
 			if (c == ' ')
 			{
+				if (_target->getPathname()[0] != '/')
+					throw BadRequestException();
 				skipSeparator();
 				std::cout << "-->pathname: [" << _target->getPathname() << "]" << std::endl;
 				std::cout << "-->Query: [" << _target->getQuery() << "]" << std::endl;
