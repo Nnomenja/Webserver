@@ -34,6 +34,8 @@ class Request {
 
         /*==== Request line ====*/
         HttpMethod                          _method;
+        std::string							_pathname;
+        std::string                         _query;
 
         Request(const Request& other);
         Request& operator=(const Request& other);
@@ -46,12 +48,15 @@ class Request {
 		std::string             getBuffer() const;
         HttpMethod              getMethod() const;
         size_t                  getBufferSize() const;
+		std::string             getPathname() const;
+		std::string             getQuery() const;
 
         void					setParseState(ARequestParserState *state);
 		void					setBuffer(std::string &value);
     
         void                    setMethod(HttpMethod value);
-
+        void                    addPathname(char c);
+        void                    addQuery(char c);
 		void					incrementParserIndex();
 		void					resetParserIndex();
 		

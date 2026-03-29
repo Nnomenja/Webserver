@@ -53,6 +53,18 @@ HttpMethod Request::getMethod() const
 	return (_method);
 }
 
+
+std::string Request::getPathname() const
+{
+	return (_pathname);
+}
+
+
+std::string Request::getQuery() const
+{
+	return (_query);
+}
+
 /**============================================
  *               SETTERS
  *=============================================**/
@@ -82,4 +94,14 @@ void Request::setBuffer(std::string &value)
 void Request::setMethod(HttpMethod value)
 {
 	_method = value;
+}
+
+void Request::addPathname(char c)
+{
+	_pathname.push_back(c);
+}
+
+void Request::addQuery(char c)
+{
+	_query.push_back(c);
 }
