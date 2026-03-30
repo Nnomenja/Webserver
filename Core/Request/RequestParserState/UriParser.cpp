@@ -60,6 +60,58 @@ char UriParser::PourcentHexaToChar(char first, char second) const
 	return (static_cast<unsigned char>((msb << 4 | lsb)));
 }
 
+
+std::string UriParser::normalizePathname(std::string pathname) const
+{
+	int									i;
+	std::string							tmp;
+	std::stringstream					segment;
+	std::stringstream					res;
+	std::vector<std::string>			el;
+	std::vector<std::string>::iterator	it;
+
+	i = 0;
+	if (pathname.length() == 1)
+		return (pathname);
+	while (pathname[i])
+	{
+		if (pathname[i] != '/')
+			segment << pathname[i];
+		if ((pathname[i] != '/' && pathname[i + 1] == '/') || !pathname[i + 1])
+		{
+				tmp = segment.str();
+				if (tmp.length())
+				{
+					if (tmp == "..")
+					{
+						if (!el.empty())
+							el.pop_back();
+					}
+					else if (tmp != ".")
+					{
+						el.push_back(tmp);
+					}
+					segment.clear();
+					segment.str("");
+				}
+		}
+		i++;
+	}
+	res << "/";
+	if (el.size())
+	{
+		it = el.begin();
+		while (it != el.end())
+		{
+			res << (*it);
+			it++;
+			if (it != el.end())
+				res << "/";
+		}
+	}
+	return (res.str());
+}
+
 void UriParser::execute()
 {
 	std::cout << "Uri executing..." << std::endl;
@@ -80,6 +132,7 @@ void UriParser::execute()
 			{
 				if (_target->getPathname()[0] != '/')
 					throw BadRequestException();
+				_target->setPathname(normalizePathname(_target->getPathname()));
 				std::cout << "-->pathname: [" << _target->getPathname() << "]" << std::endl;
 				std::cout << "-->Query: [" << _target->getQuery() << "]" << std::endl;
 				_finished = true;

@@ -96,6 +96,11 @@ void Request::setMethod(HttpMethod value)
 	_method = value;
 }
 
+void Request::setPathname(std::string value)
+{
+	_pathname = value;
+}
+
 void Request::addPathname(char c)
 {
 	_pathname.push_back(c);

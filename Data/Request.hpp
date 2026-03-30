@@ -53,7 +53,7 @@ class Request {
 
         void					setParseState(ARequestParserState *state);
 		void					setBuffer(std::string &value);
-    
+        void                    setPathname(std::string value);
         void                    setMethod(HttpMethod value);
         void                    addPathname(char c);
         void                    addQuery(char c);
