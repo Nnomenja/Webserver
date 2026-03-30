@@ -38,7 +38,7 @@ void HttpVersionParser::execute()
             it = _versions.begin();
             while(it != _versions.end())
             {
-                if ((*it)[_j] == '\0' && _versions.size() == 1)
+                if ((*it)[_j] == c && (*it)[_j + 1] == '\0' && _versions.size() == 1)
                 {
                     std::cout << "Http version Done: " << (*it) << std::endl;
                     return;
