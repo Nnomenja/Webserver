@@ -2,6 +2,7 @@
 #include "./RequestParserState/ARequestParserState.hpp"
 #include "./RequestParserState/UriParser.hpp"
 #include "./RequestParserState/MethodParser.hpp"
+#include "./RequestParserState/HttpVersionParser.hpp"
 
 HttpRequestParser::HttpRequestParser():_finished(false){
 
@@ -43,6 +44,10 @@ void HttpRequestParser::parse(Request *req, UnitConf_t endpoint)
 				req->setParseState(new UriParser(req, endpoint));
 				//fallthrough
 			case URI :
+				req->getParserState()->execute();
+				req->setParseState(new HttpVersionParser(req, endpoint));
+				//fallthrough
+			case VERSION :
 				req->getParserState()->execute();
 				//fallthrough
 			default:
