@@ -11,6 +11,7 @@ class HttpVersionParser: public ARequestParserState
         bool                        protocol_readed;
         std::vector<std::string>	_versions;
         size_t                      _j;
+		bool						_finished;
     public:
         HttpVersionParser(Request *target, UnitConf_t endpoint);
         ~HttpVersionParser();

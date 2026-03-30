@@ -1,7 +1,8 @@
 #include "./ARequestParserState.hpp"
 #include "../../Settings/Config.hpp"
+#include "../../../Exception/BadRequestException.hpp"
 
-ARequestParserState::ARequestParserState(RequestParserStateName value, Request *target, UnitConf_t endpoint):_name(value), _target(target), _endpoint(endpoint)
+ARequestParserState::ARequestParserState(RequestParserStateName value, Request *target, UnitConf_t endpoint):_crlf(false), _name(value), _target(target), _endpoint(endpoint)
 {
 }
 
@@ -17,7 +18,7 @@ ARequestParserState::~ARequestParserState()
 
 void ARequestParserState::skipSeparator()
 {
-	std::cout << "...Skip parse executing..." << std::endl;
+	std::cout << "...Skip separator  executing..." << std::endl;
   for (size_t i = _target->getParserIndex(); i < _target->getBufferSize(); i++)
   {
     if (_target->getBuffer()[i] != ' ')
@@ -26,4 +27,30 @@ void ARequestParserState::skipSeparator()
   }
   _target->resetParserIndex();
   throw EagainParser();
+}
+
+void ARequestParserState::skipCRLF()
+{
+	char c;
+	for (size_t i = _target->getParserIndex(); i < _target->getBufferSize(); i++)
+	{
+		c = _target->getBuffer()[i];
+		if (!_crlf)
+		{
+			if (c == '\r')
+				_crlf = true;
+			else if (c == '\n')
+				return;
+		}
+		else
+		{
+			if (c == '\n')
+				return;
+			else
+				throw BadRequestException();
+		}
+		_target->incrementParserIndex();
+	}
+	_target->resetParserIndex();
+	throw EagainParser();
 }

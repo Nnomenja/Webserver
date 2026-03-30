@@ -10,6 +10,8 @@
 class Request;
 class ARequestParserState
 {
+	private:
+		bool	_crlf;
     protected:
         const RequestParserStateName _name;
         Request                     *_target;
@@ -21,7 +23,7 @@ class ARequestParserState
         virtual void	execute() = 0;
         
         virtual void    skipSeparator();
-
+        virtual void	skipCRLF();
         RequestParserStateName  getParserStateName() const;
 
         class EagainParser: public std::exception {
