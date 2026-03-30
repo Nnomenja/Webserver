@@ -8,6 +8,7 @@ class UriParser: public ARequestParserState {
 		int		_tmp;
 		bool	_hasQuery;
 		bool	_encoded;
+		bool	_finished;
 
 		bool	checkPathEncode(char c) const;
 		bool	checkQueryEncode(char c) const;

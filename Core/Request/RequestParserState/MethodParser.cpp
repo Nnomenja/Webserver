@@ -3,7 +3,7 @@
 #include "../../../Exception/BadRequestException.hpp"
 #include "../../../Exception/NotImplement.hpp"
 
-MethodParser::MethodParser(Request *target, UnitConf_t	 endpoint):ARequestParserState(METHOD, target, endpoint), _i(0){
+MethodParser::MethodParser(Request *target, UnitConf_t	 endpoint):ARequestParserState(METHOD, target, endpoint), _i(0), _finished(false){
 	_methods.push_back("GET");
 	_methods.push_back("POST");
 	_methods.push_back("PATH");
@@ -29,6 +29,12 @@ void MethodParser::execute()
 	std::cout << "...MethodParser executing..." << std::endl;
 	std::vector<std::string>::iterator it;
 	HttpMethod method;
+
+	if (_finished)
+	{
+		skipSeparator();
+		return ;
+	}
 	for (size_t i = _target->getParserIndex(); i < _target->getBuffer().size(); i++)
 	{
 		it = _methods.begin();
@@ -41,6 +47,7 @@ void MethodParser::execute()
 				if ((*it) != "GET" && (*it) != "POST" && (*it) != "DELETE")
 					throw NotImplement();
 				_target->setMethod(method);
+				_finished = true;
 				skipSeparator();
 				return;
 			}
@@ -60,4 +67,3 @@ void MethodParser::execute()
 	throw EagainParser();
 	std::cout << "...................." << std::endl;
 }
-

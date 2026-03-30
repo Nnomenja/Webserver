@@ -1,7 +1,7 @@
 #include "UriParser.hpp"
 #include "../../../Exception/BadRequestException.hpp"
 
-UriParser::UriParser(Request *target, UnitConf_t endpoint):ARequestParserState(URI, target, endpoint), _tmp(-1), _hasQuery(false), _encoded(false){
+UriParser::UriParser(Request *target, UnitConf_t endpoint):ARequestParserState(URI, target, endpoint), _tmp(-1), _hasQuery(false), _encoded(false), _finished(false){
 };
 UriParser::~UriParser(){
 };
@@ -64,6 +64,13 @@ void UriParser::execute()
 {
 	std::cout << "Uri executing..." << std::endl;
 	char c;
+
+	if (_finished)
+	{
+		skipSeparator();
+		return ;
+	}
+
 	for (size_t i = _target->getParserIndex(); i < _target->getBufferSize(); i++)
 	{
 		c = _target->getBuffer()[i];
@@ -73,9 +80,10 @@ void UriParser::execute()
 			{
 				if (_target->getPathname()[0] != '/')
 					throw BadRequestException();
-				skipSeparator();
 				std::cout << "-->pathname: [" << _target->getPathname() << "]" << std::endl;
 				std::cout << "-->Query: [" << _target->getQuery() << "]" << std::endl;
+				_finished = true;
+				skipSeparator();
 				return;
 			}
 			else if (!_hasQuery && c == '?')
