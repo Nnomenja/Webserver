@@ -45,7 +45,10 @@ void ARequestParserState::skipCRLF()
 		else
 		{
 			if (c == '\n')
+			{
+				_crlf = false;
 				return;
+			}
 			else
 				throw BadRequestException();
 		}
