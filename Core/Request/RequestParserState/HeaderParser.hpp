@@ -19,6 +19,7 @@ class HeaderParser: public ARequestParserState {
         t_header_state  _state;
 
         void        resetStateData();
+        void	    addHeaderAndReset();
 	public:
 		HeaderParser(Request *target, UnitConf_t endpoint);
 		~HeaderParser();

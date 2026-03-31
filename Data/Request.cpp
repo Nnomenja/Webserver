@@ -65,6 +65,11 @@ std::string Request::getQuery() const
 	return (_query);
 }
 
+std::map<std::string, std::string> Request::getHeaders() const
+{
+	return (_headers);
+}
+
 /**============================================
  *               SETTERS
  *=============================================**/
@@ -114,4 +119,9 @@ void Request::addQuery(char c)
 void Request::setHeader(std::string key, std::string value)
 {
 	_headers[key] = value;
+}
+
+bool Request::hasHeader(std::string &value) const
+{
+	return (_headers.find(value) != _headers.end());
 }

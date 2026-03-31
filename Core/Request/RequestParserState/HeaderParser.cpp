@@ -9,8 +9,8 @@ HeaderParser::~HeaderParser(){
 
 bool HeaderParser::checkHeaderEncode(char c) const
 {
-	std::string other = "!#$%&'*+-.^_`|~:";
-	return (std::isalnum(c) && other.find(c) == std::string::npos);
+	std::string other = "!#$%&'*+-.^_`|~:\r\n";
+	return (std::isprint(c) && other.find(c) == std::string::npos);
 }
 
 std::string &HeaderParser::toLowerCase(std::string &src) const
@@ -24,6 +24,14 @@ void HeaderParser::resetStateData()
 	_state = KEY;
 	_key.clear();
 	_value.clear();
+}
+
+void HeaderParser::addHeaderAndReset()
+{
+	if (_target->hasHeader(_key))
+		throw BadRequestException();
+	_target->setHeader(_key, _value);
+	resetStateData();
 }
 
 void HeaderParser::execute()
@@ -41,6 +49,7 @@ void HeaderParser::execute()
 					_key.push_back(c);
 				else
 				{
+					
 					if (c == ':')
 					{
 						if (!_key.size())
@@ -48,21 +57,22 @@ void HeaderParser::execute()
 						_state = SEPARATOR;
 					}
 					else if (c == '\r')
+					{
 						_state = DELIMITER;
+					}
 					else if (c == '\n')
 					{
 						if (!_key.size())
-						{
-							_target->setHeader(_key, _value);
 							return;
-						}
-						std::cout <<  "key->[" << _key << "] value->[" << _value << "]" << std::endl;
-						resetStateData();
+						addHeaderAndReset();
 					}
 					else
+					{
 						throw BadRequestException();
+					}
 				}
 				break;
+
 			case SEPARATOR:
 				if (c != ' ')
 				{
@@ -71,32 +81,33 @@ void HeaderParser::execute()
 						_state = VALUE;
 						_value.push_back(c);
 					}
-					else if (c == '\r')
-						_state = DELIMITER;
-					else if (c == '\n')
-						_state = KEY;
 					else
+					{
 						throw BadRequestException();
+					}
 				}
 				break;
+
 			case DELIMITER:
 				if (c != '\n')
 					throw BadRequestException();
 				if (!_key.size())
-				{
-					_target->setHeader(_key, _value);
 					return;
-				}
-				std::cout <<  "key->[" << _key << "] value->[" << _value << "]" << std::endl;
-				resetStateData();
+				addHeaderAndReset();
+				_state = KEY;
 				break;
+
 			default:
 				if (!checkHeaderEncode(c))
 				{
 					if (c == '\r')
 						_state = DELIMITER;
+					else if (c == '\n')
+						addHeaderAndReset();
 					else
+					{
 						throw BadRequestException();
+					}
 				}
 				else
 					_value.push_back(c);

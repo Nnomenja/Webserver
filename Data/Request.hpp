@@ -53,6 +53,8 @@ class Request {
         size_t                  getBufferSize() const;
 		std::string             getPathname() const;
 		std::string             getQuery() const;
+        std::map<std::string \
+                , std::string>  getHeaders() const;
 
         void					setParseState(ARequestParserState *state);
 		void					setBuffer(std::string &value);
@@ -63,7 +65,7 @@ class Request {
 		void					incrementParserIndex();
 		void					resetParserIndex();
         void                    setHeader(std::string key, std::string value);
-		
+		bool                    hasHeader(std::string &value) const;
 };
 
 #endif
