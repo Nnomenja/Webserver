@@ -25,7 +25,6 @@ class Request {
         // std::string							_body;
         // bool								_hasBody;
         // std::vector<std::string>			_contentType;
-        // std::map<std::string, std::string>	_headers;
 
         size_t                              _index;
         ARequestParserState					*_parserState;
@@ -36,6 +35,10 @@ class Request {
         HttpMethod                          _method;
         std::string							_pathname;
         std::string                         _query;
+
+        /*==== Request header ====*/
+
+        std::map<std::string, std::string>	_headers;
 
         Request(const Request& other);
         Request& operator=(const Request& other);
@@ -59,6 +62,7 @@ class Request {
         void                    addQuery(char c);
 		void					incrementParserIndex();
 		void					resetParserIndex();
+        void                    setHeader(std::string key, std::string value);
 		
 };
 

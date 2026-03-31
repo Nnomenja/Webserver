@@ -40,13 +40,17 @@ void ARequestParserState::skipCRLF()
 			if (c == '\r')
 				_crlf = true;
 			else if (c == '\n')
+			{
+				_target->incrementParserIndex();
 				return;
+			}
 		}
 		else
 		{
 			if (c == '\n')
 			{
 				_crlf = false;
+				_target->incrementParserIndex();
 				return;
 			}
 			else

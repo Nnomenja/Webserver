@@ -110,3 +110,8 @@ void Request::addQuery(char c)
 {
 	_query.push_back(c);
 }
+
+void Request::setHeader(std::string key, std::string value)
+{
+	_headers[key] = value;
+}
