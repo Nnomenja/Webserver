@@ -2,7 +2,7 @@
 #include "../Core/Request/RequestParserState/MethodParser.hpp"
 #include "../Core/Request/RequestParserState/ARequestParserState.hpp"
 
-#include <iostream>
+#include <algorithm>
 
 Request::Request():_index(0), _parserState(NULL), _method(GET){
 
@@ -70,6 +70,17 @@ std::map<std::string, std::string> Request::getHeaders() const
 	return (_headers);
 }
 
+
+const std::string &Request::getHeaderBykey(std::string key)
+{
+	return (_headers[key]);	
+}
+
+t_body_encode Request::getBodyEncode() const
+{
+	return (_body_encode);
+}
+
 /**============================================
  *               SETTERS
  *=============================================**/
@@ -116,12 +127,33 @@ void Request::addQuery(char c)
 	_query.push_back(c);
 }
 
-void Request::setHeader(std::string key, std::string value)
+std::string &Request::toLowerCase(std::string &src) const
 {
-	_headers[key] = value;
+	std::transform(src.begin(), src.end(), src.begin(), ::tolower);
+	return (src);
 }
 
-bool Request::hasHeader(std::string &value) const
+void Request::setHeader(std::string key, std::string value)
+{
+	_headers[toLowerCase(key)] = value;
+}
+
+bool Request::hasHeader(std::string value) const
 {
 	return (_headers.find(value) != _headers.end());
+}
+
+void Request::setContenLength(long value)
+{
+	_contentLength = value;
+}
+
+void Request::setBodyEncode(t_body_encode value)
+{
+	_body_encode = value;
+}
+
+void Request::addBody(char c)
+{
+	_body.push_back(c);
 }
