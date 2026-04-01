@@ -9,8 +9,9 @@ HeaderParser::~HeaderParser(){
 
 bool HeaderParser::checkHeaderEncode(char c) const
 {
-	std::string other = "!#$%&'*+-.^_`|~:\r\n";
-	return (std::isprint(c) && other.find(c) == std::string::npos);
+	std::string other = "!#$%&'*+-.^_`|~:";
+	(void)c;
+	return (isalnum(c) || other.find(c) != std::string::npos);
 }
 
 std::string &HeaderParser::toLowerCase(std::string &src) const
@@ -34,9 +35,17 @@ void HeaderParser::addHeaderAndReset()
 	resetStateData();
 }
 
-void HeaderParser::execute()
+
+bool HeaderParser::endOfHeadersReached()
 {
-    char    c;
+	if (_key.size())
+		return (false);
+	return (true);
+}
+
+void HeaderParser::receivingHeaders()
+{
+	char    c;
 
 	std::cout << "...HeaderParser executing..." << std::endl;
     for (size_t i = _target->getParserIndex(); i < _target->getBufferSize(); i++)
@@ -45,31 +54,26 @@ void HeaderParser::execute()
 		switch (_state)
 		{
 			case KEY:
-				if (checkHeaderEncode(c))
-					_key.push_back(c);
-				else
+				if (c == ':')
 				{
-					
-					if (c == ':')
-					{
 						if (!_key.size())
 							throw BadRequestException();
 						_state = SEPARATOR;
-					}
-					else if (c == '\r')
-					{
+				}
+				else if (checkHeaderEncode(c))
+					_key.push_back(c);
+				else
+				{
+					if (c == '\r')
 						_state = DELIMITER;
-					}
 					else if (c == '\n')
 					{
-						if (!_key.size())
+						if (endOfHeadersReached())
 							return;
 						addHeaderAndReset();
 					}
 					else
-					{
 						throw BadRequestException();
-					}
 				}
 				break;
 
@@ -87,11 +91,11 @@ void HeaderParser::execute()
 					}
 				}
 				break;
-
 			case DELIMITER:
+
 				if (c != '\n')
 					throw BadRequestException();
-				if (!_key.size())
+				if (endOfHeadersReached())
 					return;
 				addHeaderAndReset();
 				_state = KEY;
@@ -105,9 +109,7 @@ void HeaderParser::execute()
 					else if (c == '\n')
 						addHeaderAndReset();
 					else
-					{
 						throw BadRequestException();
-					}
 				}
 				else
 					_value.push_back(c);
@@ -117,4 +119,15 @@ void HeaderParser::execute()
     }
 	_target->resetParserIndex();
 	throw EagainParser();
+}
+
+void HeaderParser::parseHeaders()
+{
+	if (_target->hasHeader("Host"))
+		throw BadRequestException();
+}
+
+void HeaderParser::execute()
+{
+	receivingHeaders();
 }
