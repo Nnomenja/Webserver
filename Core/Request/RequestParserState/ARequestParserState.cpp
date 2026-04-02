@@ -44,6 +44,8 @@ void ARequestParserState::skipCRLF()
 				_target->incrementParserIndex();
 				return;
 			}
+			else
+				throw BadRequestException();
 		}
 		else
 		{
