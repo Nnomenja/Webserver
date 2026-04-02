@@ -11,7 +11,7 @@ void BodyParser::checkHeader()
 {
     bool    hasContentLength = false;
 
-    if (!_target->hasHeader("Host"))
+    if (!_target->hasHeader("host"))
         throw BadRequestException();
     if (_target->hasHeader("content-length"))
     {
