@@ -102,7 +102,7 @@ void HeaderParser::receivingHeaders()
 				break;
 
 			default:
-				if (!checkHeaderEncode(c))
+				if (!checkHeaderEncode(c) && c != ' ')
 				{
 					if (c == '\r')
 						_state = DELIMITER;
