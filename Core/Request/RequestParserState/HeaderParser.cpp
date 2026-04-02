@@ -40,6 +40,7 @@ bool HeaderParser::endOfHeadersReached()
 {
 	if (_key.size())
 		return (false);
+	_target->incrementParserIndex();
 	return (true);
 }
 
