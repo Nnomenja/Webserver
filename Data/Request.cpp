@@ -81,6 +81,16 @@ t_body_encode Request::getBodyEncode() const
 	return (_body_encode);
 }
 
+long Request::getContentLength() const
+{
+	return (_contentLength);
+}
+
+const std::string &Request::getBody() const
+{
+	return (_body);
+}
+
 /**============================================
  *               SETTERS
  *=============================================**/

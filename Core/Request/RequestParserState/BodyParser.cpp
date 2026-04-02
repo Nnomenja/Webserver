@@ -1,7 +1,9 @@
 #include "./BodyParser.hpp"
 #include "../../../Exception/BadRequestException.hpp"
+#include "../../../Exception/PayloadTooLarge.hpp"
+
 #define CONTENT_LENGTH_MAX 10485760
-BodyParser::BodyParser(Request *target, UnitConf_t endpoint):ARequestParserState(BODY, target, endpoint), _checked_headers(false){
+BodyParser::BodyParser(Request *target, UnitConf_t endpoint):ARequestParserState(BODY, target, endpoint), _checked_headers(false), _tmp(0), _state(CHECK_HEADERS){
 };
 BodyParser::~BodyParser(){
 };
@@ -25,6 +27,7 @@ void BodyParser::checkHeader()
             throw BadRequestException();
         _target->setBodyEncode(BODY_CHUNKED);
     }
+    _state = READ_BODY;
 }
 
 long BodyParser::parseContentLength(const std::string& value)
@@ -69,27 +72,58 @@ long BodyParser::parseContentLength(const std::string& value)
     return (length);
 }
 
+void    BodyParser::readBodyThroughContentLength()
+{
+    char c;
+
+    for (size_t i = _target->getParserIndex(); i < _target->getBufferSize(); i++)
+    {
+        c = _target->getBuffer()[i];
+        std::cout << "add: " << (c == '\r' ? static_cast<int>(c) : c) << std::endl;
+        _target->addBody(c);
+        _target->incrementParserIndex();
+        _tmp--;
+        if (!_tmp)
+        {
+            _state = CRLF;
+            std::cout << "***************BODY***********************" << std::endl;
+            std::cout << _target->getBody() << std::endl;
+            std::cout << "*****************************************" << std::endl;
+            skipCRLF();
+            return;
+        }
+    }
+    _target->resetParserIndex();
+	throw EagainParser();
+}
+
 void BodyParser::execute()
 {
 	std::cout << "BodyParser executing..." << std::endl;
-    if (!_checked_headers)
-        checkHeader();
-    if (_target->getMethod() == GET)
-		return;
-    // else
-    // {
-    //     char c;
-    
-    //     if (_target->getBodyEncode() == BODY_CONTENT_LENGTH)
-    //     {
-    //         for (size_t i = _target->getParserIndex(); i < _target->getBufferSize(); i++)
-    //         {
-    //             c = _target->getBuffer()[i];
-    //             _target->addBody(c);
-    //             _target->incrementParserIndex();
-    //         }
-    //     }
-    // }
-    _target->resetParserIndex();
-	throw EagainParser();
+    switch (_state)
+    {
+        case CHECK_HEADERS:
+            checkHeader();
+            if (_target->getMethod() == GET)
+                return;
+            //fallthrough
+        case READ_BODY:
+            if (_target->getBodyEncode() == BODY_CONTENT_LENGTH)
+            {
+                if (!_tmp)
+                    _tmp = _target->getContentLength();
+                else if (_target->getContentLength() > _endpoint.max_body_size)
+                    throw PayloadTooLarge();
+                readBodyThroughContentLength();
+                std::cout << "Content-Length-Max: " << _target->getContentLength() << " max: " << _endpoint.max_body_size << std::endl;
+            }
+            else
+            {
+                // chuncked
+            }
+            //fallthrough
+        default:
+            skipCRLF();
+            break;
+    }
 }

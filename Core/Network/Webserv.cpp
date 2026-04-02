@@ -90,6 +90,7 @@ void initSimulData(std::vector<UnitConf_t> &configsSimul)
 	u.method_arr.push_back("GET");
 	u.method_arr.push_back("POST");
 	u.type = STATIC;
+	u.max_body_size = 100000;
     configsSimul.push_back(u);
     // n = 2
 	u.host = "0.0.0.0";
@@ -99,6 +100,7 @@ void initSimulData(std::vector<UnitConf_t> &configsSimul)
 	u.method_arr.push_back("POST");
 	u.method_arr.push_back("DELETE");
     u.methods = GET + POST + DELETE;
+	u.max_body_size = 100000;
     configsSimul.push_back(u);
 }
 // <- SIMULATION

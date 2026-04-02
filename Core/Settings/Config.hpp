@@ -53,6 +53,7 @@ typedef struct UnitConf
     EndpointType                type; // temp
     // unsigned int                client_max_body_size;
     std::vector<std::string>    method_arr;
+    long                           max_body_size;
     // std::vector<t_error_page>   error_pages;
     // std::vector<t_location>     locations;
 }	UnitConf_t;

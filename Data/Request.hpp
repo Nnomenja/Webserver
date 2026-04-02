@@ -46,7 +46,7 @@ class Request {
 
         std::map<std::string, std::string>	_headers;
         long                                _contentLength;
-        t_body_encode                        _body_encode;
+        t_body_encode                       _body_encode;
         /*==== Request Body ====*/
         std::string                         _body;
 
@@ -68,6 +68,8 @@ class Request {
         const std::string \
                                 &getHeaderBykey(std::string key);
         t_body_encode           getBodyEncode() const;
+        long                    getContentLength() const;
+        const std::string             &getBody() const;        
 
         void					setParseState(ARequestParserState *state);
 		void					setBuffer(std::string &value);
