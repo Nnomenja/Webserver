@@ -7,6 +7,7 @@ EndParser::~EndParser(){
 
 void EndParser::execute()
 {
-    std::cout << "EndParser executing..." << std::endl;
+    if (_target->getBodyEncode() == BODY_CHUNKED)
+        return;
     skipCRLF();
 }
