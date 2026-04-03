@@ -37,24 +37,29 @@ void    BodyParser::readBodyThroughContentLength()
 long	BodyParser::parseChunkSize(const std::string &line) const
 {
     std::string	metadata;
-    char		*endptr;
     long		chunkSize;
     size_t		separator;
+    int		digit;
 
     separator = line.find(';');
     metadata = line.substr(0, separator);
     if (!metadata.size())
         throw BadRequestException();
+    chunkSize = 0;
     for (size_t i = 0; i < metadata.size(); i++)
     {
-        if (!std::isxdigit(static_cast<unsigned char>(metadata[i])))
+        if (metadata[i] >= '0' && metadata[i] <= '9')
+            digit = metadata[i] - '0';
+        else if (metadata[i] >= 'a' && metadata[i] <= 'f')
+            digit = metadata[i] - 'a' + 10;
+        else if (metadata[i] >= 'A' && metadata[i] <= 'F')
+            digit = metadata[i] - 'A' + 10;
+        else
             throw BadRequestException();
+        if (chunkSize > (LONG_MAX - digit) / 16)
+            throw BadRequestException();
+        chunkSize = (chunkSize * 16) + digit;
     }
-    errno = 0;
-    endptr = NULL;
-    chunkSize = std::strtol(metadata.c_str(), &endptr, 16);
-    if (errno == ERANGE || endptr == NULL || *endptr != '\0' || chunkSize < 0)
-        throw BadRequestException();
     if (chunkSize > _endpoint.max_body_size - static_cast<long>(_target->getBody().size()))
         throw PayloadTooLarge();
     return (chunkSize);

@@ -6,7 +6,6 @@
 #include <cstdlib>
 #include <climits>
 #include <cctype>
-#include <cerrno>
 
 typedef enum e_chunk_parser_state
 	{
