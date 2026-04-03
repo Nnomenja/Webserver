@@ -8,7 +8,7 @@ enum RequestParserStateName {
     HEADER,
     METADATA,
     BODY,
-    COMPLETE
+    END
 };
 
 #endif

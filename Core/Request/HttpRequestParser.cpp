@@ -6,6 +6,7 @@
 #include "./RequestParserState/HeaderParser.hpp"
 #include "./RequestParserState/BodyParser.hpp"
 #include "./RequestParserState/MetadataParser.hpp"
+#include "./RequestParserState/EndParser.hpp"
 
 HttpRequestParser::HttpRequestParser():_finished(false){
 
@@ -64,7 +65,10 @@ void HttpRequestParser::parse(Request *req, UnitConf_t endpoint)
 				//fallthrough
 			case BODY:
 				req->getParserState()->execute();
-				//fallthrough	
+				req->setParseState(new EndParser(req, endpoint));
+				//fallthrough
+			case END:
+				req->getParserState()->execute();
 			default:
 				req->setParseState(NULL);
 				_finished = true;
