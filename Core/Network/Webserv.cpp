@@ -100,7 +100,7 @@ void initSimulData(std::vector<UnitConf_t> &configsSimul)
 	u.method_arr.push_back("POST");
 	u.method_arr.push_back("DELETE");
 	// u.type = STATIC;
-	u.max_body_size = 100000;
+	u.max_body_size = 10000000;
 
 	l.type = STATIC;
 
@@ -396,7 +396,7 @@ void Webserv::run(void)
 		{
 			int tmp;
 
-			bool check = verify_deadline_ms(it->second->getStartTime(), 50000); 
+			bool check = verify_deadline_ms(it->second->getStartTime(), 500000); 
 			if (!it->second->isParsed() && check)
 			{
 				std::cout << "nbr: " << _clients.size() << std::endl;
