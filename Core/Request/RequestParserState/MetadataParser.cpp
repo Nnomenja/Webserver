@@ -107,26 +107,28 @@ void MetadataParser::setLocation()
 
 void MetadataParser::parseBodyMetadata()
 {
-  bool    hasContentLength = false;
-  bool    hassTranferEncoding = false;
+    const bool hasContentLength = _target->hasHeader("content-length");
+    const bool hasTransferEncoding = _target->hasHeader("transfer-encoding");
 
-    if (!_target->hasHeader("host"))
+    if (!hasContentLength && !hasTransferEncoding)
         throw BadRequestException();
-    _target->setBodyEncode(BODY_CONTENT_LENGTH);
-    if (_target->hasHeader("content-length"))
+
+    if (hasContentLength && hasTransferEncoding)
+        throw BadRequestException();
+
+    if (hasTransferEncoding)
     {
-        _target->setContenLength(parseContentLength(_target->getHeaderBykey("content-length")));
-        hasContentLength = true;
-    }
-    if (_target->hasHeader("transfer-encoding"))
-    {
-        if(_target->getHeaderBykey("transfer-encoding") == "chunked" && hasContentLength)
+        std::string transferEncoding = _target->getHeaderBykey("transfer-encoding");
+        trimWhiteSpace(transferEncoding);
+        if (transferEncoding != "chunked")
             throw BadRequestException();
+
         _target->setBodyEncode(BODY_CHUNKED);
-        hassTranferEncoding = true;
+        return;
     }
-    if (!hasContentLength && !hassTranferEncoding)
-        throw BadRequestException();
+
+    _target->setContenLength(parseContentLength(_target->getHeaderBykey("content-length")));
+    _target->setBodyEncode(BODY_CONTENT_LENGTH);
 }
 
 void MetadataParser::execute()
