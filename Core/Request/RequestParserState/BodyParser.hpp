@@ -8,23 +8,13 @@
 #include <cctype>
 #include <cerrno>
 
-typedef enum s_body_parser
-{
-	CHECK_HEADERS = 20,
-	READ_BODY,
-	BODY_ENCODE,
-	CRLF
-}	t_body_parser;
-
 class BodyParser: public ARequestParserState {
 	private:
-        bool    		_checked_headers;
 		long			_tmp;
-		t_body_parser	_state;
+		bool			_end;
 
-        void    checkHeader();
-		long	parseContentLength(const std::string& value);
 		void    readBodyThroughContentLength();	
+		void	readBodyAsChuncked();
 	public:
 		BodyParser(Request *target, UnitConf_t endpoint);
 		~BodyParser();

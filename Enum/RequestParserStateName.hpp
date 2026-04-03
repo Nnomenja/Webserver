@@ -6,6 +6,7 @@ enum RequestParserStateName {
     URI,
     VERSION,
     HEADER,
+    METADATA,
     BODY,
     COMPLETE
 };

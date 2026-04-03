@@ -25,7 +25,7 @@ RequestProcessor::~RequestProcessor(){};
 
 void RequestProcessor::processRequest(Client *client)
 {
-	IRequestStrategy	*strategy = createStrategy(client->getEndpoint().type);
+	IRequestStrategy	*strategy = createStrategy(client->getRequest()->getLocation().type);
 	strategy->process(client);
 	delete strategy;
 	// if (client->getRequest())

@@ -57,7 +57,8 @@ REQUEST_PARSE_STATE = $(addprefix $(CORE_DIR)/Request/RequestParserState/, \
 				UriParser.cpp \
 				HttpVersionParser.cpp \
 				HeaderParser.cpp \
-				BodyParser.cpp \
+ 				BodyParser.cpp \
+				MetadataParser.cpp \
 			)
 
 SRC = main.cpp

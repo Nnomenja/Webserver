@@ -9,7 +9,7 @@ HeaderParser::~HeaderParser(){
 
 bool HeaderParser::checkHeaderEncode(char c) const
 {
-	std::string other = "!#$%&'*+-.^_`|~:";
+	std::string other = "!#$%&'*+-.^_|~`";
 	(void)c;
 	return (isalnum(c) || other.find(c) != std::string::npos);
 }
@@ -103,7 +103,7 @@ void HeaderParser::receivingHeaders()
 				break;
 
 			default:
-				if (!checkHeaderEncode(c) && c != ' ')
+				if (!((c >= 33 && c <= 126 )|| c == ' '))
 				{
 					if (c == '\r')
 						_state = DELIMITER;

@@ -54,7 +54,7 @@ HttpMethod Request::getMethod() const
 }
 
 
-std::string Request::getPathname() const
+const std::string &Request::getPathname() const
 {
 	return (_pathname);
 }
@@ -89,6 +89,11 @@ long Request::getContentLength() const
 const std::string &Request::getBody() const
 {
 	return (_body);
+}
+
+t_location Request::getLocation() const
+{
+	return (_location);
 }
 
 /**============================================
@@ -166,4 +171,13 @@ void Request::setBodyEncode(t_body_encode value)
 void Request::addBody(char c)
 {
 	_body.push_back(c);
+}
+
+void Request::setLocation(t_location &value)
+{
+	_location = value;
+}
+void Request::setLocationType(EndpointType &value)
+{
+	_location.type = value;
 }

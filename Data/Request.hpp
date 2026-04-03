@@ -36,6 +36,7 @@ class Request {
         ARequestParserState					*_parserState;
         std::string							_buffer;
         size_t                              _buffer_size;
+        t_location                          _location;
 
         /*==== Request line ====*/
         HttpMethod                          _method;
@@ -61,7 +62,7 @@ class Request {
 		std::string             getBuffer() const;
         HttpMethod              getMethod() const;
         size_t                  getBufferSize() const;
-		std::string             getPathname() const;
+		const std::string       &getPathname() const;
 		std::string             getQuery() const;
         std::map<std::string \
                 , std::string>  getHeaders() const;
@@ -69,8 +70,11 @@ class Request {
                                 &getHeaderBykey(std::string key);
         t_body_encode           getBodyEncode() const;
         long                    getContentLength() const;
-        const std::string             &getBody() const;        
+        const std::string       &getBody() const;        
+        t_location              getLocation() const;
 
+        void                    setLocation(t_location &value);
+        void                    setLocationType(EndpointType &value);
         void					setParseState(ARequestParserState *state);
 		void					setBuffer(std::string &value);
         void                    setPathname(std::string value);

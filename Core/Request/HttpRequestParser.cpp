@@ -5,6 +5,7 @@
 #include "./RequestParserState/HttpVersionParser.hpp"
 #include "./RequestParserState/HeaderParser.hpp"
 #include "./RequestParserState/BodyParser.hpp"
+#include "./RequestParserState/MetadataParser.hpp"
 
 HttpRequestParser::HttpRequestParser():_finished(false){
 
@@ -54,6 +55,10 @@ void HttpRequestParser::parse(Request *req, UnitConf_t endpoint)
 				req->setParseState(new HeaderParser(req, endpoint));
 				//fallthrough
 			case  HEADER:
+				req->getParserState()->execute();
+				req->setParseState(new MetadataParser(req, endpoint));
+				//fallthrough
+			case  METADATA:
 				req->getParserState()->execute();
 				req->setParseState(new BodyParser(req, endpoint));
 				//fallthrough

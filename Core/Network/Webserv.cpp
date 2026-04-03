@@ -81,27 +81,55 @@ void Webserv::removeClientHttp(int fd)
 
 void initSimulData(std::vector<UnitConf_t> &configsSimul)
 {
+
+	/**========================================================================
+	 *                           STATIC WEBSITE
+	 * - GET : render index.hml
+	 * - POST : 405 Method Not Allowed
+	 * - DELETE : 405 Method Not Allowed
+	 *========================================================================**/
+
     UnitConf_t u;
-    
-	// n = 1
-    u.host = "0.0.0.0";
+    t_location l;
+
+	u.host = "0.0.0.0";
     u.port = 2000;
-    u.methods = GET + POST;
+	u.enable_virtual_hosting = false;
+    u.methods = GET + POST + DELETE;
 	u.method_arr.push_back("GET");
 	u.method_arr.push_back("POST");
-	u.type = STATIC;
+	u.method_arr.push_back("DELETE");
+	// u.type = STATIC;
 	u.max_body_size = 100000;
+
+	l.type = STATIC;
+
+	l.path = "/";
+
+	u.locations.push_back(l);
     configsSimul.push_back(u);
-    // n = 2
+
+	/**========================================================================
+	 *                           REDIRECTION
+	 * - GET : redirect 3xx
+	 * - POST : 405 Method Not Allowed
+	 * - DELETE : 405 Method Not Allowed
+	 *========================================================================**/
+
 	u.host = "0.0.0.0";
     u.port = 2001;
-	u.type = STATIC;
+	// u.type = REDIRECTION;
 	u.method_arr.push_back("GET");
 	u.method_arr.push_back("POST");
 	u.method_arr.push_back("DELETE");
     u.methods = GET + POST + DELETE;
 	u.max_body_size = 100000;
+
+	l.type = REDIRECTION;
+	l.return_path = "https:google.com";
+	u.locations.push_back(l);
     configsSimul.push_back(u);
+
 }
 // <- SIMULATION
 

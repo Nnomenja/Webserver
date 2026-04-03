@@ -34,28 +34,28 @@ typedef struct s_location
 {
     EndpointType                type;
     std::string                 path;
-    std::vector<t_error_page>   error_pages;
-    std::string                 root;
-    std::vector<std::string>    methods;
-    std::string                 index;
-    bool                        auto_index;
+    // std::vector<t_error_page>   error_pages;
+    // std::string                 root;
+    // std::vector<std::string>    methods;
+    // std::string                 index;
+    // bool                        auto_index;
     std::string                 return_path;
-    bool                        upload_enable;
-    std::string                 upload_store;
-    std::vector<t_cgi>          cgi;
+    // bool                        upload_enable;
+    // std::string                 upload_store;
+    // std::vector<t_cgi>          cgi;
 }   t_location;
 
 typedef struct UnitConf
 {
     std::string                 host;
+    bool                        enable_virtual_hosting;
     int                         port;
     int                         methods;
-    EndpointType                type; // temp
-    // unsigned int                client_max_body_size;
+    // EndpointType                type; // temp
     std::vector<std::string>    method_arr;
-    long                           max_body_size;
+    long                        max_body_size;
     // std::vector<t_error_page>   error_pages;
-    // std::vector<t_location>     locations;
+    std::vector<t_location>     locations;
 }	UnitConf_t;
 
 class Config

@@ -81,7 +81,7 @@ void Client::setEndpoint(UnitConf_t value)
 }
 void Client::setEndpointType(EndpointType type)
 {
-  _endpoint.type = type;
+	_req->setLocationType(type);
 }
 
 void Client::setBuffer(std::string &value)
