@@ -3,8 +3,6 @@
 #include "../../../Exception/NotFound.hpp"
 #include "../../../Exception/PayloadTooLarge.hpp"
 
-#define CONTENT_LENGTH_MAX 10485760
-
 MetadataParser::MetadataParser(Request *target, UnitConf_t endpoint):ARequestParserState(METADATA, target, endpoint), _longest_matching(0){
 
 };
@@ -68,7 +66,7 @@ long MetadataParser::parseContentLength(const std::string& value)
     
     res = std::strtol(tmp.c_str(), &endptr, 10);
     
-    if ( res > CONTENT_LENGTH_MAX)
+    if ( res > _endpoint.max_body_size)
         throw PayloadTooLarge();
     return (res);
 }
