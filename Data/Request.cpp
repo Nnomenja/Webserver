@@ -118,7 +118,7 @@ void Request::setParseState(ARequestParserState *state)
 void Request::setBuffer(std::string &value)
 {
 	_buffer = value;
-	_buffer_size = value.length();
+	_buffer_size = value.size();
 }
 
 

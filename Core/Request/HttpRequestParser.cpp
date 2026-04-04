@@ -69,6 +69,7 @@ void HttpRequestParser::parse(Request *req, UnitConf_t endpoint)
 				//fallthrough
 			case END:
 				req->getParserState()->execute();
+				//fallthrough
 			default:
 				req->setParseState(NULL);
 				_finished = true;

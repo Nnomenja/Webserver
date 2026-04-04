@@ -2,8 +2,6 @@
 #include "../../../Exception/BadRequestException.hpp"
 #include "../../../Exception/PayloadTooLarge.hpp"
 
-#define CONTENT_LENGTH_MAX 10485760
-
 BodyParser::BodyParser(Request *target, UnitConf_t endpoint):ARequestParserState(BODY, target, endpoint) ,_end(false), _chunkState(CHUNK_SIZE), _chunkBytesRemaining(0), _chunkCR(false){
 	_tmp = _target->getContentLength();
 };
@@ -24,7 +22,7 @@ void    BodyParser::readBodyThroughContentLength()
         {
             _end = true;
             std::cout << "***************BODY***********************" << std::endl;
-            std::cout << _target->getBody() << std::endl;
+            std::cout << _target->getBody() << std::endl; 
             std::cout << "*****************************************" << std::endl;
             skipCRLF();
 			return;
@@ -174,7 +172,7 @@ void    BodyParser::readBodyAsChuncked()
         if (_end)
         {
             std::cout << "***************BODY***********************" << std::endl;
-            std::cout << _target->getBody() << std::endl;
+            std::cout << _target->getBody() << std::endl; 
             std::cout << "*****************************************" << std::endl;
             return;
         }

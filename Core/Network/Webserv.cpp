@@ -432,7 +432,6 @@ bool Webserv::readtHttpRequest(Client* client)
 		}
 		try
 		{
-			std::cout << "Buff: " << data << std::endl;
 			HttpRequestParser	parse;
 			parse.parse(client->getRequest(), client->getEndpoint());
 
