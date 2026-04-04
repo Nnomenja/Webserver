@@ -33,6 +33,8 @@ void HttpVersionParser::execute()
 				_j = 0;
 				i--;
 			}
+            else if (_protocol_name[_j] != c)
+                throw BadRequestException();
 			else
 			{
 				_j++;
