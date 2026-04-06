@@ -61,6 +61,11 @@ void HttpRequestParser::parse(Request *req, UnitConf_t endpoint)
 				//fallthrough
 			case  METADATA:
 				req->getParserState()->execute();
+				if (req->getMethod() == GET)
+				{
+					_finished = true;
+					return;
+				}
 				req->setParseState(new BodyParser(req, endpoint));
 				//fallthrough
 			case BODY:

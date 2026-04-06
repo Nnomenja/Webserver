@@ -183,8 +183,7 @@ void    BodyParser::readBodyAsChuncked()
 
 void BodyParser::execute()
 {
-	if (_target->getMethod() == GET)
-		return;
+	std::cout << "...BodyParser executing..." << std::endl;
 	if (_target->getBodyEncode() == BODY_CONTENT_LENGTH)
 	{
 		if (!_end)
@@ -194,4 +193,5 @@ void BodyParser::execute()
 	}
 	else
 		readBodyAsChuncked();
+	std::cout << "...................." << std::endl;
 }
