@@ -1,8 +1,8 @@
 #include "Webserv.hpp"
-#include "../Request/HttpRequestParser.hpp"
+#include "./Request/HttpRequestParser.hpp"
 #include "../../Data/Request.hpp"
 #include "../../Data/Client.hpp"
-#include "../Request/RequestProcessor.hpp"
+#include "./Request/RequestProcessor.hpp"
 #include <signal.h>
 
 extern volatile sig_atomic_t stop;
@@ -105,8 +105,10 @@ void initSimulData(std::vector<UnitConf_t> &configsSimul)
 	l.type = STATIC;
 
 	l.path = "/";
-
+	l.root = "/var/www/html";
+	l.auto_index = true;
 	u.locations.push_back(l);
+	l.index = "index.html";
     configsSimul.push_back(u);
 
 	/**========================================================================
@@ -127,6 +129,9 @@ void initSimulData(std::vector<UnitConf_t> &configsSimul)
 
 	l.type = REDIRECTION;
 	l.return_path = "https:google.com";
+	l.root = "/var/www/html";
+	l.auto_index = true;
+	l.index = "";
 	u.locations.push_back(l);
     configsSimul.push_back(u);
 
@@ -343,12 +348,19 @@ void Webserv::run(void)
 
 				if (_epoll.getEvents()[i].events & EPOLLIN)
 				{
-					if (!readtHttpRequest(client))
-						continue;
-					RequestProcessor	process;
-					// Process request
-					std::cout << "POLLIN" << std::endl;
-					process.processRequest(_clients[currentFd]);
+					try
+					{
+						if (!readtHttpRequest(client))
+							continue;
+						RequestProcessor	process;
+						process.processRequest(_clients[currentFd]);
+					}
+					catch(const ServerException& e)
+					{
+						// Erro
+						// std::cout << "ERROR: " << e.getName() << std::endl;
+					}
+					// client.generateResponse();
 					_epoll.modify(client->getFd(), EPOLLOUT);
 					std::cout << "[" << client->getFd() << "]: read successfull" << std::endl;
 				}
@@ -430,24 +442,14 @@ bool Webserv::readtHttpRequest(Client* client)
 			std::cout << "Numbers of client: " << _clients.size() << std::endl;
 			return (false);
 		}
-		try
-		{
-			HttpRequestParser	parse;
-			parse.parse(client->getRequest(), client->getEndpoint());
 
-			if (parse.finished())
-			{
-				client->parsed();
-				std::cout << "Finished" << std::endl;
-				return (true);
-			}
-		}
-		catch(const ServerException& e)
+		HttpRequestParser	parse;
+		parse.parse(client->getRequest(), client->getEndpoint());
+
+		if (parse.finished())
 		{
-			client->getResponse()->setStatusCode(e.getCode());
-			client->getResponse()->setStatusName(e.getName());
-			client->setEndpointType(ERROR);
-			std::cout << "REQUEST ERROR: " << e.what() << std::endl;
+			client->parsed();
+			std::cout << "Finished" << std::endl;
 			return (true);
 		}
 		if (end)

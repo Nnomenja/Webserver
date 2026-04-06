@@ -1,5 +1,5 @@
 #include "UriParser.hpp"
-#include "../../../Exception/BadRequestException.hpp"
+#include "../../../../Exception/BadRequestException.hpp"
 
 UriParser::UriParser(Request *target, UnitConf_t endpoint):ARequestParserState(URI, target, endpoint), _tmp(-1), _hasQuery(false), _encoded(false), _finished(false){
 };

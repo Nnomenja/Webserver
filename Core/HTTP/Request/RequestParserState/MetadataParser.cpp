@@ -1,7 +1,8 @@
 #include "MetadataParser.hpp"
-#include "../../../Exception/BadRequestException.hpp"
-#include "../../../Exception/NotFound.hpp"
-#include "../../../Exception/PayloadTooLarge.hpp"
+#include "../../../../Exception/BadRequestException.hpp"
+#include "../../../../Exception/NotFound.hpp"
+#include "../../../../Exception/PayloadTooLarge.hpp"
+#include "../../../../Exception/Forbiden.hpp"
 
 MetadataParser::MetadataParser(Request *target, UnitConf_t endpoint):ARequestParserState(METADATA, target, endpoint), _longest_matching(0){
 
@@ -71,7 +72,7 @@ long MetadataParser::parseContentLength(const std::string& value)
     return (res);
 }
 
-void MetadataParser::setLocation()
+void MetadataParser::matchConfiguredRoute()
 {
     size_t      tmp;
     t_location  location;
@@ -110,9 +111,6 @@ void MetadataParser::parseBodyMetadata()
     const bool hasContentLength = _target->hasHeader("content-length");
     const bool hasTransferEncoding = _target->hasHeader("transfer-encoding");
 
-    if (!hasContentLength && !hasTransferEncoding)
-        throw BadRequestException();
-
     if (hasContentLength && hasTransferEncoding)
         throw BadRequestException();
 
@@ -126,13 +124,48 @@ void MetadataParser::parseBodyMetadata()
         _target->setBodyEncode(BODY_CHUNKED);
         return;
     }
+    else if(hasContentLength)
+    {
+        _target->setContenLength(parseContentLength(_target->getHeaderBykey("content-length")));
+        _target->setBodyEncode(BODY_CONTENT_LENGTH);
+    }
+}
 
-    _target->setContenLength(parseContentLength(_target->getHeaderBykey("content-length")));
-    _target->setBodyEncode(BODY_CONTENT_LENGTH);
+void MetadataParser::resolveFilesystemPath()
+{
+    std::string fullPath = _target->getLocation().root + &_target->getPathname()[1];
+    bool    isDir;
+    struct stat info;
+    
+    if (stat(fullPath.c_str(), &info))
+        throw NotFound();
+    
+    if (access(fullPath.c_str(), R_OK))
+        throw Forbiden();
+    
+    isDir = (info.st_mode & S_IFDIR) != 0;
+    
+    if (isDir)
+    {
+        if (_target->getLocationDefaultIndex().size())
+            fullPath += "/" + _target->getLocationDefaultIndex();
+        else
+        {
+            if (_target->getLocation().auto_index)
+                _target->setLocationType(DIRECTORY);
+            else
+                NotFound();
+        }
+    }
+    _target->setPathname(fullPath);
 }
 
 void MetadataParser::execute()
 {
-    setLocation();
+	std::cout << "...MetadataParser executing..." << std::endl;
+    matchConfiguredRoute();
+    // if (_target->getLocation().type != REDIRECTION)
+    //     resolveFilesystemPath();
     parseBodyMetadata();
+	std::cout << "...................." << std::endl;
 }

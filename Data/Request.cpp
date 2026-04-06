@@ -1,6 +1,6 @@
 #include "Request.hpp"
-#include "../Core/Request/RequestParserState/MethodParser.hpp"
-#include "../Core/Request/RequestParserState/ARequestParserState.hpp"
+#include "../Core/HTTP/Request/RequestParserState/MethodParser.hpp"
+#include "../Core/HTTP/Request/RequestParserState/ARequestParserState.hpp"
 
 #include <algorithm>
 
@@ -96,6 +96,12 @@ t_location Request::getLocation() const
 	return (_location);
 }
 
+
+const std::string &Request::getLocationDefaultIndex() const
+{
+	return (_location.index);
+}
+
 /**============================================
  *               SETTERS
  *=============================================**/
@@ -177,7 +183,7 @@ void Request::setLocation(t_location &value)
 {
 	_location = value;
 }
-void Request::setLocationType(EndpointType &value)
+void Request::setLocationType(LocationType value)
 {
 	_location.type = value;
 }

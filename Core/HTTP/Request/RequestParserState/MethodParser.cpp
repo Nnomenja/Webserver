@@ -1,7 +1,7 @@
 #include "MethodParser.hpp"
-#include "../../Settings/Config.hpp"
-#include "../../../Exception/BadRequestException.hpp"
-#include "../../../Exception/NotImplement.hpp"
+#include "../../../Settings/Config.hpp"
+#include "../../../../Exception/BadRequestException.hpp"
+#include "../../../../Exception/NotImplement.hpp"
 
 MethodParser::MethodParser(Request *target, UnitConf_t	 endpoint):ARequestParserState(METHOD, target, endpoint), _i(0), _finished(false){
 	_methods.push_back("GET");

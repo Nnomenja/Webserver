@@ -5,6 +5,7 @@ CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -g
 CORE_DIR = Core
 DATA_DIR = Data
 OBJS_DIR = objs
+HTTP_DIR = HTTP
 UTILS_DIR = utils
 EXCEPTION_DIR = Exception
 
@@ -21,9 +22,8 @@ NETWORK_SRCS = $(addprefix $(CORE_DIR)/Network/, \
 				ServerSocket.cpp \
 				Signal.cpp \
 				Socket.cpp \
-				Webserv.cpp \
 			)
-REQUEST_SRCS = $(addprefix $(CORE_DIR)/Request/, \
+REQUEST_SRCS = $(addprefix $(CORE_DIR)/$(HTTP_DIR)/Request/, \
 				HttpRequestParser.cpp \
 				RequestProcessor.cpp \
 			)
@@ -43,14 +43,14 @@ EXCEPTION_SRC = $(addprefix $(EXCEPTION_DIR)/, \
 				ServerException.cpp  \
 			)
 
-REQUEST_PROCESS_STRATEGY = $(addprefix $(CORE_DIR)/Request/RequestProcessStrategy/, \
+REQUEST_PROCESS_STRATEGY = $(addprefix $(CORE_DIR)/$(HTTP_DIR)/Request/RequestProcessStrategy/, \
 				DynamicStrategy.cpp \
 				Redirectionrategy.cpp \
 				StaticStrategy.cpp \
 				DirectoryStrategy.cpp \
 			)
 
-REQUEST_PARSE_STATE = $(addprefix $(CORE_DIR)/Request/RequestParserState/, \
+REQUEST_PARSE_STATE = $(addprefix $(CORE_DIR)/$(HTTP_DIR)/Request/RequestParserState/, \
 				ARequestParserState.cpp \
 				MethodParser.cpp \
 				UriParser.cpp \
@@ -59,6 +59,10 @@ REQUEST_PARSE_STATE = $(addprefix $(CORE_DIR)/Request/RequestParserState/, \
  				BodyParser.cpp \
 				MetadataParser.cpp \
 				EndParser.cpp \
+			)
+
+HTTP_SRCS = $(addprefix $(CORE_DIR)/$(HTTP_DIR)/, \
+				Webserv.cpp \
 			)
 
 SRC = main.cpp
@@ -70,6 +74,7 @@ SRC += $(DATA_SRCS)
 SRC += $(EXCEPTION_SRC)
 SRC += $(REQUEST_PROCESS_STRATEGY)
 SRC += $(REQUEST_PARSE_STATE)
+SRC += $(HTTP_SRCS)
 
 OBJS = $(SRC:%.cpp=$(OBJS_DIR)/%.o)
 

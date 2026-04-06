@@ -2,7 +2,7 @@
 #define REQUESTPROCESSOR_HPP
 
 #include "./RequestProcessStrategy/IRequestStrategy.hpp"
-#include "../../Enum/LocationType.hpp"
+#include "../../../Enum/LocationType.hpp"
 #include <iostream>
 
 class Client;

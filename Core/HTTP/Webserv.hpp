@@ -10,8 +10,8 @@
 # include <ctime>
 
 # include "../Settings/Config.hpp"
-# include "./Epoll.hpp"
-# include "./ServerSocket.hpp"
+# include "../Network/Epoll.hpp"
+# include "../Network/ServerSocket.hpp"
 # include "../../Exception/ServerException.hpp"
 #include "../../Data/Client.hpp"
 
