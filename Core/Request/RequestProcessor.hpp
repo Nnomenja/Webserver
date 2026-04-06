@@ -2,13 +2,13 @@
 #define REQUESTPROCESSOR_HPP
 
 #include "./RequestProcessStrategy/IRequestStrategy.hpp"
-#include "../../Enum/EndpointType.hpp"
+#include "../../Enum/LocationType.hpp"
 #include <iostream>
 
 class Client;
 class RequestProcessor {
 	private:
-		IRequestStrategy* createStrategy(EndpointType type);
+		IRequestStrategy* createStrategy(LocationType type);
 	public:
 		RequestProcessor();
 		RequestProcessor(const RequestProcessor& other);

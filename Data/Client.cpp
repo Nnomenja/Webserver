@@ -79,7 +79,7 @@ void Client::setEndpoint(UnitConf_t value)
 {
   _endpoint = value;
 }
-void Client::setEndpointType(EndpointType type)
+void Client::setLocationType(LocationType type)
 {
 	_req->setLocationType(type);
 }

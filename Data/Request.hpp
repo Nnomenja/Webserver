@@ -72,9 +72,11 @@ class Request {
         long                    getContentLength() const;
         const std::string       &getBody() const;        
         t_location              getLocation() const;
+        const std::string 
+                                &getLocationDefaultIndex() const;
 
         void                    setLocation(t_location &value);
-        void                    setLocationType(EndpointType &value);
+        void                    setLocationType(LocationType value);
         void					setParseState(ARequestParserState *state);
 		void					setBuffer(std::string &value);
         void                    setPathname(std::string value);

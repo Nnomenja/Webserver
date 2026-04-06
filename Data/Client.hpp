@@ -4,7 +4,7 @@
 #include "../Core/Network/Socket.hpp"
 #include "./Request.hpp"
 #include "./Response.hpp"
-#include "../Enum/EndpointType.hpp"
+#include "../Enum/LocationType.hpp"
 #include "../Core/Settings/Config.hpp"
 
 class Request;
@@ -39,7 +39,7 @@ class Client {
 
         void            	setFd(int fd);
         void				setEndpoint(UnitConf_t  value);
-		void				setEndpointType(EndpointType type);
+		void				setLocationType(LocationType type);
 		void				setBuffer(std::string &value);
 		void				setBufferSize(size_t value);
 

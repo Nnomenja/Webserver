@@ -3,7 +3,7 @@
 
 #include "../../utils/utils.hpp"
 #include "Validator.hpp"
-#include "../../Enum/EndpointType.hpp"
+#include "../../Enum/LocationType.hpp"
 #include <vector>
 #include <exception>
 #include <sstream>
@@ -32,17 +32,18 @@ typedef struct s_error_page
 
 typedef struct s_location
 {
-    EndpointType                type;
+    LocationType                type;
     std::string                 path;
     // std::vector<t_error_page>   error_pages;
-    // std::string                 root;
+    std::string                 root;
     // std::vector<std::string>    methods;
     // std::string                 index;
-    // bool                        auto_index;
+    bool                        auto_index;
     std::string                 return_path;
     // bool                        upload_enable;
     // std::string                 upload_store;
     // std::vector<t_cgi>          cgi;
+    std::string                 index;
 }   t_location;
 
 typedef struct UnitConf
@@ -51,7 +52,7 @@ typedef struct UnitConf
     bool                        enable_virtual_hosting;
     int                         port;
     int                         methods;
-    // EndpointType                type; // temp
+    // LocationType                type; // temp
     std::vector<std::string>    method_arr;
     long                        max_body_size;
     // std::vector<t_error_page>   error_pages;

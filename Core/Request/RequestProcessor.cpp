@@ -2,7 +2,6 @@
 #include "./RequestProcessStrategy/StaticStrategy.hpp"
 #include "./RequestProcessStrategy/DynamicStrategy.hpp"
 #include "./RequestProcessStrategy/RedirectionStrategy.hpp"
-#include "./RequestProcessStrategy/ErrorStrategy.hpp"
 #include "./RequestProcessStrategy/DirectoryStrategy.hpp"
 
 #include "../../Data/Client.hpp"
@@ -34,7 +33,7 @@ void RequestProcessor::processRequest(Client *client)
 	// 	delete  client->getResponse();
 }
 
-IRequestStrategy *RequestProcessor::createStrategy(EndpointType type)
+IRequestStrategy *RequestProcessor::createStrategy(LocationType  type)
 {
 	switch (type)
 	{
@@ -43,9 +42,6 @@ IRequestStrategy *RequestProcessor::createStrategy(EndpointType type)
 			break;
 		case DYNAMIC:
 			return (new DynamicStrategy());
-			break;
-		case ERROR:
-			return (new ErrorStrategy());
 			break;
 		case DIRECTORY:
 			return (new DirectoryStrategy());

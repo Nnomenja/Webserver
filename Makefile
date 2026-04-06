@@ -47,7 +47,6 @@ REQUEST_PROCESS_STRATEGY = $(addprefix $(CORE_DIR)/Request/RequestProcessStrateg
 				DynamicStrategy.cpp \
 				Redirectionrategy.cpp \
 				StaticStrategy.cpp \
-				ErrorStrategy.cpp \
 				DirectoryStrategy.cpp \
 			)
 
