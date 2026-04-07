@@ -82,15 +82,8 @@ void HeaderParser::receivingHeaders()
 			case SEPARATOR:
 				if (c != ' ')
 				{
-					if (checkHeaderEncode(c))
-					{
-						_state = VALUE;
-						_value.push_back(c);
-					}
-					else
-					{
-						throw BadRequestException();
-					}
+					_state = VALUE;
+					continue;
 				}
 				break;
 			case DELIMITER:
@@ -123,11 +116,6 @@ void HeaderParser::receivingHeaders()
 	throw EagainParser();
 }
 
-void HeaderParser::parseHeaders()
-{
-	if (_target->hasHeader("Host"))
-		throw BadRequestException();
-}
 
 void HeaderParser::execute()
 {
