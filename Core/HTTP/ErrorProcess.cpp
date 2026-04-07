@@ -7,13 +7,12 @@
 std::string     readErrorPageFile(std::string &path)
 {
    std::ifstream file(path.c_str());
-    if (!file) {
-        return "";
-    }
+    if (!file)
+       throw std::exception();
 
     std::ostringstream buffer;
     buffer << file.rdbuf();
-    return buffer.str();
+    return (buffer.str());
 }
 
 /*
@@ -119,11 +118,15 @@ void    ErrorProcess::processError(const ServerException &e, Client *client)
 
     res->setStatusCode(e.getCode());
     res->setStatusName(e.getName());
-    if (ErrorPagePath.size())
-        res->setBody(readErrorPageFile(ErrorPagePath));
-    else
+    try
     {
-         res->setBody(generateDefaultErrorpage(e.getCode(), e.getName()));
+        if (!ErrorPagePath.size())
+            throw std::exception();
+        res->setBody(readErrorPageFile(ErrorPagePath));
+    }
+    catch(const std::exception& e)
+    {
+         res->setBody(generateDefaultErrorpage(res->getStatusCode(), res->getStatusMessage()));
          res->addHeader("Content-Type", "text/html; charset=UTF-8");
          ss << res->getBody().size();
          res->addHeader("Content-Length", ss.str());

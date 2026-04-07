@@ -73,15 +73,28 @@ Response *Client::getResponse()
 }
 
 
-std::string Client::getDefaultErrorPagePath(int code) const
+std::string findDefaultErrorPagePathBySource(int code, const std::vector<t_error_page> &error_pages)
 {
-	std::vector<t_error_page>::const_iterator it = _endpoint.error_pages.begin();
-	while (it != _endpoint.error_pages.end())
+	std::vector<t_error_page>::const_iterator it = error_pages.begin();
+	while (it != error_pages.end())
 	{
 		if (std::find(it->codes.begin(), it->codes.end(), code) != it->codes.end())
 			return (it->path);
 		++it;
 	}
+	return ("");
+}
+
+std::string Client::getDefaultErrorPagePath(int code) const
+{
+	std::string path;
+
+	path = findDefaultErrorPagePathBySource(code, _req->getLocation().error_pages);
+	if (path.size())
+		return (_req->getLocation().root + path);
+	path = findDefaultErrorPagePathBySource(code, _endpoint.error_pages);
+	if (path.size())
+		return (_endpoint.root + path);
 	return ("");
 }
 

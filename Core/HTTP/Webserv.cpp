@@ -104,10 +104,21 @@ void initSimulData(std::vector<UnitConf_t> &configsSimul)
 
 	l.type = STATIC;
 
-	l.path = "/services";
-	l.root = "/var/www/html";
+	l.path = "/home";
+	u.root = "/home/nnomenja/Desktop/42/webserver/www";
 	l.auto_index = true;
+	// 400
+	t_error_page error1;
+	error1.codes.push_back(400);
+	error1.path = "/error/400.html";
+	u.error_pages.push_back(error1);
+	// 404
+	t_error_page error2;
+	error2.codes.push_back(404);
+	error2.path = "/error/404.html";
+	u.error_pages.push_back(error2);
 	u.locations.push_back(l);
+	
 	l.index = "index.html";
     configsSimul.push_back(u);
 
@@ -130,7 +141,7 @@ void initSimulData(std::vector<UnitConf_t> &configsSimul)
 	l.path ="/home";
 	l.type = REDIRECTION;
 	l.return_path = "https:google.com";
-	l.root = "/var/www/html";
+	l.root = "/home/nnomenja/Desktop/42/webserver/www";
 	l.auto_index = true;
 	l.index = "";
 	u.locations.push_back(l);
@@ -361,8 +372,6 @@ void Webserv::run(void)
 					{
 						std::cout << "#####ERROR: " << e.getCode() << " " << e.getName() << std::endl;
 						ErrorProcess::processError(e, _clients[currentFd]);
-						// Erro
-						// std::cout << "ERROR: " << e.getName() << std::endl;
 					}
 					client->generateResponse();
 					_epoll.modify(client->getFd(), EPOLLOUT);

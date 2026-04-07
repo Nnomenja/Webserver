@@ -34,7 +34,7 @@ typedef struct s_location
 {
     LocationType                type;
     std::string                 path;
-    // std::vector<t_error_page>   error_pages;
+    std::vector<t_error_page>   error_pages;
     std::string                 root;
     // std::vector<std::string>    methods;
     // std::string                 index;
@@ -52,7 +52,7 @@ typedef struct UnitConf
     bool                        enable_virtual_hosting;
     int                         port;
     int                         methods;
-    // LocationType                type; // temp
+    std::string                 root;
     std::vector<std::string>    method_arr;
     long                        max_body_size;
     std::vector<t_error_page>   error_pages;
@@ -100,3 +100,4 @@ public:
 };
 
 #endif
+
