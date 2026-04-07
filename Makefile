@@ -63,6 +63,7 @@ REQUEST_PARSE_STATE = $(addprefix $(CORE_DIR)/$(HTTP_DIR)/Request/RequestParserS
 
 HTTP_SRCS = $(addprefix $(CORE_DIR)/$(HTTP_DIR)/, \
 				Webserv.cpp \
+				ErrorProcess.cpp \
 			)
 
 SRC = main.cpp

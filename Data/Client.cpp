@@ -1,5 +1,6 @@
 #include "Client.hpp"
 #include "../utils/utils.hpp"
+#include <algorithm>
 
 Client::Client():_start_time_ms(get_time_ms()), _req(new Request()), _res(new Response()), _parsed(false){
   std::cout << "Create client" << std::endl;
@@ -71,6 +72,19 @@ Response *Client::getResponse()
 	return (_res);
 }
 
+
+std::string Client::getDefaultErrorPagePath(int code) const
+{
+	std::vector<t_error_page>::const_iterator it = _endpoint.error_pages.begin();
+	while (it != _endpoint.error_pages.end())
+	{
+		if (std::find(it->codes.begin(), it->codes.end(), code) != it->codes.end())
+			return (it->path);
+		++it;
+	}
+	return ("");
+}
+
 /**============================================
  *               SETTERS
  *=============================================**/
@@ -117,4 +131,32 @@ bool Client::isParsed() const
 void Client::parsed()
 {
 	_parsed = true;
+}
+
+
+void	Client::generateResponse()
+{
+	/*==== RESPONSE LINE ====*/
+	std::stringstream statusCode;
+
+	statusCode << _res->getStatusCode();
+	_buffer += "HTTP/1.1 ";
+	_buffer += statusCode.str();
+	_buffer += " ";
+	_buffer += _res->getStatusMessage();
+	_buffer += "\r\n";
+
+	/*==== RESPONSE HEADERS ====*/
+	std::map<std::string, std::string>::const_iterator it =  _res->getHeaders().begin();
+	while (it != _res->getHeaders().end())
+	{
+		_buffer += it->second + "\r\n";
+		++it;
+	}
+	_buffer += "\r\n";
+	/*==== RESPONSE BODY ====*/
+	_buffer += _res->getBody();
+	_bufferSize = _buffer.size();
+	// delete _req;
+	// delete _res;
 }

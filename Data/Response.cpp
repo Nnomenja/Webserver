@@ -34,7 +34,27 @@ int Response::getStatusCode() const
 	return (this->_status_code);
 }
 
-std::string Response::getStatusName() const
+std::string Response::getStatusMessage() const
 {
 	return (this->_status_name);
+}
+
+std::string Response::getBody() const
+{
+	return (_body);
+}
+
+const std::map<std::string, std::string> &Response::getHeaders() const
+{
+	return (_headers);
+}
+
+void Response::setBody(const std::string &body)
+{
+	_body = body;
+}
+
+void Response::addHeader(std::string key, std::string value)
+{
+	_headers[key] = value;
 }

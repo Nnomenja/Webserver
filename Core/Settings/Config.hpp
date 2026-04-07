@@ -25,8 +25,8 @@ typedef struct s_cgi
 
 typedef struct s_error_page
 {
-    int         code;
-    std::string path;
+    std::vector<int>    codes;
+    std::string         path;
 }   t_error_page;
 
 
@@ -55,7 +55,7 @@ typedef struct UnitConf
     // LocationType                type; // temp
     std::vector<std::string>    method_arr;
     long                        max_body_size;
-    // std::vector<t_error_page>   error_pages;
+    std::vector<t_error_page>   error_pages;
     std::vector<t_location>     locations;
 }	UnitConf_t;
 

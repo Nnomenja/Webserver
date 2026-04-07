@@ -36,6 +36,7 @@ class Client {
 
         Request             *getRequest();
         Response            *getResponse();
+        std::string			getDefaultErrorPagePath(int code) const;
 
         void            	setFd(int fd);
         void				setEndpoint(UnitConf_t  value);
@@ -46,6 +47,7 @@ class Client {
         void        		refreshStartTime();
         void                parsed();
         bool                isParsed() const;
+        void                generateResponse();
 };
 
 #endif

@@ -4,7 +4,7 @@
 #include "../../Data/Client.hpp"
 #include "./Request/RequestProcessor.hpp"
 #include <signal.h>
-
+#include "ErrorProcess.hpp"
 extern volatile sig_atomic_t stop;
 
 /* ************************************************************************** */
@@ -104,7 +104,7 @@ void initSimulData(std::vector<UnitConf_t> &configsSimul)
 
 	l.type = STATIC;
 
-	l.path = "/";
+	l.path = "/services";
 	l.root = "/var/www/html";
 	l.auto_index = true;
 	u.locations.push_back(l);
@@ -127,6 +127,7 @@ void initSimulData(std::vector<UnitConf_t> &configsSimul)
     u.methods = GET + POST + DELETE;
 	u.max_body_size = 100000;
 
+	l.path ="/home";
 	l.type = REDIRECTION;
 	l.return_path = "https:google.com";
 	l.root = "/var/www/html";
@@ -354,13 +355,16 @@ void Webserv::run(void)
 							continue;
 						RequestProcessor	process;
 						process.processRequest(_clients[currentFd]);
+						simulateClient(client); // this is an example of response because there are not strategy request implemented
 					}
 					catch(const ServerException& e)
 					{
+						std::cout << "#####ERROR: " << e.getCode() << " " << e.getName() << std::endl;
+						ErrorProcess::processError(e, _clients[currentFd]);
 						// Erro
 						// std::cout << "ERROR: " << e.getName() << std::endl;
 					}
-					// client.generateResponse();
+					client->generateResponse();
 					_epoll.modify(client->getFd(), EPOLLOUT);
 					std::cout << "[" << client->getFd() << "]: read successfull" << std::endl;
 				}
@@ -382,7 +386,7 @@ void Webserv::run(void)
 					 *   - set client_socket buffer size by client.getResponse size
 					 *========================================================================**/
 					std::cout << "POLLOUT" << std::endl;
-					simulateClient(client); // this is an example of response because there are not strategy request implemented
+					// simulateClient(client); // this is an example of response because there are not strategy request implemented
 
 					sendHttpResponse(client);
 					removeClientHttp(client->getFd());
@@ -435,6 +439,9 @@ bool Webserv::readtHttpRequest(Client* client)
 	{
 		data = _epoll.read(client->getFd(), &end);
 		client->getRequest()->setBuffer(data);
+		std::cout << "****************************************" << std::endl;
+		std::cout << data << std::endl;
+		std::cout << "****************************************" << std::endl;
 		if (data.empty())
 		{
 			std::cout << "Client disconnected: "<< client->getFd()  << std::endl;

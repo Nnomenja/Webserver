@@ -131,7 +131,7 @@ void MetadataParser::parseBodyMetadata()
     }
 }
 
-void MetadataParser::resolveFilesystemPath()
+void    MetadataParser::resolveFilesystemPath()
 {
     std::string fullPath = _target->getLocation().root + &_target->getPathname()[1];
     bool    isDir;

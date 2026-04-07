@@ -22,7 +22,6 @@ class HeaderParser: public ARequestParserState {
         void	    addHeaderAndReset();
         bool        endOfHeadersReached();
         void        receivingHeaders();
-        void        parseHeaders();
 	public:
 		HeaderParser(Request *target, UnitConf_t endpoint);
 		~HeaderParser();
