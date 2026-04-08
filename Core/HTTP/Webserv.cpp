@@ -148,6 +148,12 @@ void initSimulData(std::vector<UnitConf_t> &configsSimul)
 	u.locations.push_back(l);
     configsSimul.push_back(u);
 
+	/**========================================================================
+	 *                           UPLOAD
+	 * - GET : 
+	 * - POST : 
+	 * - DELETE : 
+	 *========================================================================**/
 }
 // <- SIMULATION
 

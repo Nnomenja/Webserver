@@ -6,6 +6,7 @@ enum LocationType {
     STATIC,
     DYNAMIC,
     DIRECTORY,
+    UPLOAD
 };
 
 #endif

@@ -49,6 +49,7 @@ REQUEST_PROCESS_STRATEGY = $(addprefix $(CORE_DIR)/$(HTTP_DIR)/Request/RequestPr
 				Redirectionrategy.cpp \
 				StaticStrategy.cpp \
 				DirectoryStrategy.cpp \
+				UploadStrategy.cpp \
 			)
 
 REQUEST_PARSE_STATE = $(addprefix $(CORE_DIR)/$(HTTP_DIR)/Request/RequestParserState/, \
