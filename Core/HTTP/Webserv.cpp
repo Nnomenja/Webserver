@@ -89,20 +89,21 @@ void initSimulData(std::vector<UnitConf_t> &configsSimul)
 	 * - DELETE : 405 Method Not Allowed
 	 *========================================================================**/
 
-    UnitConf_t u;
-    t_location l;
+	{
+		UnitConf_t u;
+		t_location l;
 
-	u.host = "0.0.0.0";
-    u.port = 2000;
-	u.enable_virtual_hosting = false;
-    u.methods = GET + POST + DELETE;
-	u.method_arr.push_back("GET");
-	u.method_arr.push_back("POST");
-	u.method_arr.push_back("DELETE");
-	// u.type = STATIC;
-	u.max_body_size = 10000000;
+		u.host = "0.0.0.0";
+		u.port = 2000;
+		u.enable_virtual_hosting = false;
+		u.methods = GET + POST + DELETE;
+		u.method_arr.push_back("GET");
+		u.method_arr.push_back("POST");
+		u.method_arr.push_back("DELETE");
+		// u.type = STATIC;
+		u.max_body_size = 10000000;
 
-	l.type = STATIC;
+		l.type = STATIC;
 
 	l.path = "/site";
 	u.root = "/home/mamenosoa/42/webserver/www";
@@ -130,23 +131,28 @@ void initSimulData(std::vector<UnitConf_t> &configsSimul)
 	 * - DELETE : 405 Method Not Allowed
 	 *========================================================================**/
 
-	u.host = "0.0.0.0";
-    u.port = 2001;
-	// u.type = REDIRECTION;
-	u.method_arr.push_back("GET");
-	u.method_arr.push_back("POST");
-	u.method_arr.push_back("DELETE");
-    u.methods = GET + POST + DELETE;
-	u.max_body_size = 100000;
+	{
+		UnitConf_t u;
+		t_location l;
 
-	l.path ="/home";
-	l.type = REDIRECTION;
-	l.return_path = "https:google.com";
-	l.root = "/home/nnomenja/Desktop/42/webserver/www";
-	l.auto_index = true;
-	l.index = "";
-	u.locations.push_back(l);
-    configsSimul.push_back(u);
+		u.host = "0.0.0.0";
+		u.port = 2001;
+		// u.type = REDIRECTION;
+		u.method_arr.push_back("GET");
+		u.method_arr.push_back("POST");
+		u.method_arr.push_back("DELETE");
+		u.methods = GET + POST + DELETE;
+		u.max_body_size = 100000;
+
+		l.path ="/redirection";
+		l.type = REDIRECTION;
+		l.return_path = "https:google.com";
+		l.root = "";
+		l.auto_index = true;
+		l.index = "";
+		u.locations.push_back(l);
+		configsSimul.push_back(u);
+	}
 
 	/**========================================================================
 	 *                           UPLOAD
@@ -154,6 +160,31 @@ void initSimulData(std::vector<UnitConf_t> &configsSimul)
 	 * - POST : 
 	 * - DELETE : 
 	 *========================================================================**/
+
+	{
+		UnitConf_t u;
+		t_location l;
+
+		u.host = "0.0.0.0";
+		u.port = 2002;
+
+		u.method_arr.push_back("GET");
+		u.method_arr.push_back("POST");
+		u.method_arr.push_back("DELETE");
+		
+		u.methods = GET + POST + DELETE;
+		u.max_body_size = 100000;
+
+		l.path = "/up";
+		l.type = UPLOAD;
+		l.return_path = "";
+		l.root = "~/webserver/www";
+		l.auto_index = true;
+		l.index = "";
+		u.locations.push_back(l);
+		configsSimul.push_back(u);
+	}
+}
 }
 // <- SIMULATION
 
@@ -208,7 +239,7 @@ bool Webserv::createServerSockets( void )
 	// <- REAL
 
 	// SIMULATION ->
-	_serverSocketsNumber = 2;
+	_serverSocketsNumber = 3;
 	std::vector<UnitConf_t> configs;
 	initSimulData(configs);
 	// <- SIMULATION

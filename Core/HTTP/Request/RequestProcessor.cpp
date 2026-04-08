@@ -1,8 +1,10 @@
-#include "./RequestProcessor.hpp"
-#include "./RequestProcessStrategy/StaticStrategy.hpp"
-#include "./RequestProcessStrategy/DynamicStrategy.hpp"
-#include "./RequestProcessStrategy/RedirectionStrategy.hpp"
-#include "./RequestProcessStrategy/DirectoryStrategy.hpp"
+# include "./RequestProcessor.hpp"
+# include "./RequestProcessStrategy/StaticStrategy.hpp"
+# include "./RequestProcessStrategy/DynamicStrategy.hpp"
+# include "./RequestProcessStrategy/RedirectionStrategy.hpp"
+# include "./RequestProcessStrategy/DirectoryStrategy.hpp"
+# include "./RequestProcessStrategy/UploadStrategy.hpp"
+
 #include "../../../Data/Client.hpp"
 #include "../../../Exception/NotFound.hpp"
 #include "../../../Exception/Forbiden.hpp"
@@ -85,6 +87,8 @@ IRequestStrategy *RequestProcessor::createStrategy(LocationType  type)
 		case DIRECTORY:
 			return (new DirectoryStrategy());
 			break;
+		case UPLOAD:
+			return (new UploadStrategy());
 		default:
 			return (new  RedirectionStrategy());
 			break;

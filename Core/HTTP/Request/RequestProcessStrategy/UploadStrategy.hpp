@@ -1,12 +1,25 @@
-#ifndef STRATEGYSTRATEGY_HPP
-#define STRATEGYSTRATEGY_HPP
+/*
+   File: UploadStrategy.hpp
+   By: Azaria
+   Created: 2026/04/08 16:13:50
+*/
 
-#include "IRequestStrategy.hpp"
-#include <iostream>
+#ifndef UPLOADSTRATEGY_HPP
+#define UPLOADSTRATEGY_HPP
 
-class UploadStrategy : public IRequestStrategy {
-public:
-    void process(Client* client);
+# include "IRequestStrategy.hpp"
+
+class UploadStrategy : public IRequestStrategy
+{
+    public :
+        UploadStrategy();
+        ~UploadStrategy();
+
+        void process(Client* client);
+
+    private :
+
 };
 
-#endif
+#endif /* UPLOADSTRATEGY_HPP */
+
