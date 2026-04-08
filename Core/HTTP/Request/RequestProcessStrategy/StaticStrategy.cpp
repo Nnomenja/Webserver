@@ -59,4 +59,6 @@ void StaticStrategy::process(Client *client)
     client->getResponse()->setStatusCode(200);
     client->getResponse()->setBody(content);
     client->getResponse()->addHeader("Content-Type", MimeTypes::fromFilename(fullpath));
+    client->getResponse()->addHeader("Content-Length", std::to_string(content.size()));
+    client->getResponse()->addHeader("Connection", "close");
 }
