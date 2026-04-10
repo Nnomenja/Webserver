@@ -1,6 +1,7 @@
 #include "Response.hpp"
 
 #include <iostream>
+#include <sstream>
 
 Response::Response():_status_code(0){
 	std::cout << "Response called" << std::endl;
@@ -57,4 +58,16 @@ void Response::setBody(const std::string &body)
 void Response::addHeader(std::string key, std::string value)
 {
 	_headers[key] = value;
+}
+void Response::setContentType(std::string value)
+{
+	_contentType = value;
+	addHeader("Content-Type", value);
+}
+
+void Response::setContentLength(long value)
+{
+	std::stringstream ss;
+	ss << value;
+	addHeader("Content-Length", ss.str());
 }

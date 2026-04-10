@@ -8,7 +8,8 @@
 class Client;
 class RequestProcessor {
 	private:
-		IRequestStrategy* createStrategy(LocationType type);
+		IRequestStrategy*	createStrategy(LocationType type);
+		LocationType		detectStategyType(Client *client);
 	public:
 		RequestProcessor();
 		RequestProcessor(const RequestProcessor& other);

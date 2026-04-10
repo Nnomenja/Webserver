@@ -17,21 +17,6 @@ typedef enum    s_body_encode
 class ARequestParserState;
 class Request {
     private:
-        // std::string							_method;
-        // std::string							_pathname;
-        // std::string							_file;
-        // std::string							_tmp;
-        // std::string							_httpVersion;
-        // bool								_hasPourcentEncode;
-        // bool								_hasQuery;
-        // bool								_hasContentLength;
-        // bool								_hasContentType;
-        // size_t								_contentLength;
-        // int									_port;
-        // std::string							_body;
-        // bool								_hasBody;
-        // std::vector<std::string>			_contentType;
-
         size_t                              _index;
         ARequestParserState					*_parserState;
         std::string							_buffer;
@@ -50,6 +35,8 @@ class Request {
         t_body_encode                       _body_encode;
         /*==== Request Body ====*/
         std::string                         _body;
+
+        std::string                         _fullpath;
 
         Request(const Request& other);
         Request& operator=(const Request& other);
@@ -74,6 +61,7 @@ class Request {
         t_location              getLocation() const;
         const std::string 
                                 &getLocationDefaultIndex() const;
+        std::string             getFullPath() const;
 
         void                    setLocation(t_location &value);
         void                    setLocationType(LocationType value);
@@ -81,6 +69,7 @@ class Request {
 		void					setBuffer(std::string &value);
         void                    setPathname(std::string value);
         void                    setMethod(HttpMethod value);
+        void                    setFullPath(std::string value);
         void                    addPathname(char c);
         void                    addQuery(char c);
 		void					incrementParserIndex();

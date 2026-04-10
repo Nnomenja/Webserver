@@ -1,11 +1,11 @@
 #include "StaticStrategy.hpp"
 #include "../../MimeTypes.hpp"
-#include "../../../Data/Client.hpp"
-#include "../../../Exception/MethodNotAllowed.hpp"
-#include "../../../Exception/NotFound.hpp"
-#include "../../../Exception/Forbiden.hpp"
-#include "../../../Exception/InternalServerError.hpp"
-#include "../../../utils/PathUtils.hpp"
+#include "../../../../Data/Client.hpp"
+#include "../../../../Exception/MethodNotAllowed.hpp"
+#include "../../../../Exception/NotFound.hpp"
+#include "../../../../Exception/Forbiden.hpp"
+#include "../../../../Exception/InternalServerError.hpp"
+#include "../../../../utils/PathUtils.hpp"
 
 /**========================================================================
  * todo                             TODO
@@ -22,30 +22,9 @@
 
 void StaticStrategy::process(Client *client)
 {
-    std::string fullpath;
+    std::cout << "StaticStrategy processing..." << std::endl;
+    std::string fullpath = client->getRequest()->getFullPath();
     std::string content;
-    
-    if (client->getRequest()->getMethod() != GET)
-        throw MethodNotAllowed();
-    fullpath = client->getEndpoint().root + client->getRequest()->getPathname();
-    if (!PathUtils::isPathExist(fullpath))
-        throw NotFound();
-    if (PathUtils::isDirectory(fullpath))
-    {
-
-        if (client->getRequest()->getLocation().index.empty())
-        {
-            if (!client->getRequest()->getLocation().auto_index)
-                throw NotFound();
-            else
-            {
-                std::cout << "Autoindex is on, but there is no index file, directory listing will be implemented in the future" << std::endl;
-                return ;
-            }
-        }
-        else
-            fullpath += "/" + client->getRequest()->getLocation().index;
-    }
     if (!PathUtils::isFileReadable(fullpath))
         throw Forbiden();
     try
@@ -57,8 +36,11 @@ void StaticStrategy::process(Client *client)
        throw InternalServerError();
     }
     client->getResponse()->setStatusCode(200);
+    client->getResponse()->setStatusName("OK");
     client->getResponse()->setBody(content);
-    client->getResponse()->addHeader("Content-Type", MimeTypes::fromFilename(fullpath));
-    client->getResponse()->addHeader("Content-Length", std::to_string(content.size()));
-    client->getResponse()->addHeader("Connection", "close");
+    client->getResponse()->setContentLength(content.size());
+    client->getResponse()->setContentType(MimeTypes::fromFilename(fullpath));
+    // client->getResponse()->addHeader("Connection", "close");
+    client->getResponse()->addHeader("Referrer-Policy", "no-referrer");
+    std::cout << "StaticStrategy processing done" << std::endl;
 }

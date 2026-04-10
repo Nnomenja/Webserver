@@ -32,7 +32,7 @@ void HeaderParser::addHeaderAndReset()
 	if (_target->hasHeader(_key))
 		throw BadRequestException();
 	std::cout << _key << "==> [" << _value << "]" << std::endl;
-	_target->setHeader(_key, _value);
+	_target->setHeader(toLowerCase(_key), _value);
 	resetStateData();
 }
 

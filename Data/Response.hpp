@@ -11,6 +11,7 @@ class Response {
         std::string              _body;
         std::map<std::string, \
             std::string>	    _headers;
+        std::string              _contentType;
 
     public:
         Response();
@@ -23,10 +24,11 @@ class Response {
         std::string    getBody(void) const;
         const std::map<std::string, \
                 std::string>	    &getHeaders() const;
-        void           setStatusCode(const int code);
-        void           setStatusName(const std::string &name);
-        void           setBody(const std::string &body);
-
+        void            setStatusCode(const int code);
+        void            setStatusName(const std::string &name);
+        void            setBody(const std::string &body);
+        void            setContentLength(long value);
+        void            setContentType(std::string value);
         void            addHeader(std::string key, std::string value);
 };
 

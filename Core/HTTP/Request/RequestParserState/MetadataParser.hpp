@@ -13,6 +13,7 @@ class MetadataParser: public ARequestParserState
         void    resolveFilesystemPath();
         long    parseContentLength(const std::string& value);
         void    parseBodyMetadata();
+		void   parseRefererPath(std::string &referer);
     public:
         MetadataParser(Request *target, UnitConf_t endpoint);
         ~MetadataParser();

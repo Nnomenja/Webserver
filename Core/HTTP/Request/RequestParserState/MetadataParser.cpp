@@ -72,6 +72,36 @@ long MetadataParser::parseContentLength(const std::string& value)
     return (res);
 }
 
+void MetadataParser::parseRefererPath(std::string &referer)
+{
+    std::stringstream port;
+
+    port << _endpoint.port;
+    std::string base = "http://" + _target->getHeaderBykey("host");
+    size_t i = 0;
+    std::string res = "";
+    if (referer.empty())
+        return ;
+    std::cout << "Base URL: " << base << std::endl;
+    while (base[i])
+    {
+        if (referer[i] != base[i])
+            throw BadRequestException();
+        i++;
+    }
+    if (referer[i] != '/')
+        throw BadRequestException();
+    while (referer[i])
+    {
+        if (referer[i] == '?')
+            break;
+        res += referer[i];
+        i++;
+    }
+    _target->setPathname(res +  "/" +_target->getPathname());
+    std::cout << "New pathname: " << _target->getPathname() << std::endl;
+}
+
 void MetadataParser::matchConfiguredRoute()
 {
     size_t      tmp;
@@ -163,6 +193,12 @@ void    MetadataParser::resolveFilesystemPath()
 void MetadataParser::execute()
 {
 	std::cout << "...MetadataParser executing..." << std::endl;
+    if (_target->hasHeader("referer"))
+    {
+        std::cout << "Parsing referer header..." << std::endl;
+        std::string referer = _target->getHeaderBykey("referer");
+        parseRefererPath(referer);
+    }
     matchConfiguredRoute();
     // if (_target->getLocation().type != REDIRECTION)
     //     resolveFilesystemPath();

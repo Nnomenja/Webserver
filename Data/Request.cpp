@@ -102,6 +102,11 @@ const std::string &Request::getLocationDefaultIndex() const
 	return (_location.index);
 }
 
+std::string Request::getFullPath() const
+{
+	return (_fullpath);
+}
+
 /**============================================
  *               SETTERS
  *=============================================**/
@@ -136,6 +141,11 @@ void Request::setMethod(HttpMethod value)
 void Request::setPathname(std::string value)
 {
 	_pathname = value;
+}
+
+void Request::setFullPath(std::string value)
+{
+	_fullpath = value;
 }
 
 void Request::addPathname(char c)
