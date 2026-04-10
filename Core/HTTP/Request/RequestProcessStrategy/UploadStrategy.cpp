@@ -8,6 +8,8 @@
 
 #include "UploadStrategy.hpp"
 #include "../../../../Data/Client.hpp"
+#include "../../../../Exception/MethodNotAllowed.hpp"
+
 
 UploadStrategy::UploadStrategy()
 { }
@@ -15,10 +17,8 @@ UploadStrategy::UploadStrategy()
 UploadStrategy::~UploadStrategy()
 { }
 
-void simul(Client *client)
+void responseData(Response *response)
 {
-    std::ostringstream oss;
-
     std::string body = 
         "<!DOCTYPE html>"
         "<html lang=\"fr\">"
@@ -53,20 +53,43 @@ void simul(Client *client)
         "</body>"
         "</html>";
 
-    oss << "HTTP/1.1 200 OK\r\n"
-        << "Content-Type: text/html; charset=UTF-8\r\n"
-        << "Connection: close\r\n"
-        << "Content-Length: " << body.size() << "\r\n"
-        << "\r\n"
-        << body;
+        std::ostringstream oss;
+        oss << body.size();
+        
+        response->setStatusCode(200);
+        response->setStatusName("OK");
 
-    std::string response = oss.str();
-    client->setBuffer(response);
-    client->setBufferSize(response.size());
+        response->addHeader("Content-Type", "text/html; charset=UTF-8");
+        response->addHeader("Connection", "close");
+        response->addHeader("Content-Length", oss.str());
+        response->setBody(body);
 }
+
+/*
+    Requête →
+    Vérif méthode →
+    Vérif config →
+    Lire body →
+    Vérif taille →
+    Parser fichier →
+    Sécuriser nom →
+    Construire path →
+    Écrire fichier →
+    Réponse HTTP
+*/
 
 void UploadStrategy::process(Client *client)
 {
-    
-    simul(client);
+    Request     *request = client->getRequest();
+    Response    *response = client->getResponse();
+
+    if (request->getMethod() != POST 
+        && request->getMethod() != GET
+        && request->getMethod() != DELETE
+    )
+    {
+        throw MethodNotAllowed();
+    }
+
+    responseData(response);
 }

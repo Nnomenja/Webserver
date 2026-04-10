@@ -10,6 +10,9 @@
 void    ErrorProcess::processError(const ServerException &e, Client *client)
 {
     std::string ErrorPagePath = client->getDefaultErrorPagePath(e.getCode());
+    
+    std::cout << "🥵🥵🥵🥵🥵🥵" << ErrorPagePath<< std::endl;
+
     Response *res = client->getResponse();
     std::stringstream ss;
 
@@ -17,8 +20,10 @@ void    ErrorProcess::processError(const ServerException &e, Client *client)
     try
     {
         if (!ErrorPagePath.size())
+        {
             throw std::exception();
         res->setBody(PathUtils::getFileContentbypath(ErrorPagePath));
+        }
     }
     catch(const std::exception& e)
     {
