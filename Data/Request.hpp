@@ -78,6 +78,7 @@ class Request {
 		bool                    hasHeader(std::string value) const;
         void                    setContenLength(long value);
         void                    setBodyEncode(t_body_encode value);
+        void                    setRedirectionPath(std::string &value);
         void                    addBody(char c);
         std::string             &toLowerCase(std::string &src) const;
 };

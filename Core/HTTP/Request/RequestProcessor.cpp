@@ -34,10 +34,6 @@ LocationType RequestProcessor::detectStategyType(Client *client)
 	{    
 		fullpath = client->getEndpoint().root + client->getRequest()->getPathname();
 		req->setFullPath(fullpath);
-		if (req->hasHeader("referer"))
-		{
-			
-		}
 		if (PathUtils::isDirectory(fullpath))
 		{
 			if (client->getRequest()->getLocation().index.empty())
@@ -50,9 +46,11 @@ LocationType RequestProcessor::detectStategyType(Client *client)
 			}
 			else
 			{
-				std::cout << "Directory with index file: " << fullpath << std::endl;
-				fullpath += "/" + client->getRequest()->getLocation().index;
-				req->setFullPath(fullpath);
+				fullpath =  "http://" +req->getHeaderBykey("host")  + req->getPathname() + "/" + req->getLocation().index;
+				client->getResponse()->setStatusCode(301);
+				client->getResponse()->setStatusName("Redirect");
+				req->setRedirectionPath(fullpath);
+				return (REDIRECTION);
 			}
 		}
 		else if (!PathUtils::isPathExist(fullpath))

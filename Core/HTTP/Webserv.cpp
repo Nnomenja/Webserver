@@ -105,7 +105,7 @@ void initSimulData(std::vector<UnitConf_t> &configsSimul)
 	l.type = STATIC;
 
 	l.path = "/site";
-	u.root = "/home/nnomenja/Desktop/42/webserver/www";
+	u.root = "/home/mamenosoa/42/webserver/www";
 	l.auto_index = true;
 	// 400
 	t_error_page error1;

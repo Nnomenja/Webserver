@@ -72,36 +72,6 @@ long MetadataParser::parseContentLength(const std::string& value)
     return (res);
 }
 
-void MetadataParser::parseRefererPath(std::string &referer)
-{
-    std::stringstream port;
-
-    port << _endpoint.port;
-    std::string base = "http://" + _target->getHeaderBykey("host");
-    size_t i = 0;
-    std::string res = "";
-    if (referer.empty())
-        return ;
-    std::cout << "Base URL: " << base << std::endl;
-    while (base[i])
-    {
-        if (referer[i] != base[i])
-            throw BadRequestException();
-        i++;
-    }
-    if (referer[i] != '/')
-        throw BadRequestException();
-    while (referer[i])
-    {
-        if (referer[i] == '?')
-            break;
-        res += referer[i];
-        i++;
-    }
-    _target->setPathname(res +  "/" +_target->getPathname());
-    std::cout << "New pathname: " << _target->getPathname() << std::endl;
-}
-
 void MetadataParser::matchConfiguredRoute()
 {
     size_t      tmp;
@@ -161,47 +131,9 @@ void MetadataParser::parseBodyMetadata()
     }
 }
 
-void    MetadataParser::resolveFilesystemPath()
-{
-    std::string fullPath = _target->getLocation().root + &_target->getPathname()[1];
-    bool    isDir;
-    struct stat info;
-    
-    if (stat(fullPath.c_str(), &info))
-        throw NotFound();
-    
-    if (access(fullPath.c_str(), R_OK))
-        throw Forbiden();
-    
-    isDir = (info.st_mode & S_IFDIR) != 0;
-    
-    if (isDir)
-    {
-        if (_target->getLocationDefaultIndex().size())
-            fullPath += "/" + _target->getLocationDefaultIndex();
-        else
-        {
-            if (_target->getLocation().auto_index)
-                _target->setLocationType(DIRECTORY);
-            else
-                NotFound();
-        }
-    }
-    _target->setPathname(fullPath);
-}
-
 void MetadataParser::execute()
 {
-	std::cout << "...MetadataParser executing..." << std::endl;
-    if (_target->hasHeader("referer"))
-    {
-        std::cout << "Parsing referer header..." << std::endl;
-        std::string referer = _target->getHeaderBykey("referer");
-        parseRefererPath(referer);
-    }
     matchConfiguredRoute();
-    // if (_target->getLocation().type != REDIRECTION)
-    //     resolveFilesystemPath();
     parseBodyMetadata();
 	std::cout << "...................." << std::endl;
 }

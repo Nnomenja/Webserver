@@ -35,12 +35,14 @@ void StaticStrategy::process(Client *client)
     {
        throw InternalServerError();
     }
-    client->getResponse()->setStatusCode(200);
-    client->getResponse()->setStatusName("OK");
+    if (!client->getResponse()->getStatusCode())
+    {
+        client->getResponse()->setStatusCode(200);
+        client->getResponse()->setStatusName("OK");
+    }
     client->getResponse()->setBody(content);
     client->getResponse()->setContentLength(content.size());
     client->getResponse()->setContentType(MimeTypes::fromFilename(fullpath));
-    // client->getResponse()->addHeader("Connection", "close");
-    client->getResponse()->addHeader("Referrer-Policy", "no-referrer");
+    client->getResponse()->addHeader("Connection", "close");
     std::cout << "StaticStrategy processing done" << std::endl;
 }

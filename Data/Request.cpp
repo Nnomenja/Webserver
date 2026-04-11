@@ -197,3 +197,7 @@ void Request::setLocationType(LocationType value)
 {
 	_location.type = value;
 }
+void Request::setRedirectionPath(std::string &value)
+{
+	_location.return_path = value;
+}
