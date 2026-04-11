@@ -47,8 +47,6 @@ LocationType RequestProcessor::detectStategyType(Client *client)
 			else
 			{
 				fullpath =  "http://" +req->getHeaderBykey("host")  + req->getPathname() + "/" + req->getLocation().index;
-				client->getResponse()->setStatusCode(301);
-				client->getResponse()->setStatusName("Redirect");
 				req->setRedirectionPath(fullpath);
 				return (REDIRECTION);
 			}

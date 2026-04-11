@@ -13,6 +13,13 @@ class Response {
             std::string>	    _headers;
         std::string              _contentType;
 
+        typedef struct s_status
+        {
+            int code;
+            std::string message;
+        }   t_status;
+        
+        t_status    getResponseStatus(const int code);
     public:
         Response();
         Response(const Response& other);
@@ -24,6 +31,7 @@ class Response {
         std::string    getBody(void) const;
         const std::map<std::string, \
                 std::string>	    &getHeaders() const;
+        void            setStatus(int code);
         void            setStatusCode(const int code);
         void            setStatusName(const std::string &name);
         void            setBody(const std::string &body);

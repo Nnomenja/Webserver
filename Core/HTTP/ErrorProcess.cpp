@@ -116,8 +116,7 @@ void    ErrorProcess::processError(const ServerException &e, Client *client)
     Response *res = client->getResponse();
     std::stringstream ss;
 
-    res->setStatusCode(e.getCode());
-    res->setStatusName(e.getName());
+    res->setStatus(e.getCode());
     try
     {
         if (!ErrorPagePath.size())

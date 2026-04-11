@@ -35,11 +35,7 @@ void StaticStrategy::process(Client *client)
     {
        throw InternalServerError();
     }
-    if (!client->getResponse()->getStatusCode())
-    {
-        client->getResponse()->setStatusCode(200);
-        client->getResponse()->setStatusName("OK");
-    }
+    client->getResponse()->setStatus(200);
     client->getResponse()->setBody(content);
     client->getResponse()->setContentLength(content.size());
     client->getResponse()->setContentType(MimeTypes::fromFilename(fullpath));
