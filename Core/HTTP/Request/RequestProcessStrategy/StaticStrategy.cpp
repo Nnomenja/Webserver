@@ -37,7 +37,6 @@ void StaticStrategy::process(Client *client)
     }
     client->getResponse()->setStatus(200);
     client->getResponse()->setBody(content);
-    client->getResponse()->setContentLength(content.size());
     client->getResponse()->setContentType(MimeTypes::fromFilename(fullpath));
     client->getResponse()->addHeader("Connection", "close");
     std::cout << "StaticStrategy processing done" << std::endl;

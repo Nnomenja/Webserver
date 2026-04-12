@@ -22,6 +22,7 @@ class Request {
         std::string							_buffer;
         size_t                              _buffer_size;
         t_location                          _location;
+        std::string                         _root;
 
         /*==== Request line ====*/
         HttpMethod                          _method;
@@ -62,6 +63,7 @@ class Request {
         const std::string 
                                 &getLocationDefaultIndex() const;
         std::string             getFullPath() const;
+        std::string             getRootDir() const;
 
         void                    setLocation(t_location &value);
         void                    setLocationType(LocationType value);
@@ -70,6 +72,7 @@ class Request {
         void                    setPathname(std::string value);
         void                    setMethod(HttpMethod value);
         void                    setFullPath(std::string value);
+        void                    setRoot(std::string value);
         void                    addPathname(char c);
         void                    addQuery(char c);
 		void					incrementParserIndex();
