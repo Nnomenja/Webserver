@@ -3,6 +3,12 @@
 
 #include "IRequestStrategy.hpp"
 #include <iostream>
+#include <dirent.h>
+#include <sys/stat.h>
+#include <cstring>
+#include <iostream>
+#include <vector>
+#include <string>
 
 class DirectoryStrategy : public IRequestStrategy {
     public:
