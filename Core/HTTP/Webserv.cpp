@@ -104,8 +104,8 @@ void initSimulData(std::vector<UnitConf_t> &configsSimul)
 
 	l.type = STATIC;
 
-	l.path = "/home";
-	u.root = "/home/nnomenja/Desktop/42/webserver/www";
+	l.path = "/site";
+	u.root = "/home/mamenosoa/42/webserver/www";
 	l.auto_index = true;
 	// 400
 	t_error_page error1;
@@ -117,9 +117,9 @@ void initSimulData(std::vector<UnitConf_t> &configsSimul)
 	error2.codes.push_back(404);
 	error2.path = "/error/404.html";
 	u.error_pages.push_back(error2);
+	l.index = "index.html";
 	u.locations.push_back(l);
 	
-	l.index = "index.html";
     configsSimul.push_back(u);
 
 	/**========================================================================
@@ -366,7 +366,7 @@ void Webserv::run(void)
 							continue;
 						RequestProcessor	process;
 						process.processRequest(_clients[currentFd]);
-						simulateClient(client); // this is an example of response because there are not strategy request implemented
+						// simulateClient(client); // this is an example of response because there are not strategy request implemented
 					}
 					catch(const ServerException& e)
 					{

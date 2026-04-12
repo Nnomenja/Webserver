@@ -131,41 +131,9 @@ void MetadataParser::parseBodyMetadata()
     }
 }
 
-void    MetadataParser::resolveFilesystemPath()
-{
-    std::string fullPath = _target->getLocation().root + &_target->getPathname()[1];
-    bool    isDir;
-    struct stat info;
-    
-    if (stat(fullPath.c_str(), &info))
-        throw NotFound();
-    
-    if (access(fullPath.c_str(), R_OK))
-        throw Forbiden();
-    
-    isDir = (info.st_mode & S_IFDIR) != 0;
-    
-    if (isDir)
-    {
-        if (_target->getLocationDefaultIndex().size())
-            fullPath += "/" + _target->getLocationDefaultIndex();
-        else
-        {
-            if (_target->getLocation().auto_index)
-                _target->setLocationType(DIRECTORY);
-            else
-                NotFound();
-        }
-    }
-    _target->setPathname(fullPath);
-}
-
 void MetadataParser::execute()
 {
-	std::cout << "...MetadataParser executing..." << std::endl;
     matchConfiguredRoute();
-    // if (_target->getLocation().type != REDIRECTION)
-    //     resolveFilesystemPath();
     parseBodyMetadata();
 	std::cout << "...................." << std::endl;
 }

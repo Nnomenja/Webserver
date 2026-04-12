@@ -10,7 +10,6 @@ class MetadataParser: public ARequestParserState
         size_t  _longest_matching;
 
         void    matchConfiguredRoute();
-        void    resolveFilesystemPath();
         long    parseContentLength(const std::string& value);
         void    parseBodyMetadata();
     public:

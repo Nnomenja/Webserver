@@ -17,7 +17,6 @@ class UriParser: public ARequestParserState {
 		bool 		isHexa(char c) const;
 		int 		HexaToInt(char c) const;
 		char 		PourcentHexaToChar(char first, char second) const;
-		std::string	normalizePathname(std::string pathname) const;
 	public:
 		UriParser(Request *target, UnitConf_t endpoint);
 		~UriParser();

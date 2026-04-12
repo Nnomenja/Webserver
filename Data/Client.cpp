@@ -163,7 +163,7 @@ void	Client::generateResponse()
 	std::map<std::string, std::string>::const_iterator it =  _res->getHeaders().begin();
 	while (it != _res->getHeaders().end())
 	{
-		_buffer += it->second + "\r\n";
+		_buffer += it->first + ": "+ it->second + "\r\n";
 		++it;
 	}
 	_buffer += "\r\n";
