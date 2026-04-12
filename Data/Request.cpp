@@ -107,6 +107,13 @@ std::string Request::getFullPath() const
 	return (_fullpath);
 }
 
+std::string Request::getRootDir() const
+{
+	if (_location.root.empty())
+		return (_root);
+	return (_location.root);
+}
+
 /**============================================
  *               SETTERS
  *=============================================**/
@@ -146,6 +153,11 @@ void Request::setPathname(std::string value)
 void Request::setFullPath(std::string value)
 {
 	_fullpath = value;
+}
+
+void Request::setRoot(std::string value)
+{
+	_root = value;
 }
 
 void Request::addPathname(char c)

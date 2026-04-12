@@ -149,6 +149,7 @@ const std::map<std::string, std::string> &Response::getHeaders() const
 void Response::setBody(const std::string &body)
 {
 	_body = body;
+    _contentType = _body.size();
 }
 
 void Response::addHeader(std::string key, std::string value)

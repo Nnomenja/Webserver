@@ -5,6 +5,7 @@
 Client::Client():_start_time_ms(get_time_ms()), _req(new Request()), _res(new Response()), _parsed(false){
   std::cout << "Create client" << std::endl;
 //   this->_start_time_ms = get_time_ms();
+	_req->setRoot(_endpoint.root);
 };
 
 Client::Client(const Client& other){

@@ -106,6 +106,7 @@ void initSimulData(std::vector<UnitConf_t> &configsSimul)
 
 	l.path = "/site";
 	u.root = "/home/mamenosoa/42/webserver/www";
+	l.root = "/home/mamenosoa/42/webserver/www";
 	l.auto_index = true;
 	// 400
 	t_error_page error1;
@@ -117,7 +118,7 @@ void initSimulData(std::vector<UnitConf_t> &configsSimul)
 	error2.codes.push_back(404);
 	error2.path = "/error/404.html";
 	u.error_pages.push_back(error2);
-	l.index = "index.html";
+	// l.index = "index.html";
 	u.locations.push_back(l);
 	
     configsSimul.push_back(u);
