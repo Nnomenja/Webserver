@@ -45,7 +45,10 @@ void ARequestParserState::skipCRLF()
 				return;
 			}
 			else
+			{
+				std::cout << "Expected CRLF, but got: " << static_cast<int>(c) << std::endl;
 				throw BadRequestException();
+			}
 		}
 		else
 		{
@@ -56,7 +59,10 @@ void ARequestParserState::skipCRLF()
 				return;
 			}
 			else
+			{
+				std::cout << "Expected CRLF, but got: " << c << std::endl;
 				throw BadRequestException();
+			}
 		}
 		_target->incrementParserIndex();
 	}

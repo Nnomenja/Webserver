@@ -14,19 +14,20 @@ void    BodyParser::readBodyThroughContentLength()
 
     for (size_t i = _target->getParserIndex(); i < _target->getBufferSize(); i++)
     {
+        if (_tmp == 0)
+        {
+            _end = true;
+            std::cout << "***************BODY TOP***********************" << std::endl;
+            std::cout << _target->getBody() << std::endl; 
+            std::cout << "*****************************************" << std::endl;
+            // skipCRLF();
+			return;
+        }
         c = _target->getBuffer()[i];
         _target->addBody(c);
         _target->incrementParserIndex();
         _tmp--;
-        if (!_tmp)
-        {
-            _end = true;
-            std::cout << "***************BODY***********************" << std::endl;
-            std::cout << _target->getBody() << std::endl; 
-            std::cout << "*****************************************" << std::endl;
-            skipCRLF();
-			return;
-        }
+        
     }
     _target->resetParserIndex();
 	throw EagainParser();
@@ -171,7 +172,7 @@ void    BodyParser::readBodyAsChuncked()
         _target->incrementParserIndex();
         if (_end)
         {
-            std::cout << "***************BODY***********************" << std::endl;
+            std::cout << "***************BODY BOTTOM***********************" << std::endl;
             std::cout << _target->getBody() << std::endl; 
             std::cout << "*****************************************" << std::endl;
             return;
