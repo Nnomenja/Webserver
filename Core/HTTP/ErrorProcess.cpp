@@ -10,8 +10,6 @@
 void    ErrorProcess::processError(const ServerException &e, Client *client)
 {
     std::string ErrorPagePath = client->getDefaultErrorPagePath(e.getCode());
-    
-    std::cout << "🥵🥵🥵🥵🥵🥵" << ErrorPagePath<< std::endl;
 
     Response *res = client->getResponse();
     std::stringstream ss;
@@ -20,18 +18,16 @@ void    ErrorProcess::processError(const ServerException &e, Client *client)
     try
     {
         if (!ErrorPagePath.size())
-        {
             throw std::exception();
-        res->setBody(PathUtils::getFileContentbypath(ErrorPagePath));
-        }
+        res->setBody(PathUtils::getFileContentbypath(client->getRequest()->getRootDir() + ErrorPagePath));
     }
     catch(const std::exception& e)
     {
          res->setBody(Template::Error(res->getStatusCode(), res->getStatusMessage()));
-         res->addHeader("Content-Type", "text/html; charset=UTF-8");
-         ss << res->getBody().size();
-         res->addHeader("Content-Length", ss.str());
-         ss.str("");
-         res->addHeader("Connection", "close");
     }
+    res->addHeader("Content-Type", "text/html; charset=UTF-8");
+    ss << res->getBody().size();
+    res->addHeader("Content-Length", ss.str());
+    ss.str("");
+    res->addHeader("Connection", "close");
 }
