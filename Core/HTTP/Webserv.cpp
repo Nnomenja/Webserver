@@ -171,14 +171,14 @@ void initSimulData(std::vector<UnitConf_t> &configsSimul)
 		u.method_arr.push_back("GET");
 		u.method_arr.push_back("POST");
 		u.method_arr.push_back("DELETE");
-		
+		u.enable_virtual_hosting = false;
 		u.methods = GET + POST + DELETE;
 		u.max_body_size = 100000;
 
 		l.path = "/up";
 		l.type = UPLOAD;
 		l.return_path = "";
-		l.root = "/home/azaria/42 project/webserv/www";
+		l.root = "/home/mamenosoa/42/webserv/www/destination";
 		l.auto_index = true;
 		l.index = "";
 
