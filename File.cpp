@@ -1,17 +1,13 @@
 #include "File.hpp"
 
-File::File()
-{
-}
+File::File() {}
 
 File::File(const File& other)
 {
     (void)other;
 }
 
-File::~File()
-{
-}
+File::~File() {}
 
 File& File::operator=(const File& other)
 {
@@ -22,7 +18,6 @@ File& File::operator=(const File& other)
     }
     return *this;
 }
-
 
 std::string File::getFileContent(std::string fileName)
 {

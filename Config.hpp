@@ -4,12 +4,16 @@
 #include "File.hpp"
 #include <stdexcept>
 #include <vector>
+#include <sstream>
+#include <map>
 
 class Config
 {
 private:
+    int n;
     std::string fileContent;
     std::vector<std::string> serverBlocks;
+    std::map<int, std::vector<std::string> > serverBlockIdToLocationBlocks;
 public:
     Config();
     Config(std::string filename);
@@ -29,6 +33,7 @@ public:
         virtual ~ConfigException() throw();
     };
     void parseFileContent();
+    void parseLocationBlocks(int i);
 };
 
 #endif
