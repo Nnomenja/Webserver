@@ -44,6 +44,7 @@ void Config::parseFileContent()
 
     while (std::getline(iss, line))
     {
+        skipLeadingSpaces(line);
         // ignore comments
         if (line.size() != 0)
         {

@@ -2,6 +2,7 @@
 #define CONFIG_HPP
 
 #include "File.hpp"
+#include "helpers.hpp"
 #include <stdexcept>
 #include <vector>
 #include <sstream>
