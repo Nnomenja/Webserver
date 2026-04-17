@@ -14,7 +14,6 @@ typedef enum e_chunk_parser_state
 		CHUNK_DATA_END,
 		CHUNK_FINAL_END
 } t_chunk_parser_state;
-
 class BodyParser: public ARequestParserState {
 	private:
 		long					_tmp;

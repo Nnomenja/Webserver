@@ -8,11 +8,21 @@
 #include "../Enum/RequestParserStateName.hpp"
 #include "../Core/HTTP/Request/RequestParserState/ARequestParserState.hpp"
 
+#define BODY_BUFFER_SIZE_MAX 8192
+
 typedef enum    s_body_encode
 {
     BODY_CONTENT_LENGTH = 300,
     BODY_CHUNKED 
 }   t_body_encode;
+
+
+typedef struct s_body
+{
+    std::string     _str_buffer;
+    std::ofstream   _file_buffer;
+    int             _tmp;
+}   t_body;
 
 class ARequestParserState;
 class Request {
@@ -35,7 +45,7 @@ class Request {
         long                                _contentLength;
         t_body_encode                       _body_encode;
         /*==== Request Body ====*/
-        std::string                         _body;
+        t_body                              _body;
 
         std::string                         _fullpath;
 
@@ -58,7 +68,8 @@ class Request {
                                 &getHeaderBykey(std::string key);
         t_body_encode           getBodyEncode() const;
         long                    getContentLength() const;
-        const std::string       &getBody() const;        
+        const t_body&           getBody() const;        
+        const size_t&           getBodySize() const;        
         t_location              getLocation() const;
         const std::string 
                                 &getLocationDefaultIndex() const;
