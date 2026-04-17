@@ -171,25 +171,24 @@ void initSimulData(std::vector<UnitConf_t> &configsSimul)
 		u.method_arr.push_back("GET");
 		u.method_arr.push_back("POST");
 		u.method_arr.push_back("DELETE");
-		u.enable_virtual_hosting = false;
+		
 		u.methods = GET + POST + DELETE;
 		u.max_body_size = 100000;
 
 		l.path = "/up";
 		l.type = UPLOAD;
 		l.return_path = "";
-		l.root = "/home/mamenosoa/42/webserv/www/destination";
+		l.root = "/home/aravelom/Project/current/Webserver/www";
 		l.auto_index = true;
 		l.index = "";
 
 		// error:
-			// 405 Method Not Allowed		
+			// 405 Method Not Allowed
 			t_error_page error1;
 			error1.codes.push_back(405);
-			error1.path = l.root + "/error/405.html";
-			u.error_pages.push_back(error1);
+			error1.path = "/error/405.html";
+			l.error_pages.push_back(error1);
 
-			
 		// save l and u
 		u.locations.push_back(l);
 		configsSimul.push_back(u);
