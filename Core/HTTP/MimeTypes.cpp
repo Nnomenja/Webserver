@@ -152,3 +152,11 @@ std::string MimeTypes::fromFilename(const std::string& filename)
         return "application/octet-stream";
     return (fromExtension(filename.substr(dot + 1)));
 }
+
+bool MimeTypes::checkMimeType(const std::string &mimeType)
+{
+    for (std::size_t i = 0; i < TABLE_SIZE; ++i)
+        if (mimeType == TABLE[i].mime)
+            return (true);
+    return (false);
+}

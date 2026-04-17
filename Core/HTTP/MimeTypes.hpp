@@ -27,7 +27,7 @@ public:
     // Extracts the last extension from a filename or path, then calls
     // fromExtension().  "style.min.css" -> "css", "/srv/app.JS" -> "js".
     static std::string fromFilename(const std::string& filename);
-
+    static bool checkMimeType(const std::string& mimeType);
 private:
     MimeTypes(); // static-only class, not instantiable
 
