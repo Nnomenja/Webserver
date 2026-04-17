@@ -5,7 +5,7 @@
 #include <algorithm>
 
 Request::Request():_index(0), _parserState(NULL), _method(GET){
-
+	_body._tmp = 0;
 };
 
 Request::Request(const Request& other){
@@ -86,9 +86,14 @@ long Request::getContentLength() const
 	return (_contentLength);
 }
 
-const std::string &Request::getBody() const
+const t_body &Request::getBody() const
 {
 	return (_body);
+}
+
+size_t           Request::getBodySize() const
+{
+	return (_body._tmp);
 }
 
 t_location Request::getLocation() const
@@ -198,7 +203,15 @@ void Request::setBodyEncode(t_body_encode value)
 
 void Request::addBody(char c)
 {
-	_body.push_back(c);
+	if (_body._str_buffer.size() < BODY_BUFFER_SIZE_MAX)
+		_body._str_buffer.push_back(c);
+	else
+	{
+		if (!_body._file_buffer.is_open())
+			_body._file_buffer.open("body_tmp", std::ios::out | std::ios::trunc);
+		_body._file_buffer.put(c);
+	}
+	_body._tmp++;
 }
 
 void Request::setLocation(t_location &value)

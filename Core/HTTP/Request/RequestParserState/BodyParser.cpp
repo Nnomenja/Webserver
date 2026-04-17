@@ -17,9 +17,9 @@ void    BodyParser::readBodyThroughContentLength()
         if (_tmp == 0)
         {
             _end = true;
-            std::cout << "***************BODY TOP***********************" << std::endl;
-            std::cout << _target->getBody() << std::endl; 
-            std::cout << "*****************************************" << std::endl;
+            // std::cout << "***************BODY TOP***********************" << std::endl;
+            // std::cout << _target->getBody() << std::endl; 
+            // std::cout << "*****************************************" << std::endl;
             // skipCRLF();
 			return;
         }
@@ -59,7 +59,7 @@ long	BodyParser::parseChunkSize(const std::string &line) const
             throw BadRequestException();
         chunkSize = (chunkSize * 16) + digit;
     }
-    if (chunkSize > _endpoint.max_body_size - static_cast<long>(_target->getBody().size()))
+    if (chunkSize > _endpoint.max_body_size - static_cast<long>(_target->getBodySize()))
         throw PayloadTooLarge();
     return (chunkSize);
 }
@@ -172,9 +172,9 @@ void    BodyParser::readBodyAsChuncked()
         _target->incrementParserIndex();
         if (_end)
         {
-            std::cout << "***************BODY BOTTOM***********************" << std::endl;
-            std::cout << _target->getBody() << std::endl; 
-            std::cout << "*****************************************" << std::endl;
+            // std::cout << "***************BODY BOTTOM***********************" << std::endl;
+            // std::cout << _target->getBody() << std::endl; 
+            // std::cout << "*****************************************" << std::endl;
             return;
         }
     }
