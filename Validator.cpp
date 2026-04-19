@@ -1,4 +1,5 @@
 #include "Validator.hpp"
+#include <unistd.h>
 
 Validator::Validator() {}
 
@@ -202,8 +203,7 @@ bool Validator::validateMethod(std::string method)
 
 bool Validator::validateBoolStr(std::string value)
 {
-    if ((value != "ON" && value != "OFF") &&
-        (value != "on" && value != "off"))
+    if ((value != "ON" && value != "OFF") && (value != "on" && value != "off"))
         return (0);
     return (1);
 }
@@ -230,18 +230,38 @@ bool Validator::validateIndex(std::string index)
     extensions.push_back(".html");
     extensions.push_back(".htm");
     extensions.push_back(".php");
+    extensions.push_back(".py");
 
     int len = index.length();
     if (len == 0)
         return false;
+
     for (size_t i = 0; i < extensions.size(); ++i)
     {
-        const std::string& ext = extensions[i];
-        int extLen = ext.length();
-        if (extLen > len)
+        const std::string& ext    = extensions[i];
+        int                extLen = ext.length();
+
+        if (extLen >= len)
             continue;
+
+        // Check extension match
         if (index.compare(len - extLen, extLen, ext) == 0)
+        {
+            std::string name = index.substr(0, len - extLen);
+
+            // Ensure name is not empty
+            if (name.empty())
+                return false;
+
+            // Validate characters
+            for (size_t j = 0; j < name.length(); ++j)
+            {
+                char c = name[j];
+                if (!(std::isalnum(c) || c == '_' || c == '-'))
+                    return false;
+            }
             return true;
+        }
     }
     return false;
 }
@@ -256,17 +276,45 @@ bool Validator::validateMaxBodySize(std::string maxBodySize)
     return (1);
 }
 
-bool Validator::validateErrorCode(std::string errorCode)
+bool Validator::validateCode(const std::string& code)
 {
-    if (!isPositiveInt(errorCode))
+    if (!isPositiveInt(code))
         return false;
-    int value = std::atoi(errorCode.c_str());
-    if (value < 100 || value > 599)
-        return false;
-    return true;
+
+    int value = std::atoi(code.c_str());
+    return (value >= 100 && value <= 599);
 }
 
-bool Validator::validateURI(const std::string &uri)
+bool Validator::isSuccessCode(const std::string& code)
+{
+    if (!validateCode(code))
+        return false;
+
+    int value = std::atoi(code.c_str());
+    return (value >= 200 && value < 300);
+}
+
+bool Validator::isRedirectCode(const std::string& code)
+{
+    if (!isPositiveInt(code))
+        return false;
+
+    int value = std::atoi(code.c_str());
+
+    return (value == 301 || value == 302 || value == 303 ||
+            value == 307 || value == 308);
+}
+
+bool Validator::isErrorCode(const std::string& code)
+{
+    if (!validateCode(code))
+        return false;
+
+    int value = std::atoi(code.c_str());
+    return (value >= 400 && value < 600);
+}
+
+bool Validator::validateURI(const std::string& uri)
 {
     if (uri.empty())
         return false;
@@ -284,6 +332,99 @@ bool Validator::validateURI(const std::string &uri)
     return true;
 }
 
+bool Validator::isValidPath(const std::string& path)
+{
+    if (path.empty())
+        return false;
+
+    // Must start with '/'
+    if (path[0] != '/')
+        return false;
+
+    // Prevent directory traversal
+    if (path.find("..") != std::string::npos)
+        return false;
+
+    for (size_t i = 0; i < path.length(); ++i)
+    {
+        char c = path[i];
+
+        // Disallow spaces
+        if (c == ' ')
+            return false;
+
+        // Allow only safe characters
+        if (!(std::isalnum(c) || c == '/' || c == '_' || c == '-' || c == '.'))
+            return false;
+    }
+
+    // Optional: reject double slashes
+    if (path.find("//") != std::string::npos)
+        return false;
+
+    return true;
+}
+
+bool Validator::isValidRedirectTarget(const std::string& target)
+{
+    if (target.empty())
+        return false;
+
+    for (size_t i = 0; i < target.length(); i++)
+        if (std::isspace(target[i]))
+            return false;
+
+    // URL case
+    if (target.find("http://") == 0 || target.find("https://") == 0)
+        return true;
+
+    // Path case
+    if (target[0] == '/')
+    {
+        if (target.find("..") != std::string::npos)
+            return false;
+
+        for (size_t i = 0; i < target.length(); i++)
+        {
+            char c = target[i];
+            if (!(std::isalnum(c) || c == '/' || c == '_' || c == '-' || c == '.'))
+                return false;
+        }
+        return true;
+    }
+
+    return false;
+}
+
+bool Validator::isValidCgiExtension(const std::string& ext)
+{
+    if (ext.empty())
+        return false;
+
+    const std::string allowed[] = {
+        ".php",
+        ".py",
+        ".pl",
+        ".cgi"
+    };
+
+    for (size_t i = 0; i < 4; i++)
+    {
+        if (ext == allowed[i])
+            return true;
+    }
+
+    return false;
+}
+
+bool Validator::isExecutable(const std::string& path)
+{
+    if (path.empty())
+        return false;
+
+    return (access(path.c_str(), X_OK) == 0);
+}
+
 // here
 
 bool Validator::isInVect(int integer, std::vector<int> vect)
@@ -298,7 +439,6 @@ bool Validator::isInVect(int integer, std::vector<int> vect)
 
 bool Validator::isValidChar(char c)
 {
-    return (std::isalnum(c) ||
-            c == '/' || c == '-' || c == '_' ||
-            c == '.' || c == '~');
+    return (std::isalnum(c) || c == '/' || c == '-' || c == '_' || c == '.' ||
+            c == '~');
 }

@@ -22,24 +22,24 @@ enum HttpMethod
     DELETE = 4   // 100
 };
 
-
-typedef struct s_error_page
+typedef struct s_return
 {
-    std::vector<int>    codes;
-    std::string         path;
-}   t_error_page;
-
+  int code;
+  std::string target;
+} t_return;
 
 typedef struct s_location
 {
     LocationType                type;
     std::string                 path;
     int                         methods;
-    std::vector<t_error_page>   error_pages;
+    std::map<int, std::string>   error_pages;
     std::string                 root;
     bool                        auto_index;
-    std::string                 return_path;
-    std::string                 index;
+    std::vector<std::string>                index;
+    std::string uploads;
+    t_return ret;
+    std::map<std::string, std::string> CGI;
 }   t_location;
 
 typedef struct UnitConf
@@ -47,11 +47,11 @@ typedef struct UnitConf
     std::string                 host;
     int                        enable_virtual_hosting;
     int                         port;
-    
-    std::string                 root;
-    std::vector<std::string>    method_arr;
-    long                        max_body_size;
-    std::vector<t_error_page>   error_pages;
+    std::string                 root;    
+    // std::vector<std::string>    method_arr;
+    int                        max_body_size;
+    std::map<int, std::string>   error_pages;
+
     std::vector<t_location>     locations;
 }	UnitConf_t;
 
@@ -87,8 +87,13 @@ public:
     std::string extractMainConfig(std::string serverBlock);
     void parseFileContent();
     void parseServerBlock(std::string serverBlock, int j);
-    void parseLocationBlocks(int i);
+    void getLocationBlocks(int i);
+    void parseLocationBlock(std::string locationBlock, int i, int j);
+    void checkLocationBlock(std::vector<t_location> &locations, int j);
     void checkPorts();
+
+    std::vector<UnitConf_t> getConfigs() const;
+    int                     getN() const;
 };
 
 #endif

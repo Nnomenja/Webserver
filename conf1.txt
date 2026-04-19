@@ -1,0 +1,36 @@
+server:
+    port 2000
+    host localhost
+    root test
+    error_pages 400 401 /4xx.html
+    location:
+        path /
+        root test
+        methods GET POST
+        index index.html
+    location:
+        path /up
+        methods POST
+        root test
+        uploads uploads
+    location:
+        path /redir
+        return 302 /test
+    location:
+        path /cgi
+        root test
+        methods GET POST
+        error_pages 400 401 /4xx.html
+        error_pages 500 501 /5xx.html
+        CGI .py /usr/bin/python3
+server:
+    port 2001
+    host localhost
+    root .
+    location:
+        path /cgi
+        root test
+        methods GET POST
+        error_pages 400 401 /4xx.html
+        error_pages 500 501 /5xx.html
+        CGI .py /usr/bin/python3

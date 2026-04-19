@@ -5,7 +5,7 @@ enum LocationType {
     REDIRECTION,
     STATIC,
     DYNAMIC,
-    DIRECTORY,
+    // DIRECTORY,
     UPLOAD
 };
 

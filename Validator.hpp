@@ -46,8 +46,15 @@ class Validator
     static bool validateUploads(std::string root, std::string uploads);
     static bool validateIndex(std::string index);
     static bool validateMaxBodySize(std::string maxBodySize);
-    static bool validateErrorCode(std::string errorCode);
+    static bool validateCode(const std::string& code);
+    static bool isSuccessCode(const std::string& code);
+    static bool isRedirectCode(const std::string& code);
+    static bool isErrorCode(const std::string& code);
     static bool validateURI(const std::string &uri);
+    static bool isValidPath(const std::string& path);
+    static bool isValidRedirectTarget(const std::string& target);
+    static bool isValidCgiExtension(const std::string& ext);
+    static bool isExecutable(const std::string& path);
     // here
 
     static bool isInVect(int integer, std::vector<int> vect);
