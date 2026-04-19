@@ -558,3 +558,13 @@ void Config::checkPorts()
             throw ConfigException("duplicate port");
     }
 }
+
+std::vector<UnitConf_t> Config::getConfigs() const
+{
+    return configs;
+}
+
+int                     Config::getN() const
+{
+    return n;
+}
