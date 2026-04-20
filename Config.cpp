@@ -13,7 +13,10 @@ Config::Config(std::string filename)
 Config::Config(const Config& other)
 {
     this->fileContent = other.fileContent;
-    this->configs     = other.configs;
+    this->n = other.n;
+    this->serverBlocks = other.serverBlocks;
+    this->configs = other.configs;
+    this->serverBlockIdToLocationBlocks = other.serverBlockIdToLocationBlocks;
 }
 
 Config::~Config() {}
@@ -23,7 +26,10 @@ Config& Config::operator=(const Config& other)
     if (this != &other)
     {
         this->fileContent = other.fileContent;
-        this->configs     = other.configs;
+        this->n = other.n;
+        this->serverBlocks = other.serverBlocks;
+        this->configs = other.configs;
+        this->serverBlockIdToLocationBlocks = other.serverBlockIdToLocationBlocks;
     }
     return *this;
 }
@@ -621,4 +627,14 @@ std::vector<UnitConf_t> Config::getConfigs() const
 int Config::getN() const
 {
     return n;
+}
+
+UnitConf_t Config::findEndpointByFd(int fd)
+{
+    return (_endpoints[fd]);
+}
+
+void Config::setEndpointByFd(UnitConf_t &value, int fd)
+{
+    _endpoints[fd] = value;
 }

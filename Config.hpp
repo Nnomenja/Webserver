@@ -71,8 +71,9 @@ private:
     std::string fileContent;
     std::vector<std::string> serverBlocks;
     std::map<int, std::vector<std::string> > serverBlockIdToLocationBlocks;
-
     std::vector<UnitConf_t> configs;
+    std::map<int, UnitConf_t>   _endpoints;
+
 public:
     Config();
     Config(std::string filename);
@@ -104,6 +105,9 @@ public:
 
     std::vector<UnitConf_t> getConfigs() const;
     int                     getN() const;
+
+    UnitConf_t              findEndpointByFd(int fd);
+    void                    setEndpointByFd(UnitConf_t &value, int fd);
 };
 
 #endif
