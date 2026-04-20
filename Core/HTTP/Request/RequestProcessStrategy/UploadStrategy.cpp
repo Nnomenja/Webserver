@@ -78,7 +78,7 @@ void responseData(Response *response)
     Réponse HTTP
 */
 
-void UploadStrategy::process(Client *client)
+void UploadStrategy::process(Client *client, Epoll &epoll, Process &process)
 {
     Request     *request = client->getRequest();
     Response    *response = client->getResponse();
@@ -92,4 +92,6 @@ void UploadStrategy::process(Client *client)
     }
 
     responseData(response);
+    (void)epoll;
+    (void)process;
 }

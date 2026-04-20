@@ -2,7 +2,7 @@
 #include "../../../../Data/Client.hpp"
 #include "../../../../Data/Response.hpp"
 
-void RedirectionStrategy::process(Client *client)
+void RedirectionStrategy::process(Client *client, Epoll &epoll, Process &process)
 {
     Response *res = client->getResponse();
     Request *req = client->getRequest();
@@ -12,4 +12,6 @@ void RedirectionStrategy::process(Client *client)
     res->addHeader("Location", req->getLocation().return_path);
     std::cout << "********************************************" << std::endl;
     (void)client;
+    (void)epoll;
+    (void)process;
 }

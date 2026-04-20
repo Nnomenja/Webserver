@@ -175,6 +175,11 @@ void Request::addQuery(char c)
 	_query.push_back(c);
 }
 
+void Request::setBody(std::string value)
+{
+	_body._str_buffer = value;
+}
+
 std::string &Request::toLowerCase(std::string &src) const
 {
 	std::transform(src.begin(), src.end(), src.begin(), ::tolower);

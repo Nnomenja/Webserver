@@ -62,12 +62,13 @@ LocationType RequestProcessor::detectStategyType(Client *client)
 	return (type);
 }
 
-void RequestProcessor::processRequest(Client *client)
+void RequestProcessor::processRequest(Client *client, Epoll &epoll, Process &process)
 {
 	LocationType 		type = detectStategyType(client);
 	IRequestStrategy	*strategy = createStrategy(type);
-	strategy->process(client);
+	strategy->process(client, epoll, process);
 	delete strategy;
+	// client.set
 	// if (client->getRequest())
 	// 	delete  client->getRequest();
 	// if (client->getResponse())

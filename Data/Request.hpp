@@ -69,7 +69,7 @@ class Request {
         t_body_encode           getBodyEncode() const;
         long                    getContentLength() const;
         const t_body&           getBody() const;        
-        size_t           getBodySize() const;        
+        size_t                  getBodySize() const;        
         t_location              getLocation() const;
         const std::string 
                                 &getLocationDefaultIndex() const;
@@ -85,6 +85,7 @@ class Request {
         void                    setFullPath(std::string value);
         void                    setRoot(std::string value);
         void                    addPathname(char c);
+        void                    setBody(std::string value);
         void                    addQuery(char c);
 		void					incrementParserIndex();
 		void					resetParserIndex();

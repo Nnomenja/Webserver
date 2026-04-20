@@ -2,10 +2,12 @@
 #include "../utils/utils.hpp"
 #include <algorithm>
 
-Client::Client():_start_time_ms(get_time_ms()), _req(new Request()), _res(new Response()), _parsed(false){
+Client::Client():_start_time_ms(get_time_ms()), _req(new Request()), _res(new Response()), _parsed(false), _cgi_pid(-1), _cgi_output(-1), _processing_cgi(false){
   std::cout << "Create client" << std::endl;
 //   this->_start_time_ms = get_time_ms();
 	_req->setRoot(_endpoint.root);
+	_bufferSize = 0;
+	_buffer = "";
 };
 
 Client::Client(const Client& other){
@@ -73,6 +75,15 @@ Response *Client::getResponse()
 	return (_res);
 }
 
+int Client::getCGIOutput() const
+{
+	return (_cgi_output);
+}
+
+pid_t Client::getCGIPid() const
+{
+	return (_cgi_pid);
+}	
 
 std::string findDefaultErrorPagePathBySource(int code, const std::vector<t_error_page> &error_pages)
 {
@@ -99,6 +110,8 @@ std::string Client::getDefaultErrorPagePath(int code) const
 	return ("");
 }
 
+
+
 /**============================================
  *               SETTERS
  *=============================================**/
@@ -112,7 +125,7 @@ void Client::setLocationType(LocationType type)
 	_req->setLocationType(type);
 }
 
-void Client::setBuffer(std::string &value)
+void Client::setBuffer(std::string value)
 {
 	_buffer = value;
 }
@@ -127,6 +140,16 @@ void Client::setFd(int fd)
 	_fd = fd;
 }
 
+void	Client::setCGIInfo(pid_t pid, int output_fd)
+{
+	_cgi_pid = pid;
+	_cgi_output = output_fd;
+}
+
+bool Client::isCGI() const
+{
+	return (_cgi_pid != -1 && _cgi_output != -1);
+}
 /**============================================
  *               UTILS
  *=============================================**/
@@ -173,4 +196,20 @@ void	Client::generateResponse()
 	_bufferSize = _buffer.size();
 	// delete _req;
 	// delete _res;
+}
+
+bool Client::isProcessingCGI() const
+{
+	return (_processing_cgi);
+}
+
+void Client::endProcessingCGI()
+{
+	_processing_cgi = false;
+}
+
+
+void Client::setProcessingCGI(bool value)
+{
+	_processing_cgi = value;
 }

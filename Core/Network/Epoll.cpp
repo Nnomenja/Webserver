@@ -77,7 +77,8 @@ bool Epoll::registerFd(int fd, unsigned int event)
 
 	if (epoll_ctl(_epollFd, EPOLL_CTL_ADD, fd, &ev) < 0)
 	{
-        std::cerr << "Error: Epoll: registerFd failed" << std::endl;
+		perror("Epoll: registerFd failed");
+        // std::cerr << "Error: Epoll: registerFd failed" << std::endl;
 		return (false);
 	}
 	return (true);
@@ -134,4 +135,10 @@ std::string Epoll::read(const int fd, bool *end)
 void Epoll::send(const int fd,const std::string &buff,const size_t lenght)
 {
 	::send(fd, buff.c_str(), lenght, MSG_DONTWAIT);
+}
+
+void Epoll::remove(int fd)
+{
+	unregister(fd);
+	::close(fd);
 }

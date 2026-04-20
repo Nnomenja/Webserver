@@ -21,6 +21,9 @@ class Client {
         Request		        *_req;
 		Response	        *_res;
         bool                _parsed;
+        pid_t               _cgi_pid;
+        int                 _cgi_output;
+        bool                _processing_cgi;
 
         Client(const Client& other);
         Client& operator=(const Client& other);
@@ -41,13 +44,21 @@ class Client {
         void            	setFd(int fd);
         void				setEndpoint(UnitConf_t  value);
 		void				setLocationType(LocationType type);
-		void				setBuffer(std::string &value);
+		void				setBuffer(std::string value);
 		void				setBufferSize(size_t value);
 
         void        		refreshStartTime();
         void                parsed();
         bool                isParsed() const;
         void                generateResponse();
+        void                setCGIInfo(pid_t pid, int output_fd);
+        bool                isCGI() const;
+        int                 getCGIOutput() const;
+        pid_t               getCGIPid() const;
+        bool                isProcessingCGI() const;
+        void                endProcessingCGI();
+        void                setProcessingCGI(bool value);
+        // void                (*registerFd)(int fd);
 };
 
 #endif

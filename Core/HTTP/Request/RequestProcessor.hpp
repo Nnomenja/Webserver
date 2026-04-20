@@ -3,7 +3,9 @@
 
 #include "./RequestProcessStrategy/IRequestStrategy.hpp"
 #include "../../../Enum/LocationType.hpp"
+#include "../../../Data/Process.hpp"
 #include <iostream>
+# include "../Webserv.hpp"
 
 class Client;
 class RequestProcessor {
@@ -19,7 +21,7 @@ class RequestProcessor {
 		/**
 		 * @brief Process request and store the accoring data in client
 		 */
-		void processRequest(Client* client);
+		void processRequest(Client* client, Epoll &epoll,  Process &process);
 };
 
 #endif

@@ -4,15 +4,23 @@
 #include <string>
 #include <map>
 
+
+
 class Response {
     private:
+        typedef struct s_cgi_response
+        {
+            size_t      size;
+            std::string value;
+        }   t_cgi_response;
+
         int                      _status_code;
         std::string              _status_name;
         std::string              _body;
         std::map<std::string, \
             std::string>	    _headers;
         std::string              _contentType;
-
+        t_cgi_response           _cgi_response;
         typedef struct s_status
         {
             int code;
@@ -38,6 +46,10 @@ class Response {
         void            setContentLength(long value);
         void            setContentType(std::string value);
         void            addHeader(std::string key, std::string value);
+        void            setCgiResponse(const std::string &response);
+        void            addCgiResponse(const std::string &response, size_t size);
+        std::string     getCgiResponse(void) const;
+        size_t          getCgiResponseSize(void) const;
 };
 
 #endif
