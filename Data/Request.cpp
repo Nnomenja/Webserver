@@ -53,6 +53,20 @@ HttpMethod Request::getMethod() const
 	return (_method);
 }
 
+std::string Request::getMethodString() const
+{
+	switch (_method)
+	{
+		case GET:
+			return ("GET");
+		case POST:
+			return ("POST");
+		case DELETE:
+			return ("DELETE");
+		default:
+			return ("");
+	}
+}
 
 const std::string &Request::getPathname() const
 {
@@ -199,6 +213,7 @@ bool Request::hasHeader(std::string value) const
 void Request::setContenLength(long value)
 {
 	_contentLength = value;
+	_body._tmp = value;
 }
 
 void Request::setBodyEncode(t_body_encode value)

@@ -17,9 +17,9 @@ void    BodyParser::readBodyThroughContentLength()
         if (_tmp == 0)
         {
             _end = true;
-            // std::cout << "***************BODY TOP***********************" << std::endl;
-            // std::cout << _target->getBody() << std::endl; 
-            // std::cout << "*****************************************" << std::endl;
+            std::cout << "***************BODY TOP***********************" << std::endl;
+            std::cout << _target->getBody()._str_buffer << std::endl; 
+            std::cout << "*****************************************" << std::endl;
             // skipCRLF();
 			return;
         }
@@ -145,7 +145,6 @@ void	BodyParser::handleFinalChunkDelimiterChar(char c)
 void    BodyParser::readBodyAsChuncked()
 {
     char	c;
-
     for (size_t i = _target->getParserIndex(); i < _target->getBufferSize(); i++)
     {
         c = _target->getBuffer()[i];
@@ -172,9 +171,9 @@ void    BodyParser::readBodyAsChuncked()
         _target->incrementParserIndex();
         if (_end)
         {
-            // std::cout << "***************BODY BOTTOM***********************" << std::endl;
-            // std::cout << _target->getBody() << std::endl; 
-            // std::cout << "*****************************************" << std::endl;
+            std::cout << "***************BODY BOTTOM***********************" << std::endl;
+            std::cout << _target->getBody()._str_buffer << std::endl; 
+            std::cout << "*****************************************" << std::endl;
             return;
         }
     }

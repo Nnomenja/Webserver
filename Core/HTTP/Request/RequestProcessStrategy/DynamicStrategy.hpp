@@ -7,7 +7,7 @@
 class DynamicStrategy : public IRequestStrategy {
 public:
     void            process(Client *client, Epoll &epoll, Process &process);
-    void            setEnv(Request *req);
+    void            setEnv(Client *client);
 
     static void    error(Client *client, Epoll &epoll, Process &process, ServerException e);
     static void    ParseCGIoutput(Client *client, std::string &response);

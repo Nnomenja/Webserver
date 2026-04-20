@@ -25,18 +25,8 @@ void DynamicStrategy::process(Client *client, Epoll &epoll, Process &process)
     int pipefd[2];
     if (pipe(pipefd) == -1)
         throw InternalServerError();
-    setEnv(client->getRequest());
+    setEnv(client);
     pid_t pid = fork();
-    
-    setenv("GATEWAY_INTERFACE", "CGI/1.1", 1);
-    setenv("SERVER_PROTOCOL", "HTTP/1.1", 1);
-    setenv("REQUEST_METHOD", "GET", 1);
-    setenv("QUERY_STRING", "", 1);
-    setenv("SCRIPT_NAME", "./cgi/test.cgi", 1);   // simplified
-    setenv("PATH_INFO", "", 1);
-    setenv("CONTENT_LENGTH", "0", 1);        // no body for GET
-    setenv("CONTENT_TYPE", "", 1);
-    setenv("SERVER_SOFTWARE", "MiniCGI/1.0", 1);
 
     if (pid == -1)
         throw InternalServerError();
@@ -72,16 +62,26 @@ void DynamicStrategy::error(Client *client, Epoll &epoll, Process &process, Serv
     ErrorProcess::processError(e, client);
 }
 
-void            setEnv(Request *req)
+void DynamicStrategy::setEnv(Client *client)
 {
-    // setenv("REQUEST_METHOD", req->getMethod() == GET ? "GET" : req->getMethod() == POST ? "POST" : "DELETE", 1);
-    // setenv("QUERY_STRING", req->getQuery().c_str(), 1);
+    std::stringstream   ss;
+    Request *req = client->getRequest();
+
+    ss << req->getContentLength();
+    setenv("REQUEST_METHOD", req->getMethodString().c_str(), 1);
+    std::cout << "METHOD: " << req->getMethodString() << std::endl;
+    setenv("QUERY_STRING", req->getQuery().c_str(), 1);
     // setEnv("SCRIPT_NAME", req->getFullPath().c_str(), 1);
-    // setEnv()
+    setenv("CONTENT_LENGTH", ss.str().c_str(), 1);
+    setenv("CONTENT_TYPE", req->hasHeader("content-type") ? req->getHeaderBykey("content-type").c_str() : "", 1);
+    ss.str("");
+    ss << client->getEndpoint().port;
+    setenv("SERVER_PORT", ss.str().c_str(), 1);
 }
 
 
 void DynamicStrategy::ParseCGIoutput(Client *client, std::string &response)
 {
-
+    (void)client;
+    (void)response;
 }

@@ -59,6 +59,7 @@ class Request {
 		size_t					getParserIndex() const;
 		std::string             getBuffer() const;
         HttpMethod              getMethod() const;
+        std::string             getMethodString() const;
         size_t                  getBufferSize() const;
 		const std::string       &getPathname() const;
 		std::string             getQuery() const;
