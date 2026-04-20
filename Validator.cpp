@@ -301,8 +301,8 @@ bool Validator::isRedirectCode(const std::string& code)
 
     int value = std::atoi(code.c_str());
 
-    return (value == 301 || value == 302 || value == 303 ||
-            value == 307 || value == 308);
+    return (value == 301 || value == 302 || value == 303 || value == 307 ||
+            value == 308);
 }
 
 bool Validator::isErrorCode(const std::string& code)
@@ -387,7 +387,8 @@ bool Validator::isValidRedirectTarget(const std::string& target)
         for (size_t i = 0; i < target.length(); i++)
         {
             char c = target[i];
-            if (!(std::isalnum(c) || c == '/' || c == '_' || c == '-' || c == '.'))
+            if (!(std::isalnum(c) || c == '/' || c == '_' || c == '-' ||
+                  c == '.'))
                 return false;
         }
         return true;
@@ -401,12 +402,7 @@ bool Validator::isValidCgiExtension(const std::string& ext)
     if (ext.empty())
         return false;
 
-    const std::string allowed[] = {
-        ".php",
-        ".py",
-        ".pl",
-        ".cgi"
-    };
+    const std::string allowed[] = { ".php", ".py", ".pl", ".cgi" };
 
     for (size_t i = 0; i < 4; i++)
     {

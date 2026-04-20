@@ -1,8 +1,12 @@
 server:
     port 2000
     host localhost
+    server_name test.com
     root test
-    error_pages 400 401 /4xx.html
+    #error_pages 400 401 /4xx.html
+    #error_pages 500 501 /5xx.html
+    error_pages 502 /502.html
+    error_pages 503 /503.html
     location:
         path /
         root test
@@ -26,6 +30,20 @@ server:
 server:
     port 2001
     host localhost
+    server_name test2.com
+    root .
+    location:
+        path /cgi
+        root test
+        methods GET POST
+        error_pages 400 401 /4xx.html
+        error_pages 500 501 /5xx.html
+        CGI .py /usr/bin/python3
+server:
+    port 2003
+    host localhost
+    enable_virtual_hosting on
+    server_name test3.com
     root .
     location:
         path /cgi

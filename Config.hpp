@@ -28,6 +28,12 @@ typedef struct s_return
   std::string target;
 } t_return;
 
+typedef struct s_cgi
+{
+    std::string     extension;
+    std::string     bin;
+}   t_cgi;
+
 typedef struct s_location
 {
     LocationType                type;
@@ -45,7 +51,8 @@ typedef struct s_location
 typedef struct UnitConf
 {
     std::string                 host;
-    int                        enable_virtual_hosting;
+    bool                        enable_virtual_hosting;
+    std::string server_name;
     int                         port;
     std::string                 root;    
     // std::vector<std::string>    method_arr;
@@ -90,7 +97,10 @@ public:
     void getLocationBlocks(int i);
     void parseLocationBlock(std::string locationBlock, int i, int j);
     void checkLocationBlock(std::vector<t_location> &locations, int j);
+    void checkPaths(const std::vector<t_location>& locations);
     void checkPorts();
+    void checkServerNames();
+    void checkVirtualHosting();
 
     std::vector<UnitConf_t> getConfigs() const;
     int                     getN() const;

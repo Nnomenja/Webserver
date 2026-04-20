@@ -32,24 +32,20 @@ void fillMap(std::map<std::string, std::string>& m, std::string s)
     }
 }
 
-void fillMap(std::map<int, std::string>& m, std::string s, size_t startIndex)
+void fillMap(std::map<int, std::string>& m,
+             const std::string& s,
+             const std::vector<std::string>& codes)
 {
-    if (m.empty())
-        return;
-    std::map<int, std::string>::iterator it = m.begin();
-    size_t                               i  = 0;
-    while (it != m.end() && i < startIndex)
+    for (std::vector<std::string>::const_iterator it = codes.begin();
+         it != codes.end();
+         ++it)
     {
-        ++it;
-        ++i;
-    }
-    for (; it != m.end(); ++it)
-    {
-        it->second = s;
+        int code = std::atoi(it->c_str());
+        m[code] = s;
     }
 }
 
-void printMap(const std::map<int, std::string>& m)
+void printMap(std::map<int, std::string>& m)
 {
     for (std::map<int, std::string>::const_iterator it = m.begin();
          it != m.end(); ++it)
