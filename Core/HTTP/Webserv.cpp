@@ -404,7 +404,6 @@ void Webserv::run(void)
 						waitpid(client->getCGIPid(), &status, WNOHANG);
 						std::cout << YELLOW << "status code: " << WEXITSTATUS(status) << RESET << std::endl;
 
-						_epoll.modify(client->getFd(), EPOLLOUT);
 						_process.removeProcess(currentFd);
 						_epoll.remove(currentFd);
 						if (WEXITSTATUS(status) != 0)
@@ -415,6 +414,7 @@ void Webserv::run(void)
 						client->endProcessingCGI();
 						std::cout << "CGI RESPONSE SIZE \n" << YELLOW <<  client->getResponse()->getCgiResponse() << RESET  << std::endl;
 						simulateClient(client);
+						
 						std::cout << "Nbr client: " << _clients.size() << std::endl;
 					}
 					else

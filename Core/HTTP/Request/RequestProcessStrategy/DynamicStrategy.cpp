@@ -25,7 +25,7 @@ void DynamicStrategy::process(Client *client, Epoll &epoll, Process &process)
     int pipefd[2];
     if (pipe(pipefd) == -1)
         throw InternalServerError();
-    // client->getFd();
+    setEnv(client->getRequest());
     pid_t pid = fork();
     
     setenv("GATEWAY_INTERFACE", "CGI/1.1", 1);
@@ -57,7 +57,6 @@ void DynamicStrategy::process(Client *client, Epoll &epoll, Process &process)
         process.addProcess(pipefd[0], client->getFd());
         std::cout << GREEN << "New CGI:" << pipefd[0] << RESET << std::endl;
         epoll.registerFd(pipefd[0], EPOLLIN);
-        // epoll.unregister(client->getFd());
         client->setProcessingCGI(true);
         epoll.modify(client->getFd(), EPOLLOUT);
     }
@@ -71,4 +70,18 @@ void DynamicStrategy::error(Client *client, Epoll &epoll, Process &process, Serv
     process.removeProcess(client->getCGIOutput());
     epoll.remove(client->getCGIOutput());
     ErrorProcess::processError(e, client);
+}
+
+void            setEnv(Request *req)
+{
+    // setenv("REQUEST_METHOD", req->getMethod() == GET ? "GET" : req->getMethod() == POST ? "POST" : "DELETE", 1);
+    // setenv("QUERY_STRING", req->getQuery().c_str(), 1);
+    // setEnv("SCRIPT_NAME", req->getFullPath().c_str(), 1);
+    // setEnv()
+}
+
+
+void DynamicStrategy::ParseCGIoutput(Client *client, std::string &response)
+{
+
 }
