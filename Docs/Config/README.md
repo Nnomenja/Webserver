@@ -1,5 +1,3 @@
----
-
 # 📄 Config System README
 
 ## Overview
