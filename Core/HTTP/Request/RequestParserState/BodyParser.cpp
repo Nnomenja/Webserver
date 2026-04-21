@@ -12,22 +12,22 @@ void    BodyParser::readBodyThroughContentLength()
 {
     char c;
 
+    std::cout << "...BodyParser executing content length..." << std::endl;
+    std::cout << "content length: " << _tmp << std::endl;
     for (size_t i = _target->getParserIndex(); i < _target->getBufferSize(); i++)
     {
+        c = _target->getBuffer()[i];
+        _target->addBody(c);
+        _target->incrementParserIndex();
+        _tmp--;
         if (_tmp == 0)
         {
             _end = true;
             std::cout << "***************BODY TOP***********************" << std::endl;
             std::cout << _target->getBody()._str_buffer << std::endl; 
             std::cout << "*****************************************" << std::endl;
-            // skipCRLF();
 			return;
         }
-        c = _target->getBuffer()[i];
-        _target->addBody(c);
-        _target->incrementParserIndex();
-        _tmp--;
-        
     }
     _target->resetParserIndex();
 	throw EagainParser();
