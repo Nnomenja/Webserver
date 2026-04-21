@@ -145,6 +145,7 @@ void	BodyParser::handleFinalChunkDelimiterChar(char c)
 void    BodyParser::readBodyAsChuncked()
 {
     char	c;
+    std::cout << "...BodyParser executing chunked..." << std::endl;
     for (size_t i = _target->getParserIndex(); i < _target->getBufferSize(); i++)
     {
         c = _target->getBuffer()[i];
@@ -192,6 +193,6 @@ void BodyParser::execute()
 			skipCRLF();
 	}
 	else
-		readBodyAsChuncked();
+        readBodyAsChuncked();
 	std::cout << "...................." << std::endl;
 }

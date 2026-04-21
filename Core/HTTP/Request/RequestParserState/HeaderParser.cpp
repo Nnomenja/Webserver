@@ -41,7 +41,17 @@ bool HeaderParser::endOfHeadersReached()
 {
 	if (_key.size())
 		return (false);
-	_target->incrementParserIndex();
+	if (_target->getBuffer()[_target->getParserIndex()] == '\r')
+	{
+		_target->incrementParserIndex();
+		if (_target->getBuffer()[_target->getParserIndex()] != '\n')
+			throw BadRequestException();
+		_target->incrementParserIndex();
+	}
+	else if (_target->getBuffer()[_target->getParserIndex()] == '\n')
+		_target->incrementParserIndex();
+	else
+		throw BadRequestException();
 	return (true);
 }
 
@@ -58,22 +68,16 @@ void HeaderParser::receivingHeaders()
 			case KEY:
 				if (c == ':')
 				{
-						if (!_key.size())
-							throw BadRequestException();
-						_state = SEPARATOR;
+					if (!_key.size())
+						throw BadRequestException();
+					_state = SEPARATOR;
 				}
 				else if (checkHeaderEncode(c))
 					_key.push_back(c);
 				else
 				{
-					if (c == '\r')
-						_state = DELIMITER;
-					else if (c == '\n')
-					{
-						if (endOfHeadersReached())
-							return;
-						addHeaderAndReset();
-					}
+					if ((c == '\n' || c == '\r') && endOfHeadersReached())
+						return;
 					else
 						throw BadRequestException();
 				}
@@ -84,17 +88,13 @@ void HeaderParser::receivingHeaders()
 				{
 					_state = VALUE;
 					_value.push_back(c);
-					continue;
 				}
 				break;
 			case DELIMITER:
 
 				if (c != '\n')
 					throw BadRequestException();
-				if (endOfHeadersReached())
-					return;
 				addHeaderAndReset();
-				_state = KEY;
 				break;
 
 			default:
