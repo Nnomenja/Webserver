@@ -21,7 +21,7 @@ typedef struct s_body
 {
     std::string     _str_buffer;
     std::ofstream   _file_buffer;
-    int             _tmp;
+    int             _content_length;
 }   t_body;
 
 class ARequestParserState;
@@ -42,7 +42,6 @@ class Request {
         /*==== Request header ====*/
 
         std::map<std::string, std::string>	_headers;
-        long                                _contentLength;
         t_body_encode                       _body_encode;
         /*==== Request Body ====*/
         t_body                              _body;
