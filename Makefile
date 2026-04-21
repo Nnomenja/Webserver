@@ -32,6 +32,8 @@ REQUEST_SRCS = $(addprefix $(CORE_DIR)/$(HTTP_DIR)/Request/, \
 SETTINGS_SRCS = $(addprefix $(CORE_DIR)/Settings/, \
 				Config.cpp \
 				Validator.cpp \
+				File.cpp \
+				helpers.cpp \
 			)
 
 DATA_SRCS = $(addprefix $(DATA_DIR)/, \

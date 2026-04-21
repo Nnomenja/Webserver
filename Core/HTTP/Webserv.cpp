@@ -205,16 +205,16 @@ bool Webserv::init( void )
     if (_isAlreadyInit)
         return (true);
 	// REAL ->
-    // try
-    // {
-    //     Config configTmp(_fileConfigName);
-    //     _config = configTmp;
-    // }
-    // catch(const Config::ConfigException& e)
-    // {
-    //     std::cerr << "Error: " << e.what() << std::endl;
-    //     return (false);
-    // }
+    try
+    {
+        Config configTmp(_fileConfigName);
+        _config = configTmp;
+    }
+    catch(const Config::ConfigException& e)
+    {
+        std::cerr << "Error: " << e.what() << std::endl;
+        return (false);
+    }
 	// <- REAL
 
     if (!createServerSockets())
@@ -245,15 +245,15 @@ bool Webserv::init( void )
 bool Webserv::createServerSockets( void )
 {
 	// REAL ->
-    // _serverSocketsNumber = _config.getN();
+    _serverSocketsNumber = _config.getN();
 
-	// std::vector<UnitConf_t> configs = _config.getConfigs();
+	std::vector<UnitConf_t> configs = _config.getConfigs();
 	// <- REAL
 
 	// SIMULATION ->
-	_serverSocketsNumber = 3;
-	std::vector<UnitConf_t> configs;
-	initSimulData(configs);
+	// _serverSocketsNumber = 3;
+	// std::vector<UnitConf_t> configs;
+	// initSimulData(configs);
 	// <- SIMULATION
 
     for (int i = 0; i < _serverSocketsNumber; i++)
