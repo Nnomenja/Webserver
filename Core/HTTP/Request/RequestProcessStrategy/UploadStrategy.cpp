@@ -20,116 +20,6 @@ UploadStrategy::UploadStrategy()
 UploadStrategy::~UploadStrategy()
 { }
 
-void responseData(Response *response)
-{
-    std::string body = 
-        "<!DOCTYPE html>"
-        "<html lang=\"fr\">"
-        "<head>"
-        "<meta charset=\"UTF-8\">"
-        "<title>Webserv - 42 Antananarivo</title>"
-        "<style>"
-        "body{margin:0;padding:0;background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);"
-        "font-family:Arial,sans-serif;color:white;display:flex;justify-content:center;"
-        "align-items:center;height:100vh;}"
-        ".card{background:rgba(255,255,255,0.1);backdrop-filter:blur(10px);"
-        "padding:40px;border-radius:15px;text-align:center;"
-        "box-shadow:0 0 30px rgba(0,0,0,0.5);width:500px;}"
-        "h1{margin-bottom:10px;font-size:32px;}"
-        ".status{color:#22c55e;font-weight:bold;font-size:20px;}"
-        ".info{margin-top:20px;font-size:14px;opacity:0.85;}"
-        ".footer{margin-top:30px;font-size:12px;opacity:0.6;}"
-        "</style>"
-        "</head>"
-        "<body>"
-        "<div class=\"card\">"
-        "<h1>Webserv Opérationnel</h1>"
-        "<div class=\"status\">HTTP/1.1 200 OK</div>"
-        "<div class=\"info\">"
-        "<p>Projet: Webserv</p>"
-        "<p>Langage: C++98</p>"
-        "<p>Architecture: epoll event-driven</p>"
-        "<p>Mode: Non-Blocking I/O</p>"
-        "</div>"
-        "<div class=\"footer\">42 Antananarivo - 2026</div>"
-        "</div>"
-        "</body>"
-        "</html>";
-
-        std::ostringstream oss;
-        oss << body.size();
-        
-        response->setStatusCode(200);
-        response->setStatusName("OK");
-
-        response->addHeader("Content-Type", "text/html; charset=UTF-8");
-        response->addHeader("Connection", "close");
-        response->addHeader("Content-Length", oss.str());
-        response->setBody(body);
-}
-
-
-void simulBodyData(BodyType type, Request* request)
-{
-    switch (type)
-    {
-        case NONE:
-            request->setContentType("");
-            request->setBody("");
-            break;
-      
-        case DIRECT:
-            request->setContentType("text/plain");
-            request->setBody("Ligne 1 du contenu direct\nLigne 2\nLigne 3 avec des données: ABC123!@#");
-            // Pour simuler du binaire, on peut mettre des bytes non imprimables
-            break;
-        
-        case MULTIPART:
-            request->setContentType("multipart/form-data");
-            request->setContentTypeParam("boundary", "boundary123");
-            
-            request->setBody(
-                "--boundary123\r\n"
-                "Content-Disposition: form-data; name=\"text_field\"\r\n"
-                "\r\n"
-                "Valeur simple\r\n"
-                "--boundary123\r\n"
-                "Content-Disposition: form-data; name=\"file1\"; filename=\"test1.txt\"\r\n"
-                "Content-Type: text/plain\r\n"
-                "\r\n"
-                "Contenu du premier fichier\r\n"
-                "--boundary123\r\n"
-                "Content-Disposition: form-data; name=\"file2\"; filename=\"test2.sh\"\r\n"
-                "Content-Type: application/x-sh\r\n"
-                "\r\n"
-                "#!/bin/bash\necho \"Hello from script\"\r\n"
-                "--boundary123\r\n"
-                "Content-Disposition: form-data; name=\"json_data\"\r\n"
-                "Content-Type: application/json\r\n"
-                "\r\n"
-                "{\"key\":\"value\",\"number\":42}\r\n"
-                "--boundary123--\r\n"
-            );
-            break;
-        
-        case URLENCODED:
-            request->setContentType("application/x-www-form-urlencoded");
-            
-            request->setBody(
-                "name=John%20Doe&"
-                "email=john%40example.com&"
-                "age=30&"
-                "interests=coding%2Creading%2Cgaming&"
-                "comment=Hello%20world%21&"
-                "newsletter=true&"
-                "file=data.txt"
-            );
-            break;
-            
-        default:
-            break;
-    }
-}
 
 void UploadStrategy::process(Client *client)
 {
@@ -141,10 +31,6 @@ void UploadStrategy::process(Client *client)
     )
     {
         throw MethodNotAllowed();
-    }
-
-    {
-        simulBodyData(DIRECT, request);
     }
 
     BodyType bodyType = bodyTypeDetection(request);
@@ -216,17 +102,6 @@ BodyType UploadStrategy::bodyTypeDetection(Request* request)
     return (MULTIPART);
 }
 
-std::string UploadStrategy::creatUploadFileName(Request* request)
-{
-    ( void ) request;
-    return ("teste.txt");
-}
-
-std::string getRequestPath( void )
-{
-    return ("/home/aravelom/Project/current/webserver/www/upload");
-}
-
 void UploadStrategy::handleDirectUpload(Client* client)
 {
     // Request     *request = client->getRequest();
@@ -274,9 +149,280 @@ void UploadStrategy::handleDirectUpload(Client* client)
     // response->addHeader("Content-Type", request->getContentType());
 }
 
-
-void    UploadStrategy::handleMultipartUpload(Client* client)
+void UploadStrategy::skipBoundary(InputReader& inputReader)
 {
+    if (inputReader.dataSource == FROM_MEMORY)
+    {
+        const std::string& buff = *inputReader.buffer;
+        size_t& i = inputReader.index;
+
+        while (i + 1 < buff.size() && !(buff[i] == '\r' && buff[i + 1] == '\n'))
+            i++;
+
+        if (i + 1 >= buff.size())
+        {
+            inputReader.dataSource = FROM_FD;
+            inputReader.index = 0;
+        }
+        else
+        {
+            i += 2;
+            return ;
+        }
+    }
+
+    if (inputReader.dataSource == FROM_FD)
+    {
+        std::fstream& fd = *inputReader.file;
+        std::string line;
+
+        if (!std::getline(fd, line))
+            throw InternalServerError();
+
+        // Vérifier format HTTP (\r\n → getline enlève \n)
+    }
+}
+
+std::string UploadStrategy::trimValue(const std::string& s)
+{
+    size_t start = 0;
+    size_t end = s.size();
+
+    while (start < end && (s[start] == ' ' || s[start] == '\t' || s[start] == '"' || s[start] == '\''))
+        start++;
+    while (end > start && (s[end-1] == ' ' || s[end-1] == '\t' || s[end-1] == '"' || s[end-1] == '\''))
+        end--;
+    return s.substr(start, end - start);
+}
+
+std::string UploadStrategy::findValue(const std::string& line, const std::string& key)
+{
+    size_t pos = line.find(key);
+    if (pos == std::string::npos)
+        return "";
+
+    pos += key.size();
+
+    if (pos < line.size() && (line[pos] == '=' || line[pos] == ':'))
+        pos++;
+
+    if (pos >= line.size())
+        return "";
+
+    size_t end = line.find(';', pos);
+    if (end == std::string::npos)
+        end = line.size();
+
+    return trimValue(line.substr(pos, end - pos));
+}
+
+MultipartHeader UploadStrategy::parseMultipartHeader(const std::string& header)
+{
+    MultipartHeader mh;
+    size_t pos = 0;
+
+    while (pos < header.size())
+    {
+        size_t lineEnd = header.find('\n', pos);
+        if (lineEnd == std::string::npos)
+            lineEnd = header.size();
+
+        std::string line = header.substr(pos, lineEnd - pos);
+        pos = lineEnd + 1;
+
+        if (!line.empty() && line[line.size() - 1] == '\r')
+            line.erase(line.size() - 1);
+        if (line.empty())
+            continue;
+
+        if (line.find("Content-Disposition:") == 0)
+        {
+            mh.name     = findValue(line, "name");
+            mh.filename = findValue(line, "filename");
+        }
+        else if (line.find("Content-Type:") == 0)
+            mh.contentType = findValue(line, "Content-Type");
+        else if (line.find("Content-Transfer-Encoding:") == 0)
+            mh.contentTransferEncoding = findValue(line, "Content-Transfer-Encoding");
+        else if (line.find("Content-ID:") == 0)
+        {
+            std::string val = findValue(line, "Content-ID");
+            if (!val.empty() && val[0] == '<' && val[val.size()-1] == '>')
+                val = val.substr(1, val.size() - 2);
+            mh.contentId = val;
+        }
+        else if (line.find("Content-Location:") == 0)
+            mh.contentLocation = findValue(line, "Content-Location");
+    }
+
+    return (mh);
+}
+
+MultipartHeader UploadStrategy::getMultipartHeader(InputReader& inputReader)
+{
+    std::string     header;
+
+    if (inputReader.dataSource == FROM_MEMORY)
+    {
+        const std::string& buff = *inputReader.buffer;
+        size_t& i = inputReader.index;
+
+        size_t start = i;
+
+        while (i + 3 < buff.size())
+        {
+            if (buff[i] == '\r' && buff[i + 1] == '\n' &&
+                buff[i + 2] == '\r' && buff[i + 3] == '\n')
+            {
+                header = buff.substr(start, i - start);
+                i += 4;
+                return parseMultipartHeader(header);
+            }
+            i++;
+        }
+
+        header = buff.substr(start);
+        inputReader.dataSource = FROM_FD;
+        inputReader.index = 0;
+    }
+
+    if (inputReader.dataSource == FROM_FD)
+    {
+        std::fstream& fd = *inputReader.file;
+        std::string line;
+
+        while (true)
+        {
+            if (!std::getline(fd, line))
+                throw BadRequestException();
+
+            if (!line.empty() && line[line.size() - 1] == '\r')
+                line.erase(line.size() - 1);
+            else
+                throw BadRequestException();
+
+            if (line.empty())
+                break;
+
+            header += line + "\r\n";
+        }
+
+        return parseMultipartHeader(header);
+    }
+    return (parseMultipartHeader(header));
+}
+
+int UploadStrategy::writeContentUntilBoundary(InputReader& inputReader, MultipartHeader& multipartHeader, Request* request)
+{
+    const std::string& delim    = multipartHeader.delim;
+    const std::string& endDelim = multipartHeader.endDelim;
+
+    if (multipartHeader.filename.empty())
+        throw BadRequestException();
+
+    std::stringstream filePath;
+    filePath << request->getRootDir() 
+                << request->getLocation().path + "/"
+                << multipartHeader.filename
+                << "."
+                << std::time(NULL);
+                
+
+
+    std::ofstream outFile(filePath.str().c_str(), std::ios::binary);
+    if (!outFile.is_open())
+    {
+        throw InternalServerError();  
+    }
+    std::string overlap;
+
+    if (inputReader.dataSource == FROM_MEMORY)
+    {
+        const std::string& buff = *inputReader.buffer;
+        size_t& i = inputReader.index;
+
+        std::string window = buff.substr(i);
+
+        size_t posEnd = window.find(endDelim);
+        size_t posDelim = window.find(delim);
+
+        if (posEnd != std::string::npos &&
+            (posDelim == std::string::npos || posEnd <= posDelim))
+        {
+
+            outFile.write(window.c_str(), posEnd);
+            return (4);
+        }
+
+        if (posDelim != std::string::npos)
+        {
+            outFile.write(window.c_str(), posDelim);
+            i += posDelim;
+            return 0;
+        }
+
+        size_t safeLen = (window.size() > endDelim.size() - 1) ?
+                  (window.size() - (endDelim.size() - 1)) :
+                  0;
+        
+        outFile.write(window.c_str(), safeLen);
+        overlap = window.substr(safeLen);
+        inputReader.dataSource = FROM_FD;
+    }
+
+    if (inputReader.dataSource == FROM_FD)
+    {
+        std::fstream& fd = *inputReader.file;
+        const size_t sizeChunk = 1024;
+        char chunk[sizeChunk];
+
+        while (fd.read(chunk, sizeChunk) || fd.gcount() > 0)
+        {
+            size_t n = fd.gcount();
+            std::string window = overlap + std::string(chunk, n);
+
+            size_t posEnd   = window.find(endDelim);
+            size_t posDelim = window.find(delim);
+
+            if (posEnd != std::string::npos)
+            {
+                outFile.write(window.c_str(), posEnd);
+
+                return 4;
+            }
+            if (posDelim != std::string::npos)
+            {
+                outFile.write(window.c_str(), posDelim);
+                std::streamoff back = (std::streamoff)(window.size() - posDelim);
+                if (back > 0)
+                {
+                    fd.seekg(-back, std::ios::cur);
+                }
+                return 0;
+            }
+
+            size_t safeLen = (window.size() > endDelim.size() - 1) ?
+                    (window.size() - (endDelim.size() - 1)) :
+                    0;
+
+            outFile.write(window.c_str(), safeLen);
+            overlap = window.substr(safeLen);
+        }
+
+        if (!overlap.empty())
+            outFile.write(overlap.c_str(), overlap.size());
+        throw BadRequestException();
+    }
+
+    return (0);
+}
+
+
+void UploadStrategy::handleMultipartUpload(Client* client)
+{
+
+    Request* request = client->getRequest();
+    Response* response = client->getResponse();
 
     // simulation de ce ngnix a fais (ram + buffer fd)
         std::string strBuff;
@@ -289,41 +435,82 @@ void    UploadStrategy::handleMultipartUpload(Client* client)
         }
 
         {
-            strBuff = 
-                "------WebKitFormBoundary7MA4YWxkTrZu0gW\r\n"
-                "Content-Disposition: form-data; name=\"description\"\r\n"
-                "\r\n"
-                "Mon fichier important\r\n"
-                "------WebKitFormBoundary7";
-            std::string strTmp = "MA4YWxkTrZu0gW\r\n"
-                "Content-Disposition: form-data; name=\"file\"; filename=\"document.pdf\"\r\n"
-                "Content-Type: application/pdf\r\n"
-                "\r\n"
-                "%PDF-1.4\n%âãÏÓ\n1 0 obj\n<</Type/Catalog/Pages 2 0 R>>\nendobj\n2 0 obj\n<</Type/Pages/Kids[3 0 R]/Count 1>>\nendobj\n3 0 obj\n<</Type/Page/MediaBox[0 0 612 792]/Parent 2 0 R/Resources<<>>>>\nendobj\nxref\n0 4\n0000000000 65535 f\n0000000015 00000 n\n0000000065 00000 n\n0000000118 00000 n\ntrailer\n<</Size 4/Root 1 0 R>>\nstartxref\n204\n%%EOF\n"
-                "\r\n"
-                "------WebKitFormBoundary7MA4YWxkTrZu0gW--\r\n";
+        // std::string body = 
+        //     "------WebKitFormBoundarysyCQvabA6mzrJ2y5\r\n"
+        //     "Content-Disposition: form-data; name=\"file\"; filename=\"test.sh\"\r\n"
+        //     "Content-Type: application/x-shellscript\r\n"
+        //     "\r\n"
+        //     "echo \"hello aravelom!\"\r\n"
+        //     "\r\n"
+        //     "------WebKitFormBoundarysyCQvabA6mzrJ2y5--\r\n";
+
+        //     request->setBody(body);
+
+            size_t pos = request->getBody()._str_buffer.size() / 2;
+
+            strBuff = request->getBody()._str_buffer.substr(0, pos);
+
+            std::cout << "💓💓💓💓" << std::endl;
+            std::cout << strBuff << std::endl;
+            std::cout << "💓💓💓💓" << std::endl;
+
+
+            std::string strTmp = request->getBody()._str_buffer.substr(pos + 1);
 
                 fdBuff << strTmp;
                 fdBuff.seekg(0);
         }
 
-    // -------------------------
+    InputReader inputReader;
 
-    // while (1)
-    // {
-    //     for (size_t i = 0; i < strBuff.size(); )
-    //     {
-    //         skapBondary();
-    //         MultipartHeader multipartHeader = getMultipartHeader(i);
-    //         parsingContent(multipartHeader, i);
-    //     }
-    //     for (endline in buff fd)
-    //     {
-    //         skapBondary();
-    //         MultipartHeader multipartHeader = getMultipartHeader(i);
-    //         parsingContent(multipartHeader, i);
-    //     }
-    // }
-    responseData(client->getResponse());
+    inputReader.buffer = &(strBuff);
+    inputReader.file = &(fdBuff);
+    inputReader.dataSource = FROM_MEMORY;
+    inputReader.index = 0;
+
+    std::string boundary = request->getHeaders()["content-type"];
+    boundary = findValue(boundary, "boundary");
+
+
+    {
+        boundary = "----WebKitFormBoundarysyCQvabA6mzrJ2y5";
+    }
+
+    std::string delim = "--" + boundary;
+    std::string endDelim = delim + "--";
+
+    while (1)
+    {
+        int status = 0;
+        MultipartHeader multipartHeader;
+
+        switch (status)
+        {
+            case 0:
+                std::cout << "Skip Bondary \n";
+                skipBoundary(inputReader);
+                status = 1;
+
+            case 1:
+                std::cout << "Get Multipart Header \n";
+                multipartHeader = getMultipartHeader(inputReader);
+                multipartHeader.delim = delim;
+                multipartHeader.endDelim = endDelim;
+                status = 2;
+            case 2:
+                std::cout << "write Content Until Boundary\n";
+                status = writeContentUntilBoundary(inputReader, multipartHeader, request);
+        }
+        if (status == 4)
+            break ;
+    }
+   
+    response->setStatusCode(201);
+    response->setStatusName("Created");
+
+    response->addHeader("Server", "Webserver/1.0");
+    response->addHeader("Location", request->getLocation().path);
+
+    response->setBody(" hello 201 hahahahahahaha ");
 }
 

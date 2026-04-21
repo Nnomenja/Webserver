@@ -178,7 +178,7 @@ void initSimulData(std::vector<UnitConf_t> &configsSimul)
 		l.path = "/up";
 		l.type = UPLOAD;
 		l.return_path = "";
-		l.root = "/home/aravelom/Project/current/Webserver/www";
+		l.root = "/home/aravelom/Project/current/webserver/www";
 		l.auto_index = true;
 		l.index = "";
 

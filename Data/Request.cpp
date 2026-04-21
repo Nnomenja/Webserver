@@ -5,7 +5,7 @@
 #include <algorithm>
 
 Request::Request():_index(0), _parserState(NULL), _method(GET){
-	_body._tmp = 0;
+	_body._content_length = 0;
 };
 
 Request::Request(const Request& other){
@@ -53,6 +53,20 @@ HttpMethod Request::getMethod() const
 	return (_method);
 }
 
+std::string Request::getMethodString() const
+{
+	switch (_method)
+	{
+		case GET:
+			return ("GET");
+		case POST:
+			return ("POST");
+		case DELETE:
+			return ("DELETE");
+		default:
+			return ("");
+	}
+}
 
 const std::string &Request::getPathname() const
 {
@@ -83,7 +97,7 @@ t_body_encode Request::getBodyEncode() const
 
 long Request::getContentLength() const
 {
-	return (_contentLength);
+	return (_body._content_length);
 }
 
 const t_body &Request::getBody() const
@@ -91,9 +105,9 @@ const t_body &Request::getBody() const
 	return (_body);
 }
 
-const size_t&           Request::getBodySize() const
+size_t           Request::getBodySize() const
 {
-	return (_body._tmp);
+	return (_body._content_length);
 }
 
 t_location Request::getLocation() const
@@ -175,6 +189,11 @@ void Request::addQuery(char c)
 	_query.push_back(c);
 }
 
+void Request::setBody(std::string value)
+{
+	_body._str_buffer = value;
+}
+
 std::string &Request::toLowerCase(std::string &src) const
 {
 	std::transform(src.begin(), src.end(), src.begin(), ::tolower);
@@ -193,7 +212,7 @@ bool Request::hasHeader(std::string value) const
 
 void Request::setContenLength(long value)
 {
-	_contentLength = value;
+	_body._content_length = value;
 }
 
 void Request::setBodyEncode(t_body_encode value)
@@ -211,7 +230,7 @@ void Request::addBody(char c)
 			_body._file_buffer.open("body_tmp", std::ios::out | std::ios::trunc);
 		_body._file_buffer.put(c);
 	}
-	_body._tmp++;
+	_body._content_length++;
 }
 
 void Request::setLocation(t_location &value)

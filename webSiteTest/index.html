@@ -1,15 +1,682 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
-    <title>Upload vers /up</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Multipart Lab - HTTP Upload Test</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f6efe6;
+      --bg-accent: #ffe2c1;
+      --surface: #fffaf4;
+      --surface-strong: #fff;
+      --ink: #1f2a37;
+      --muted: #586474;
+      --line: #d8cfc3;
+      --brand: #d1491f;
+      --brand-strong: #a93312;
+      --success: #1b7a4f;
+      --danger: #b03a2e;
+      --shadow: 0 14px 50px rgba(107, 72, 43, 0.12);
+      --radius-lg: 22px;
+      --radius-md: 14px;
+      --radius-sm: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Space Grotesk", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 15% 15%, rgba(255, 226, 193, 0.9), transparent 45%),
+        radial-gradient(circle at 85% 5%, rgba(209, 73, 31, 0.12), transparent 35%),
+        linear-gradient(160deg, var(--bg) 0%, #f2e8da 100%);
+    }
+
+    .container {
+      width: min(1150px, 92vw);
+      margin: 2.2rem auto 3rem;
+      animation: reveal 500ms ease-out both;
+    }
+
+    .hero {
+      border: 1px solid var(--line);
+      background: linear-gradient(120deg, var(--surface) 0%, #fff 80%);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      padding: clamp(1.3rem, 2.5vw, 2.2rem);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -40px;
+      top: -40px;
+      width: 170px;
+      height: 170px;
+      border-radius: 50%;
+      border: 22px solid rgba(209, 73, 31, 0.1);
+      pointer-events: none;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.7rem, 3vw, 2.8rem);
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      margin: 0.75rem 0 0;
+      color: var(--muted);
+      line-height: 1.55;
+      max-width: 80ch;
+    }
+
+    .layout {
+      margin-top: 1.25rem;
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: 1fr;
+    }
+
+    @media (min-width: 900px) {
+      .layout {
+        grid-template-columns: 1.08fr 0.92fr;
+      }
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: var(--surface-strong);
+      box-shadow: var(--shadow);
+      padding: 1rem;
+      animation: slide 420ms ease-out both;
+    }
+
+    .panel h2 {
+      margin: 0 0 0.8rem;
+      font-size: 1.1rem;
+      letter-spacing: 0.01em;
+    }
+
+    .form-row {
+      display: grid;
+      gap: 0.55rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .form-row label {
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    input,
+    textarea,
+    select,
+    button {
+      font: inherit;
+    }
+
+    input,
+    textarea,
+    select {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: #fff;
+      color: var(--ink);
+      padding: 0.65rem 0.75rem;
+      outline: none;
+      transition: border-color 140ms ease, box-shadow 140ms ease;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 90px;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: var(--brand);
+      box-shadow: 0 0 0 3px rgba(209, 73, 31, 0.16);
+    }
+
+    .examples {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 0.7rem;
+    }
+
+    .pill {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 999px;
+      padding: 0.45rem 0.75rem;
+      font-size: 0.86rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 140ms ease, border-color 140ms ease, background 140ms ease;
+    }
+
+    .pill:hover {
+      transform: translateY(-1px);
+      border-color: var(--brand);
+    }
+
+    .pill.active {
+      background: rgba(209, 73, 31, 0.12);
+      border-color: rgba(209, 73, 31, 0.35);
+      color: var(--brand-strong);
+    }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.4rem;
+    }
+
+    button.primary,
+    button.secondary {
+      border-radius: 999px;
+      border: 0;
+      padding: 0.62rem 1rem;
+      cursor: pointer;
+      font-weight: 700;
+      transition: transform 120ms ease, filter 120ms ease;
+    }
+
+    button.primary {
+      background: var(--brand);
+      color: #fff;
+    }
+
+    button.secondary {
+      background: #eef2f7;
+      color: #2b3440;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.03);
+    }
+
+    .note {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.4;
+      margin-top: 0.55rem;
+    }
+
+    .status-box {
+      border: 1px dashed var(--line);
+      border-radius: var(--radius-md);
+      padding: 0.7rem;
+      margin: 0.75rem 0;
+      font-size: 0.92rem;
+      line-height: 1.5;
+      background: #fffdf9;
+    }
+
+    .status-box.ok {
+      border-color: rgba(27, 122, 79, 0.45);
+      background: rgba(27, 122, 79, 0.06);
+      color: var(--success);
+    }
+
+    .status-box.error {
+      border-color: rgba(176, 58, 46, 0.5);
+      background: rgba(176, 58, 46, 0.08);
+      color: var(--danger);
+    }
+
+    pre {
+      margin: 0;
+      padding: 0.85rem;
+      border-radius: var(--radius-md);
+      border: 1px solid #d2dce8;
+      background: #f5f8fb;
+      color: #1f2a37;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.79rem;
+      line-height: 1.5;
+      overflow: auto;
+      max-height: 300px;
+    }
+
+    .spec-list {
+      margin: 0;
+      padding-left: 1rem;
+      color: #304152;
+      line-height: 1.5;
+      display: grid;
+      gap: 0.45rem;
+    }
+
+    .response-title {
+      margin: 0.5rem 0 0.35rem;
+      font-size: 0.92rem;
+      color: var(--muted);
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    @keyframes reveal {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes slide {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
 </head>
 <body>
-    <h1>Test Upload vers /up</h1>
+  <main class="container">
+    <section class="hero">
+      <h1>Multipart Lab</h1>
+      <p class="subtitle">
+        Outil web pour tester ton serveur HTTP upload avec des requetes POST multipart/form-data,
+        sans utiliser curl ou nc. Tu peux charger des fichiers, envoyer des champs texte, ajouter
+        un bloc JSON, et voir un exemple de requete HTTP brute.
+      </p>
+    </section>
 
-    <form action="http://localhost:2002/up" method="POST" enctype="multipart/form-data">
-        <input type="file" name="file"><br><br>
-        <button type="submit">Upload</button>
-    </form>
+    <section class="layout">
+      <article class="panel">
+        <h2>Generateur de requete</h2>
 
+        <div class="form-row">
+          <label for="endpoint">Endpoint cible (POST)</label>
+          <input id="endpoint" type="url" placeholder="http://localhost:8080/upload" />
+        </div>
+
+        <div class="form-row">
+          <label>Choisir un exemple multipart</label>
+          <div id="examplePills" class="examples"></div>
+        </div>
+
+        <form id="multipartForm" novalidate>
+          <div id="dynamicFields"></div>
+
+          <div class="btn-row">
+            <button type="submit" class="primary">Envoyer la requete</button>
+            <button type="button" id="buildPreview" class="secondary">Generer preview HTTP</button>
+            <button type="button" id="resetForm" class="secondary">Reset</button>
+          </div>
+        </form>
+
+        <p class="note">
+          Important: ne force jamais le header Content-Type pour FormData. Le navigateur ajoute
+          automatiquement la bonne boundary multipart.
+        </p>
+
+        <div id="status" class="status-box">Pret a envoyer une requete.</div>
+
+        <p class="response-title">Apercu HTTP brut (exemple)</p>
+        <pre id="requestPreview">Clique sur "Generer preview HTTP".</pre>
+
+        <p class="response-title">Reponse du serveur</p>
+        <pre id="responseOutput">Aucune reponse pour le moment.</pre>
+      </article>
+
+      <aside class="panel">
+        <h2>Exemples multipart inclus</h2>
+        <ol class="spec-list">
+          <li><strong>Texte simple:</strong> champs title + description sans fichier.</li>
+          <li><strong>Single file:</strong> un fichier principal + champ meta.</li>
+          <li><strong>Multiple files:</strong> plusieurs fichiers dans le meme champ files[].</li>
+          <li><strong>Mix JSON + fichier:</strong> payload JSON (Blob) + fichier binaire.</li>
+          <li><strong>Avatar + tags:</strong> fichier image et liste de tags repetes.</li>
+        </ol>
+
+        <p class="note">
+          Ce site est ideal pour verifier le parsing multipart, la validation des limites upload,
+          la gestion des erreurs 4xx/5xx, et les headers de reponse.
+        </p>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    const examples = [
+      {
+        id: "simple-text",
+        label: "Texte simple",
+        description: "Deux champs texte sans fichier",
+        fields: [
+          { name: "title", type: "text", label: "Title", placeholder: "benchmark run" },
+          { name: "description", type: "textarea", label: "Description", placeholder: "upload sans fichier" }
+        ]
+      },
+      {
+        id: "single-file",
+        label: "Single file",
+        description: "Un fichier + champ meta",
+        fields: [
+          { name: "meta", type: "text", label: "Meta", placeholder: "build=staging" },
+          { name: "file", type: "file", label: "Fichier" }
+        ]
+      },
+      {
+        id: "multi-file",
+        label: "Multiple files",
+        description: "Plusieurs fichiers avec le meme nom de part",
+        fields: [
+          { name: "batchId", type: "text", label: "Batch ID", placeholder: "job-42" },
+          { name: "files", type: "file", label: "Fichiers (multiple)", multiple: true }
+        ]
+      },
+      {
+        id: "json-and-file",
+        label: "JSON + fichier",
+        description: "Blob JSON + binaire",
+        fields: [
+          {
+            name: "jsonPayload",
+            type: "textarea",
+            asJsonBlob: true,
+            label: "Payload JSON",
+            placeholder: '{"tenant":"demo","priority":2}'
+          },
+          { name: "binary", type: "file", label: "Fichier binaire" }
+        ]
+      },
+      {
+        id: "avatar-tags",
+        label: "Avatar + tags",
+        description: "Fichier image + tags repetes",
+        fields: [
+          { name: "username", type: "text", label: "Username", placeholder: "alice" },
+          {
+            name: "tags",
+            type: "text",
+            repeatHint: "Separe les tags par virgule (ex: qa,upload,edge)",
+            label: "Tags",
+            placeholder: "qa,upload,edge"
+          },
+          { name: "avatar", type: "file", label: "Avatar image" }
+        ]
+      }
+    ];
+
+    const endpointInput = document.getElementById("endpoint");
+    const examplePills = document.getElementById("examplePills");
+    const dynamicFields = document.getElementById("dynamicFields");
+    const multipartForm = document.getElementById("multipartForm");
+    const requestPreview = document.getElementById("requestPreview");
+    const responseOutput = document.getElementById("responseOutput");
+    const status = document.getElementById("status");
+    const buildPreviewBtn = document.getElementById("buildPreview");
+    const resetFormBtn = document.getElementById("resetForm");
+
+    let selectedExample = examples[0];
+
+    function setStatus(message, kind = "") {
+      status.textContent = message;
+      status.className = `status-box ${kind}`.trim();
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;");
+    }
+
+    function renderExamplePills() {
+      examplePills.innerHTML = "";
+      examples.forEach((ex) => {
+        const pill = document.createElement("button");
+        pill.type = "button";
+        pill.className = "pill";
+        pill.textContent = ex.label;
+        pill.title = ex.description;
+        if (ex.id === selectedExample.id) {
+          pill.classList.add("active");
+        }
+        pill.addEventListener("click", () => {
+          selectedExample = ex;
+          renderExamplePills();
+          renderFields();
+          setStatus(`Exemple actif: ${ex.label}`);
+        });
+        examplePills.appendChild(pill);
+      });
+    }
+
+    function renderFields() {
+      dynamicFields.innerHTML = "";
+      selectedExample.fields.forEach((field) => {
+        const row = document.createElement("div");
+        row.className = "form-row";
+
+        const label = document.createElement("label");
+        label.setAttribute("for", `field-${field.name}`);
+        label.textContent = field.label;
+        row.appendChild(label);
+
+        let input;
+        if (field.type === "textarea") {
+          input = document.createElement("textarea");
+        } else {
+          input = document.createElement("input");
+          input.type = field.type;
+        }
+
+        input.id = `field-${field.name}`;
+        input.name = field.name;
+
+        if (field.placeholder) {
+          input.placeholder = field.placeholder;
+        }
+
+        if (field.multiple) {
+          input.multiple = true;
+        }
+
+        row.appendChild(input);
+
+        if (field.repeatHint) {
+          const hint = document.createElement("div");
+          hint.className = "note";
+          hint.textContent = field.repeatHint;
+          row.appendChild(hint);
+        }
+
+        dynamicFields.appendChild(row);
+      });
+    }
+
+    function buildFormDataAndPreview() {
+      const endpoint = endpointInput.value.trim();
+      if (!endpoint) {
+        setStatus("Ajoute un endpoint cible avant de continuer.", "error");
+        return null;
+      }
+
+      const formData = new FormData();
+      const boundary = `----WebMultipartLab${Math.random().toString(16).slice(2)}`;
+      const bodyLines = [];
+
+      selectedExample.fields.forEach((field) => {
+        const element = document.getElementById(`field-${field.name}`);
+        if (!element) {
+          return;
+        }
+
+        if (field.type === "file") {
+          const files = element.files;
+          if (!files || files.length === 0) {
+            return;
+          }
+
+          Array.from(files).forEach((file) => {
+            formData.append(field.name, file);
+            bodyLines.push(`--${boundary}`);
+            bodyLines.push(`Content-Disposition: form-data; name="${field.name}"; filename="${file.name}"`);
+            bodyLines.push(`Content-Type: ${file.type || "application/octet-stream"}`);
+            bodyLines.push("");
+            bodyLines.push(`[binary data: ${file.name}, ${file.size} bytes]`);
+          });
+          return;
+        }
+
+        const value = element.value;
+        if (!value.trim()) {
+          return;
+        }
+
+        if (field.asJsonBlob) {
+          try {
+            const normalized = JSON.stringify(JSON.parse(value), null, 2);
+            const blob = new Blob([normalized], { type: "application/json" });
+            formData.append(field.name, blob, `${field.name}.json`);
+            bodyLines.push(`--${boundary}`);
+            bodyLines.push(`Content-Disposition: form-data; name="${field.name}"; filename="${field.name}.json"`);
+            bodyLines.push("Content-Type: application/json");
+            bodyLines.push("");
+            bodyLines.push(normalized);
+          } catch {
+            setStatus("Le JSON est invalide. Corrige le payload JSON.", "error");
+            throw new Error("Invalid JSON payload");
+          }
+          return;
+        }
+
+        if (field.name === "tags") {
+          const tags = value.split(",").map((x) => x.trim()).filter(Boolean);
+          tags.forEach((tag) => {
+            formData.append(field.name, tag);
+            bodyLines.push(`--${boundary}`);
+            bodyLines.push(`Content-Disposition: form-data; name="${field.name}"`);
+            bodyLines.push("");
+            bodyLines.push(tag);
+          });
+          return;
+        }
+
+        formData.append(field.name, value);
+        bodyLines.push(`--${boundary}`);
+        bodyLines.push(`Content-Disposition: form-data; name="${field.name}"`);
+        bodyLines.push("");
+        bodyLines.push(value);
+      });
+
+      bodyLines.push(`--${boundary}--`);
+      const requestText = [
+        `POST ${new URL(endpoint).pathname || "/"} HTTP/1.1`,
+        `Host: ${new URL(endpoint).host}`,
+        "Content-Type: multipart/form-data; boundary=" + boundary,
+        "",
+        ...bodyLines
+      ].join("\n");
+
+      return { endpoint, formData, requestText };
+    }
+
+    function renderResponse(result) {
+      responseOutput.textContent = result;
+    }
+
+    buildPreviewBtn.addEventListener("click", () => {
+      try {
+        const data = buildFormDataAndPreview();
+        if (!data) {
+          return;
+        }
+        requestPreview.innerHTML = escapeHtml(data.requestText);
+        setStatus("Preview HTTP genere.");
+      } catch (error) {
+        if (error.message !== "Invalid JSON payload") {
+          setStatus("Impossible de generer le preview.", "error");
+        }
+      }
+    });
+
+    resetFormBtn.addEventListener("click", () => {
+      multipartForm.reset();
+      responseOutput.textContent = "Aucune reponse pour le moment.";
+      requestPreview.textContent = 'Clique sur "Generer preview HTTP".';
+      setStatus("Formulaire vide.");
+    });
+
+    multipartForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      let data;
+
+      try {
+        data = buildFormDataAndPreview();
+        if (!data) {
+          return;
+        }
+      } catch (error) {
+        if (error.message !== "Invalid JSON payload") {
+          setStatus("Erreur de preparation de la requete.", "error");
+        }
+        return;
+      }
+
+      requestPreview.innerHTML = escapeHtml(data.requestText);
+      setStatus("Envoi de la requete en cours...");
+
+      try {
+        const response = await fetch(data.endpoint, {
+          method: "POST",
+          body: data.formData
+        });
+
+        const responseText = await response.text();
+        const headers = [...response.headers.entries()]
+          .map(([k, v]) => `${k}: ${v}`)
+          .join("\n");
+
+        renderResponse(
+          [
+            `HTTP ${response.status} ${response.statusText}`,
+            "",
+            headers || "(aucun header)",
+            "",
+            responseText || "(corps vide)"
+          ].join("\n")
+        );
+
+        setStatus(`Requete envoyee. Code HTTP: ${response.status}`, response.ok ? "ok" : "error");
+      } catch (error) {
+        renderResponse(`Erreur reseau: ${error.message}`);
+        setStatus("Erreur reseau: verifier endpoint/CORS/disponibilite serveur.", "error");
+      }
+    });
+
+    endpointInput.value = "http://localhost:8080/upload";
+    renderExamplePills();
+    renderFields();
+  </script>
 </body>
 </html>
