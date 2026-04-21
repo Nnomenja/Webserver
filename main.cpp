@@ -16,7 +16,7 @@ void handler(int signal)
 	stop = 1;
 }
 
-int main(int c, char **v)
+int main(int c, char **v, char **environ)
 {
 	if (c != 2)
 		return (1);
@@ -25,7 +25,7 @@ int main(int c, char **v)
 
 	Webserv webserv(v[1]);
 
-	if (webserv.init())
+	if (webserv.init(environ))
 		webserv.run();
 
 	return (0);

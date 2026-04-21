@@ -20,35 +20,36 @@
 void DynamicStrategy::process(Client *client, Epoll &epoll, Process &process)
 {
     std::cout << "DynamicStrategy" << std::endl;
-    if (!PathUtils::isPathExist("./cgi/test.cgi") || !PathUtils::isExecutable("./cgi/test.cgi"))
+    std::string ext = client->getRequest()->getLocation().CGI.begin()->first;
+    std::string bin = client->getRequest()->getLocation().CGI[ext];
+    if (!PathUtils::isPathExist(bin) || !PathUtils::isExecutable(bin))
         throw Forbiden();
     int pipefd[2];
     if (pipe(pipefd) == -1)
         throw InternalServerError();
     setEnv(client);
     pid_t pid = fork();
-
     if (pid == -1)
         throw InternalServerError();
     if (pid == 0)
     {
+        dup2(pipefd[0], STDIN_FILENO);
         close(pipefd[0]);
         dup2(pipefd[1], STDOUT_FILENO);
         close(pipefd[1]);
-        execl("./cgi/test.cgi", "./cgi/test.cgi" , (char*)NULL);
-
-        std::cerr << "Failed to execute CGI script: " << strerror(errno) << std::endl;
-        exit(EXIT_SUCCESS);
+        execve(bin.c_str(), (char* const[]){(char*)bin.c_str(), NULL}, client->getEnviron());
+        exit(EXIT_FAILURE);
     }
     else
     {
+        write(pipefd[1], client->getRequest()->getBody()._str_buffer.c_str(),  client->getRequest()->getBody()._content_length);
         close(pipefd[1]);
         client->setCGIInfo(pid, pipefd[0]);
         process.addProcess(pipefd[0], client->getFd());
         std::cout << GREEN << "New CGI:" << pipefd[0] << RESET << std::endl;
         epoll.registerFd(pipefd[0], EPOLLIN);
         client->setProcessingCGI(true);
-        epoll.modify(client->getFd(), EPOLLOUT);
+        // epoll.modify(client->getFd(), EPOLLOUT);
     }
     (void)client;
     (void)epoll;
@@ -77,6 +78,7 @@ void DynamicStrategy::setEnv(Client *client)
     ss.str("");
     ss << client->getEndpoint().port;
     setenv("SERVER_PORT", ss.str().c_str(), 1);
+    setenv("SCRIPT_FILENAME", req->getFullPath().c_str(), 1);
 }
 
 

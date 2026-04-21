@@ -24,6 +24,7 @@ class Client {
         pid_t               _cgi_pid;
         int                 _cgi_output;
         bool                _processing_cgi;
+        char                **_environ;
 
         Client(const Client& other);
         Client& operator=(const Client& other);
@@ -40,7 +41,8 @@ class Client {
         Request             *getRequest();
         Response            *getResponse();
         std::string			getDefaultErrorPagePath(int code) const;
-
+        char                **getEnviron() const;
+        
         void            	setFd(int fd);
         void				setEndpoint(UnitConf_t  value);
 		void				setLocationType(LocationType type);
@@ -58,6 +60,7 @@ class Client {
         bool                isProcessingCGI() const;
         void                endProcessingCGI();
         void                setProcessingCGI(bool value);
+        void                setEnviron(char **environ);
         // void                (*registerFd)(int fd);
 };
 

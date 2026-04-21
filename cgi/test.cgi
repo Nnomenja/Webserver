@@ -12,4 +12,7 @@ echo "SCRIPT: $SCRIPT_NAME"
 echo "PATH_INFO: $PATH_INFO"
 echo "CONTENT_LENGTH: $CONTENT_LENGTH"
 echo "CONTENT_TYPE: $CONTENT_TYPE"
-echo ""echo "<html><body><h1>Hello from CGI!</h1></body></html>"
+echo "-----------------------------------BODY-----------------------------------"
+    # Read the body of the request
+# read -n "$CONTENT_LENGTH" POST_DATA
+# echo "$POST_DATA"

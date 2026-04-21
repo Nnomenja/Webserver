@@ -200,7 +200,7 @@ void initSimulData(std::vector<UnitConf_t> &configsSimul)
 }
 // <- SIMULATION
 
-bool Webserv::init( void )
+bool Webserv::init( char **environ )
 {
     if (_isAlreadyInit)
         return (true);
@@ -239,6 +239,7 @@ bool Webserv::init( void )
         }
     //=============================================================
     _isAlreadyInit = true;
+	_environ = environ;
     return (true);
 }
 
@@ -379,6 +380,7 @@ void Webserv::run(void)
 				// sleep(90);
 				std::cout << "-----------------" << _clients.size() << std::endl;
 				_clients[tmp.fd]->setFd(tmp.fd);
+				_clients[tmp.fd]->setEnviron(_environ);
 				std::cout << "---------X--------" <<std::endl;
 				_clients[tmp.fd]->setEndpoint(_config.findEndpointByFd(tmp.serverFd));
 				std::cout << "---------X--------" << _clients.size()<<std::endl;
@@ -406,19 +408,28 @@ void Webserv::run(void)
 
 						_process.removeProcess(currentFd);
 						_epoll.remove(currentFd);
-						if (WEXITSTATUS(status) != 0)
+						client->endProcessingCGI();
+						if (WIFSIGNALED(status))
 						{
 							DynamicStrategy::error(client, _epoll, _process, ServerException(504, "Gateway Timeout"));
+							std::cout << YELLOW << "CGI script failed with status: " << WEXITSTATUS(status) << RESET << std::endl;
 							continue;
 						}
-						client->endProcessingCGI();
 						std::cout << "CGI RESPONSE SIZE \n" << YELLOW <<  client->getResponse()->getCgiResponse() << RESET  << std::endl;
 						simulateClient(client);
 						
 						std::cout << "Nbr client: " << _clients.size() << std::endl;
 					}
 					else
+					{
+						if (_clients[currentFd]->isCGI())
+						{
+							std::cout << RED << "Killing CGI process for client fd: " << currentFd << RESET << std::endl;
+							Client *client = _clients[currentFd];
+							kill(client->getCGIPid(), SIGKILL);
+						}
 						removeClientHttp(currentFd);
+					}
 					std::cout << "[" << currentFd << "]: disconnected" << std::endl;
 					continue;
 				}
@@ -444,12 +455,19 @@ void Webserv::run(void)
 								DynamicStrategy::error(client, _epoll, _process, ServerException(502, "Bad Gateway"));
 							else
 								client->getResponse()->addCgiResponse(std::string(buff, n), n);
+							std::cout << "######FINISH READING CGI#######" << std::endl;
 							continue;
 						}
 						else
 						{
-							std::cout << "######READ HTTP REQUEST#######" << std::endl;
 							 client = _clients[currentFd];
+							if (client->isProcessingCGI())
+							{
+								if (_process.isTimeout(CGI_TIMEOUT, client->getCGIOutput()) || read(client->getFd(), NULL, 1) == -1)
+									kill(client->getCGIPid(), SIGKILL);
+								continue;
+							}
+							std::cout << "######READ HTTP REQUEST#######" << std::endl;
 							if (!readtHttpRequest(client))
 								continue;
 							RequestProcessor	process;
@@ -469,12 +487,6 @@ void Webserv::run(void)
 				else if (_epoll.getEvents()[i].events & EPOLLOUT)
 				{
 					client = _clients[currentFd];
-					if (client->isProcessingCGI())
-					{
-						if (_process.isTimeout(CGI_TIMEOUT, client->getCGIOutput()))
-							kill(client->getCGIPid(), SIGKILL);
-						continue;
-					}
 					client->generateResponse();
 					sendHttpResponse(client);
 					removeClientHttp(client->getFd());

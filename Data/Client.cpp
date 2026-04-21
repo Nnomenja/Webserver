@@ -110,7 +110,10 @@ std::string Client::getDefaultErrorPagePath(int code) const
 	return ("");
 }
 
-
+char **Client::getEnviron() const
+{
+	return (_environ);
+}
 
 /**============================================
  *               SETTERS
@@ -150,6 +153,11 @@ bool Client::isCGI() const
 {
 	return (_cgi_pid != -1 && _cgi_output != -1);
 }
+void Client::setEnviron(char **environ)
+{
+	_environ = environ;
+}
+
 /**============================================
  *               UTILS
  *=============================================**/

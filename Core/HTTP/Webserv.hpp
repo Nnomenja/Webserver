@@ -39,7 +39,7 @@ class Webserv
         ~Webserv();
 
         Webserv(const std::string& fileConfigName);
-        bool    init( void );
+        bool    init( char **environ );
         void    run( void );
         void    clear( void );
 
@@ -69,6 +69,7 @@ class Webserv
         std::vector<ServerSocket*>      _serverSockets;
         std::map<int, Client*>          _clients;
         Process                         _process;
+        char                            **_environ;
 };
 
 #endif /* WEBSERV_HPP */
