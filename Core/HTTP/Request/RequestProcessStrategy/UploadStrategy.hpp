@@ -44,9 +44,8 @@ enum BodyType
 typedef struct SInputReader
 {
     DataSource          dataSource;
-    const std::string*  buffer;
-    size_t index;
-    std::fstream*       file;
+    t_body              *body;
+    size_t              index;
 }           InputReader;
 
 
@@ -67,7 +66,6 @@ class UploadStrategy : public IRequestStrategy
         BodyType bodyTypeDetection(Request* request);
         std::string creatUploadFileName(Request* request);
 
-        void     handleDirectUpload(Client* client);
         void     handleMultipartUpload(Client* client);
 
         void    skipBoundary(InputReader& inputReader);

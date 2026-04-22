@@ -68,7 +68,7 @@ class Request {
                                 &getHeaderBykey(std::string key);
         t_body_encode           getBodyEncode() const;
         long                    getContentLength() const;
-        const t_body&           getBody() const;        
+        t_body&                 getBody();        
         size_t                  getBodySize() const;        
         t_location              getLocation() const;
         const std::string 

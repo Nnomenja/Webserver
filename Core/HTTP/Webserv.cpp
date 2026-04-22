@@ -175,7 +175,7 @@ void initSimulData(std::vector<UnitConf_t> &configsSimul)
 		u.method_arr.push_back("DELETE");
 		
 		u.methods = GET + POST + DELETE;
-		u.max_body_size = 100000;
+		u.max_body_size = 1000000000;
 
 		l.path = "/up";
 		l.type = UPLOAD;

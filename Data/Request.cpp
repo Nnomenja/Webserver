@@ -100,7 +100,7 @@ long Request::getContentLength() const
 	return (_body._content_length);
 }
 
-const t_body &Request::getBody() const
+t_body &Request::getBody()
 {
 	return (_body);
 }
@@ -232,7 +232,7 @@ void Request::addBody(char c, bool inc)
 	else
 	{
 		if (!_body._file_buffer.is_open())
-			_body._file_buffer.open("body_tmp", std::ios::out | std::ios::trunc);
+			_body._file_buffer.open("body_tmp", std::ios::out | std::ios::in | std::ios::trunc);
 		_body._file_buffer.put(c);
 	}
 	if (inc)
