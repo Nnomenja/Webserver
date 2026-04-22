@@ -220,7 +220,7 @@ void Request::setBodyEncode(t_body_encode value)
 	_body_encode = value;
 }
 
-void Request::addBody(char c)
+void Request::addBody(char c, bool inc)
 {
 	if (_body._str_buffer.size() < BODY_BUFFER_SIZE_MAX)
 		_body._str_buffer.push_back(c);
@@ -230,7 +230,8 @@ void Request::addBody(char c)
 			_body._file_buffer.open("body_tmp", std::ios::out | std::ios::trunc);
 		_body._file_buffer.put(c);
 	}
-	_body._content_length++;
+	if (inc)
+		 _body._content_length++;
 }
 
 void Request::setLocation(t_location &value)

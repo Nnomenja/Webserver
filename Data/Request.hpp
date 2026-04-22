@@ -94,7 +94,7 @@ class Request {
         void                    setContenLength(long value);
         void                    setBodyEncode(t_body_encode value);
         void                    setRedirectionPath(std::string &value);
-        void                    addBody(char c);
+        void                    addBody(char c, bool inc);
         std::string             &toLowerCase(std::string &src) const;
 };
 

@@ -17,7 +17,7 @@ void    BodyParser::readBodyThroughContentLength()
     for (size_t i = _target->getParserIndex(); i < _target->getBufferSize(); i++)
     {
         c = _target->getBuffer()[i];
-        _target->addBody(c);
+        _target->addBody(c, false);
         _target->incrementParserIndex();
         _tmp--;
         if (_tmp == 0)
@@ -155,7 +155,7 @@ void    BodyParser::readBodyAsChuncked()
                 handleChunkSizeLineChar(c);
                 break;
             case CHUNK_DATA:
-                _target->addBody(c);
+                _target->addBody(c, true);
                 _chunkBytesRemaining--;
                 if (_chunkBytesRemaining == 0)
                     _chunkState = CHUNK_DATA_END;
