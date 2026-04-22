@@ -26,34 +26,34 @@ int main(void)
 
     printf("---- BODY ----\n");
 
-    /* --- READ BODY FROM STDIN --- */
-    if (content_length > 0)
-    {
-        char *body = (char *)malloc(content_length + 1);
-        if (!body)
-        {
-            printf("Memory allocation failed\n");
-            return 1;
-        }
+    // /* --- READ BODY FROM STDIN --- */
+    // if (content_length > 0)
+    // {
+    //     char *body = (char *)malloc(content_length + 1);
+    //     if (!body)
+    //     {
+    //         printf("Memory allocation failed\n");
+    //         return 1;
+    //     }
 
-        int total = 0;
-        while (total < content_length)
-        {
-            int n = read(STDIN_FILENO, body + total, content_length - total);
-            if (n <= 0)
-                break;
-            total += n;
-        }
+    //     int total = 0;
+    //     while (total < content_length)
+    //     {
+    //         int n = read(STDIN_FILENO, body + total, content_length - total);
+    //         if (n <= 0)
+    //             break;
+    //         total += n;
+    //     }
 
-        body[total] = '\0';
-        printf("%s\n", body);
+    //     body[total] = '\0';
+    //     printf("%s\n", body);
 
-        free(body);
-    }
-    else
-    {
-        printf("(no body)\n");
-    }
+    //     free(body);
+    // }
+    // else
+    // {
+    //     printf("(no body)\n");
+    // }
 
     printf("----------------\n");
     printf("<html><body><h1>Hello from C CGI!</h1></body></html>\n");
