@@ -20,7 +20,7 @@
  *   
  *========================================================================**/
 
-void StaticStrategy::process(Client *client)
+void StaticStrategy::process(Client *client, Epoll &epoll, Process &process)
 {
     std::cout << "StaticStrategy processing..." << std::endl;
     std::string fullpath = client->getRequest()->getFullPath();
@@ -40,4 +40,6 @@ void StaticStrategy::process(Client *client)
     client->getResponse()->setContentType(MimeTypes::fromFilename(fullpath));
     client->getResponse()->addHeader("Connection", "close");
     std::cout << "StaticStrategy processing done" << std::endl;
+    (void)epoll;
+    (void)process;
 }

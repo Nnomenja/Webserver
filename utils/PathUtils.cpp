@@ -96,3 +96,8 @@ std::string PathUtils::getFileContentbypath(std::string pathname)
     file.close();
     return (fileContent);
 }
+
+bool PathUtils::isExecutable(const std::string &path)
+{
+	return (access(path.c_str(), X_OK) == 0);
+}

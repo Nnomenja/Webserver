@@ -21,7 +21,7 @@ typedef struct s_body
 {
     std::string     _str_buffer;
     std::ofstream   _file_buffer;
-    int             _tmp;
+    int             _content_length;
 }   t_body;
 
 class ARequestParserState;
@@ -42,7 +42,6 @@ class Request {
         /*==== Request header ====*/
 
         std::map<std::string, std::string>	_headers;
-        long                                _contentLength;
         t_body_encode                       _body_encode;
         /*==== Request Body ====*/
         t_body                              _body;
@@ -59,6 +58,7 @@ class Request {
 		size_t					getParserIndex() const;
 		std::string             getBuffer() const;
         HttpMethod              getMethod() const;
+        std::string             getMethodString() const;
         size_t                  getBufferSize() const;
 		const std::string       &getPathname() const;
 		std::string             getQuery() const;
@@ -69,12 +69,13 @@ class Request {
         t_body_encode           getBodyEncode() const;
         long                    getContentLength() const;
         const t_body&           getBody() const;        
-        const size_t&           getBodySize() const;        
+        size_t                  getBodySize() const;        
         t_location              getLocation() const;
         const std::string 
                                 &getLocationDefaultIndex() const;
         std::string             getFullPath() const;
         std::string             getRootDir() const;
+        std::string             getPathExtension() const;
 
         void                    setLocation(t_location &value);
         void                    setLocationType(LocationType value);
@@ -85,6 +86,7 @@ class Request {
         void                    setFullPath(std::string value);
         void                    setRoot(std::string value);
         void                    addPathname(char c);
+        void                    setBody(std::string value);
         void                    addQuery(char c);
 		void					incrementParserIndex();
 		void					resetParserIndex();
@@ -93,7 +95,7 @@ class Request {
         void                    setContenLength(long value);
         void                    setBodyEncode(t_body_encode value);
         void                    setRedirectionPath(std::string &value);
-        void                    addBody(char c);
+        void                    addBody(char c, bool inc);
         std::string             &toLowerCase(std::string &src) const;
 };
 

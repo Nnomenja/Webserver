@@ -6,7 +6,7 @@
 
 class StaticStrategy : public IRequestStrategy {
 public:
-    void process(Client* client);
+    void process(Client* client, Epoll &epoll, Process &process);
 };
 
 #endif

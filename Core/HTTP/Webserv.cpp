@@ -3,7 +3,9 @@
 #include "../../Data/Request.hpp"
 #include "../../Data/Client.hpp"
 #include "./Request/RequestProcessor.hpp"
+#include "./Request/RequestProcessStrategy/DynamicStrategy.hpp"
 #include <signal.h>
+#include <string.h>
 #include "ErrorProcess.hpp"
 extern volatile sig_atomic_t stop;
 
@@ -103,11 +105,11 @@ void initSimulData(std::vector<UnitConf_t> &configsSimul)
 		// u.type = STATIC;
 		u.max_body_size = 10000000;
 
-		l.type = STATIC;
+		l.type = DYNAMIC;
 
 	l.path = "/site";
-	u.root = "/home/mamenosoa/42/webserver/www";
-	l.root = "/home/mamenosoa/42/webserver/www";
+	u.root = "/home/nnomenja/Desktop/42/webserver/www";
+	l.root ="/home/nnomenja/Desktop/42/webserver/www";
 	l.auto_index = true;
 	// 400
 	t_error_page error1;
@@ -198,21 +200,21 @@ void initSimulData(std::vector<UnitConf_t> &configsSimul)
 }
 // <- SIMULATION
 
-bool Webserv::init( void )
+bool Webserv::init()
 {
     if (_isAlreadyInit)
         return (true);
 	// REAL ->
-    // try
-    // {
-    //     Config configTmp(_fileConfigName);
-    //     _config = configTmp;
-    // }
-    // catch(const Config::ConfigException& e)
-    // {
-    //     std::cerr << "Error: " << e.what() << std::endl;
-    //     return (false);
-    // }
+    try
+    {
+        Config configTmp(_fileConfigName);
+        _config = configTmp;
+    }
+    catch(const Config::ConfigException& e)
+    {
+        std::cerr << "Error: " << e.what() << std::endl;
+        return (false);
+    }
 	// <- REAL
 
     if (!createServerSockets())
@@ -243,15 +245,15 @@ bool Webserv::init( void )
 bool Webserv::createServerSockets( void )
 {
 	// REAL ->
-    // _serverSocketsNumber = _config.getN();
+    _serverSocketsNumber = _config.getN();
 
-	// std::vector<UnitConf_t> configs = _config.getConfigs();
+	std::vector<UnitConf_t> configs = _config.getConfigs();
 	// <- REAL
 
 	// SIMULATION ->
-	_serverSocketsNumber = 3;
-	std::vector<UnitConf_t> configs;
-	initSimulData(configs);
+	// _serverSocketsNumber = 3;
+	// std::vector<UnitConf_t> configs;
+	// initSimulData(configs);
 	// <- SIMULATION
 
     for (int i = 0; i < _serverSocketsNumber; i++)
@@ -347,7 +349,6 @@ void Webserv::run(void)
 	while (!stop)
 	{
 		int nFds = _epoll.wait(epollTimeOut);
-
 		if (nFds < 0)
 		{
             this->clear();
@@ -374,7 +375,7 @@ void Webserv::run(void)
 				// }
 				
 				std::cout << "--------" << tmp.fd << "---------" << _clients.size() <<std::endl;
-				_clients[tmp.fd] = new Client();
+				_clients[tmp.fd] = new Client(_envs);
 				// sleep(90);
 				std::cout << "-----------------" << _clients.size() << std::endl;
 				_clients[tmp.fd]->setFd(tmp.fd);
@@ -388,16 +389,46 @@ void Webserv::run(void)
 			// 2. Socket's type is client
 			else
 			{
-
-				Client *client = _clients[currentFd];
-
+				Client *client;
 				/**============================================
 				 *               SOCKET ERROR
 				 *=============================================**/
-
 				if ((_epoll.getEvents()[i].events & (EPOLLERR | EPOLLHUP)))
 				{
-					removeClientHttp(currentFd);
+					std::cout << "#### SOCKET ERROR CHECKING ####" << std::endl;
+					if (_process.isProcess(currentFd))
+					{
+						Client *client = _clients[_process.getClientFd(currentFd)];
+						int status;
+	
+						waitpid(client->getCGIPid(), &status, WNOHANG);
+						std::cout << YELLOW << "status code: " << WEXITSTATUS(status) << RESET << std::endl;
+
+						_process.removeProcess(currentFd);
+						_epoll.remove(currentFd);
+						client->endProcessingCGI();
+						if ((WIFEXITED(status) && WEXITSTATUS(status) != 0) || WIFSIGNALED(status))
+						{
+							std::cout << RED << "CGI process was killed by signal: " << WTERMSIG(status) << RESET << std::endl;
+							DynamicStrategy::error(client, _epoll, _process, ServerException(504, "Gateway Timeout"));
+							std::cout << YELLOW << "CGI script failed with status: " << WEXITSTATUS(status) << RESET << std::endl;
+							continue;
+						}
+						std::cout << "CGI RESPONSE SIZE \n" << YELLOW <<  client->getResponse()->getCgiResponse() << RESET  << std::endl;
+						simulateClient(client);
+						
+						std::cout << "Nbr client: " << _clients.size() << std::endl;
+					}
+					else
+					{
+						if (_clients[currentFd]->isCGI())
+						{
+							std::cout << RED << "Killing CGI process for client fd: " << currentFd << RESET << std::endl;
+							Client *client = _clients[currentFd];
+							kill(client->getCGIPid(), SIGKILL);
+						}
+						removeClientHttp(currentFd);
+					}
 					std::cout << "[" << currentFd << "]: disconnected" << std::endl;
 					continue;
 				}
@@ -408,46 +439,58 @@ void Webserv::run(void)
 
 				if (_epoll.getEvents()[i].events & EPOLLIN)
 				{
+					std::cout << "#### READING [" << currentFd << "]####" << std::endl;
 					try
 					{
-						if (!readtHttpRequest(client))
+						if (_process.isProcess(currentFd))
+						{
+							std::cout << "######READ CGI#######" << std::endl;
+							char buff[BODY_MAX_BYTES];
+							client = _clients[_process.getClientFd(currentFd)];
+							bzero(buff, BODY_MAX_BYTES);
+							ssize_t n = read(client->getCGIOutput(), buff, BODY_MAX_BYTES);
+							if (n == -1 || (client->getResponse()->getCgiResponseSize() + n) > BODY_MAX_BYTES)
+								DynamicStrategy::error(client, _epoll, _process, ServerException(502, "Bad Gateway"));
+							else
+								client->getResponse()->addCgiResponse(std::string(buff, n), n);
+							std::cout << "######FINISH READING CGI#######" << std::endl;
 							continue;
-						RequestProcessor	process;
-						process.processRequest(_clients[currentFd]);
-						// simulateClient(client); // this is an example of response because there are not strategy request implemented
+						}
+						else
+						{
+							 client = _clients[currentFd];
+							if (client->isProcessingCGI())
+							{
+								if (_process.isTimeout(CGI_TIMEOUT, client->getCGIOutput()) || read(client->getFd(), NULL, 1) == -1)
+									kill(client->getCGIPid(), SIGKILL);
+								continue;
+							}
+							std::cout << "######READ HTTP REQUEST#######" << std::endl;
+							if (!readtHttpRequest(client))
+								continue;
+							RequestProcessor	process;
+							process.processRequest(_clients[currentFd], _epoll, _process);
+						}
 					}
 					catch(const ServerException& e)
 					{
 						std::cout << "#####ERROR: " << e.getCode() << " " << e.getName() << std::endl;
 						ErrorProcess::processError(e, _clients[currentFd]);
 					}
-					client->generateResponse();
 					_epoll.modify(client->getFd(), EPOLLOUT);
-					std::cout << "[" << client->getFd() << "]: read successfull" << std::endl;
 				}
-	
 				/**============================================
 				 *               SOCKET WRITE
 				 *=============================================**/
-
 				else if (_epoll.getEvents()[i].events & EPOLLOUT)
 				{
-					 // because there are not request process strategy implemented 
-					
-					// Client		_clients[currentFd];
-
-
-					/**========================================================================
-					 * todo                             TODO
-					 *   - set client_socket buffer by client.getResponse();
-					 *   - set client_socket buffer size by client.getResponse size
-					 *========================================================================**/
-					std::cout << "POLLOUT" << std::endl;
-					// simulateClient(client); // this is an example of response because there are not strategy request implemented
-
+					client = _clients[currentFd];
+					if (client->isProcessingCGI())
+						continue;
+					client->generateResponse();
 					sendHttpResponse(client);
 					removeClientHttp(client->getFd());
-					std::cout << "[" << currentFd << "]: write successfull" << std::endl;
+					std::cout << "[" << currentFd << "]: disconnected client size" << _clients.size() << std::endl;
 				}
 			}
 		}
@@ -480,7 +523,7 @@ void Webserv::run(void)
 			}
 			else
 				++it;
-		}
+		}		
 	}	
 }
 
@@ -579,3 +622,4 @@ void Webserv::simulateClient(Client *client)
 		client->setBuffer(response);
 		client->setBufferSize(response.size());
 }
+

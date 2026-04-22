@@ -18,6 +18,7 @@ class PathUtils
         static bool         isTraversableDir(const std::string& path);
         static std::string  getFileContentbypath(std::string pathname);
         static std::string  normalizePathname(std::string pathname);
+        static bool         isExecutable(const std::string& path);
 
 };
 

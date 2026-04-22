@@ -6,7 +6,7 @@
 #include "../../Template.hpp"
 
 
-void DirectoryStrategy::process(Client *client)
+void DirectoryStrategy::process(Client *client, Epoll &epoll, Process &process)
 {
     DIR*                    dir;
     Request                 *req;
@@ -23,7 +23,7 @@ void DirectoryStrategy::process(Client *client)
     if (dir == NULL)
         throw Forbiden();
 
-    std::cout << "*********************DirectoryStrategy not implemented*******************" << std::endl;
+    std::cout << "*********************DirectoryStrategy implemented*******************" << std::endl;
 
     // back
     tmp.name = "..";
@@ -64,4 +64,6 @@ void DirectoryStrategy::process(Client *client)
     client->getResponse()->addHeader("Content-Type", "text/html; charset=UTF-8");
     std::cout << "*******************************************************" << std::endl;
     (void)client;
+    (void)epoll;
+    (void)process;
 }

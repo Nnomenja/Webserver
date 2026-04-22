@@ -15,7 +15,7 @@ class UploadStrategy : public IRequestStrategy
         UploadStrategy();
         ~UploadStrategy();
 
-        void process(Client* client);
+        void process(Client* client, Epoll &epoll, Process &process);
 
     private :
 

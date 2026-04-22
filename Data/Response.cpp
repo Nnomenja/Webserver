@@ -5,6 +5,8 @@
 
 Response::Response():_status_code(0){
 	std::cout << "Response called" << std::endl;
+    _cgi_response.size = 0;
+    _cgi_response.value = "";
 };
 
 Response::Response(const Response& other){
@@ -141,6 +143,22 @@ std::string Response::getBody() const
 	return (_body);
 }
 
+std::string Response::getCgiResponse() const
+{
+    return (_cgi_response.value);
+}
+
+void Response::setCgiResponse(const std::string &response)
+{
+    _cgi_response.value = response;
+    _cgi_response.size += response.size();
+}
+
+size_t Response::getCgiResponseSize() const
+{
+    return (_cgi_response.size);
+}
+
 const std::map<std::string, std::string> &Response::getHeaders() const
 {
 	return (_headers);
@@ -167,4 +185,10 @@ void Response::setContentLength(long value)
 	std::stringstream ss;
 	ss << value;
 	addHeader("Content-Length", ss.str());
+}
+
+void Response::addCgiResponse(const std::string &response, size_t size)
+{
+    _cgi_response.value += response;
+    _cgi_response.size += size;
 }

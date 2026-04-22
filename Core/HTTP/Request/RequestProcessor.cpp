@@ -58,16 +58,26 @@ LocationType RequestProcessor::detectStategyType(Client *client)
 			std::cout << "Path does not exist: " << fullpath << std::endl;
 			throw NotFound();
 		}
+
+		if (type == DYNAMIC)
+		{
+			std::string ext = req->getPathExtension();
+			std::string cgi_bin = client->getCGIbinByExtension(ext);
+			if (cgi_bin.empty())
+				return (STATIC);
+			client->setCGIbin(cgi_bin);
+		}
 	}
 	return (type);
 }
 
-void RequestProcessor::processRequest(Client *client)
+void RequestProcessor::processRequest(Client *client, Epoll &epoll, Process &process)
 {
 	LocationType 		type = detectStategyType(client);
 	IRequestStrategy	*strategy = createStrategy(type);
-	strategy->process(client);
+	strategy->process(client, epoll, process);
 	delete strategy;
+	// client.set
 	// if (client->getRequest())
 	// 	delete  client->getRequest();
 	// if (client->getResponse())

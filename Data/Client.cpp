@@ -2,13 +2,15 @@
 #include "../utils/utils.hpp"
 #include <algorithm>
 
-Client::Client():_start_time_ms(get_time_ms()), _req(new Request()), _res(new Response()), _parsed(false){
+Client::Client(std::map<std::string, std::string> &envs):_start_time_ms(get_time_ms()), _req(new Request()), _res(new Response()), _parsed(false), _cgi_pid(-1), _cgi_output(-1), _processing_cgi(false), _envs(envs){
   std::cout << "Create client" << std::endl;
 //   this->_start_time_ms = get_time_ms();
 	_req->setRoot(_endpoint.root);
+	_bufferSize = 0;
+	_buffer = "";
 };
 
-Client::Client(const Client& other){
+Client::Client(const Client& other):_envs(other._envs){
 	std::cout << "Copy client" << std::endl;
 	_fd = other._fd;
     _buffer = other._buffer;
@@ -73,6 +75,15 @@ Response *Client::getResponse()
 	return (_res);
 }
 
+int Client::getCGIOutput() const
+{
+	return (_cgi_output);
+}
+
+pid_t Client::getCGIPid() const
+{
+	return (_cgi_pid);
+}	
 
 std::string findDefaultErrorPagePathBySource(int code, const std::vector<t_error_page> &error_pages)
 {
@@ -99,6 +110,18 @@ std::string Client::getDefaultErrorPagePath(int code) const
 	return ("");
 }
 
+const std::map<std::string, std::string> &Client::getEnv() const
+{
+	return (_envs);
+}
+
+std::string Client::getCGIbinByExtension(std::string ext) const
+{
+	if (_req->getLocation().CGI.find(ext) != _req->getLocation().CGI.end())
+		return (_req->getLocation().CGI[ext]);
+	return ("");
+}
+
 /**============================================
  *               SETTERS
  *=============================================**/
@@ -112,7 +135,7 @@ void Client::setLocationType(LocationType type)
 	_req->setLocationType(type);
 }
 
-void Client::setBuffer(std::string &value)
+void Client::setBuffer(std::string value)
 {
 	_buffer = value;
 }
@@ -125,6 +148,22 @@ void Client::setBufferSize(size_t value)
 void Client::setFd(int fd)
 {
 	_fd = fd;
+}
+
+void	Client::setCGIInfo(pid_t pid, int output_fd)
+{
+	_cgi_pid = pid;
+	_cgi_output = output_fd;
+}
+
+bool Client::isCGI() const
+{
+	return (_cgi_pid != -1 && _cgi_output != -1);
+}
+void Client::setEnv(std::string key, std::string value)
+
+{
+	_envs[key] = value;
 }
 
 /**============================================
@@ -173,4 +212,30 @@ void	Client::generateResponse()
 	_bufferSize = _buffer.size();
 	// delete _req;
 	// delete _res;
+}
+
+bool Client::isProcessingCGI() const
+{
+	return (_processing_cgi);
+}
+
+void Client::endProcessingCGI()
+{
+	_processing_cgi = false;
+}
+
+
+void Client::setProcessingCGI(bool value)
+{
+	_processing_cgi = value;
+}
+
+void Client::setCGIbin(std::string &value)
+{
+	_cgi_bin = value;
+}
+
+std::string Client::getCGIbin() const
+{
+	return (_cgi_bin);
 }

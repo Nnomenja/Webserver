@@ -7,15 +7,31 @@
 #ifndef WEBSERV_HPP
 #define WEBSERV_HPP
 
-# include <ctime>
+#include <ctime>
+#include <algorithm>
+#include <sys/wait.h>
 
 # include "../Settings/Config.hpp"
 # include "../Network/Epoll.hpp"
 # include "../Network/ServerSocket.hpp"
 # include "../../Exception/ServerException.hpp"
 #include "../../Data/Client.hpp"
+#include "../../Data/Process.hpp"
 
 #define MAXREADBYTES 1024
+#define BODY_MAX_BYTES 409600
+#define CGI_TIMEOUT 50000 // ms
+
+#define GREEN "\033[32m"
+#define RESET "\033[0m"
+#define RED   "\033[31m"
+#define YELLOW "\033[33m"
+typedef struct  s_child_process
+{
+    int     fd_client;
+    int     fd_output;
+    pid_t   pid;
+}   t_child_process;
 
 class Webserv
 {
@@ -23,7 +39,7 @@ class Webserv
         ~Webserv();
 
         Webserv(const std::string& fileConfigName);
-        bool    init( void );
+        bool    init();
         void    run( void );
         void    clear( void );
 
@@ -45,13 +61,16 @@ class Webserv
 
 		void		    simulateClient(Client* client);
 
-        bool						_isAlreadyInit;
-        std::string					_fileConfigName;
-        Config						_config;
-        Epoll						_epoll;
-        int							_serverSocketsNumber;
-        std::vector<ServerSocket*>	_serverSockets;
-        std::map<int, Client*>       _clients;
+        bool                                _isAlreadyInit;
+        std::string                         _fileConfigName;
+        Config                              _config;
+        Epoll                               _epoll;
+        int                                 _serverSocketsNumber;
+        std::vector<ServerSocket*>          _serverSockets;
+        std::map<int, Client*>              _clients;
+        Process                             _process;
+         std::map<std::string, std::string> _envs;
+        
 };
 
 #endif /* WEBSERV_HPP */

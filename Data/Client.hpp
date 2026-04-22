@@ -12,20 +12,26 @@ class Response;
 class IRequestParseState;
 class Client {
     private:
-        int					_fd;
-        std::string			_buffer;
-		size_t				 _bufferSize;
-        uint64_t			_start_time_ms;
-        UnitConf_t		    _endpoint;
+        int					     _fd;
+        std::string			     _buffer;
+		size_t				      _bufferSize;
+        uint64_t			     _start_time_ms;
+        UnitConf_t		         _endpoint;
 
-        Request		        *_req;
-		Response	        *_res;
-        bool                _parsed;
+        Request		             *_req;
+		Response	             *_res;
+        bool                     _parsed;
+        pid_t                    _cgi_pid;
+        int                      _cgi_output;
+        std::string               _cgi_bin;
+        bool                     _processing_cgi;
+        std::map<std::string\
+            , std::string>      &_envs;
 
         Client(const Client& other);
         Client& operator=(const Client& other);
     public:
-        Client();
+        Client(std::map<std::string, std::string> &envs);
         ~Client();
 
         int			    	getFd() const;
@@ -37,17 +43,30 @@ class Client {
         Request             *getRequest();
         Response            *getResponse();
         std::string			getDefaultErrorPagePath(int code) const;
-
+        const std::map<std::string, std::string> &getEnv() const;
+        
         void            	setFd(int fd);
         void				setEndpoint(UnitConf_t  value);
 		void				setLocationType(LocationType type);
-		void				setBuffer(std::string &value);
+		void				setBuffer(std::string value);
 		void				setBufferSize(size_t value);
 
         void        		refreshStartTime();
         void                parsed();
         bool                isParsed() const;
         void                generateResponse();
+        void                setCGIInfo(pid_t pid, int output_fd);
+        bool                isCGI() const;
+        int                 getCGIOutput() const;
+        pid_t               getCGIPid() const;
+        bool                isProcessingCGI() const;
+        void                endProcessingCGI();
+        void                setProcessingCGI(bool value);
+        void                setEnv(std::string key, std::string value);
+        std::string         getCGIbinByExtension(std::string ext) const;
+        void                setCGIbin(std::string &value);
+        std::string         getCGIbin() const;
+        // void                (*registerFd)(int fd);
 };
 
 #endif

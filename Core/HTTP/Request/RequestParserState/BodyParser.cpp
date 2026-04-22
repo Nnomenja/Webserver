@@ -12,22 +12,22 @@ void    BodyParser::readBodyThroughContentLength()
 {
     char c;
 
+    std::cout << "...BodyParser executing content length..." << std::endl;
+    std::cout << "content length: " << _tmp << std::endl;
     for (size_t i = _target->getParserIndex(); i < _target->getBufferSize(); i++)
     {
+        c = _target->getBuffer()[i];
+        _target->addBody(c, false);
+        _target->incrementParserIndex();
+        _tmp--;
         if (_tmp == 0)
         {
             _end = true;
-            // std::cout << "***************BODY TOP***********************" << std::endl;
-            // std::cout << _target->getBody() << std::endl; 
-            // std::cout << "*****************************************" << std::endl;
-            // skipCRLF();
+            std::cout << "***************BODY TOP***********************" << std::endl;
+            std::cout << _target->getBody()._str_buffer << std::endl; 
+            std::cout << "*****************************************" << std::endl;
 			return;
         }
-        c = _target->getBuffer()[i];
-        _target->addBody(c);
-        _target->incrementParserIndex();
-        _tmp--;
-        
     }
     _target->resetParserIndex();
 	throw EagainParser();
@@ -145,7 +145,7 @@ void	BodyParser::handleFinalChunkDelimiterChar(char c)
 void    BodyParser::readBodyAsChuncked()
 {
     char	c;
-
+    std::cout << "...BodyParser executing chunked..." << std::endl;
     for (size_t i = _target->getParserIndex(); i < _target->getBufferSize(); i++)
     {
         c = _target->getBuffer()[i];
@@ -155,7 +155,7 @@ void    BodyParser::readBodyAsChuncked()
                 handleChunkSizeLineChar(c);
                 break;
             case CHUNK_DATA:
-                _target->addBody(c);
+                _target->addBody(c, true);
                 _chunkBytesRemaining--;
                 if (_chunkBytesRemaining == 0)
                     _chunkState = CHUNK_DATA_END;
@@ -172,9 +172,9 @@ void    BodyParser::readBodyAsChuncked()
         _target->incrementParserIndex();
         if (_end)
         {
-            // std::cout << "***************BODY BOTTOM***********************" << std::endl;
-            // std::cout << _target->getBody() << std::endl; 
-            // std::cout << "*****************************************" << std::endl;
+            std::cout << "***************BODY BOTTOM***********************" << std::endl;
+            std::cout << _target->getBody()._str_buffer << std::endl; 
+            std::cout << "*****************************************" << std::endl;
             return;
         }
     }
@@ -193,6 +193,6 @@ void BodyParser::execute()
 			skipCRLF();
 	}
 	else
-		readBodyAsChuncked();
+        readBodyAsChuncked();
 	std::cout << "...................." << std::endl;
 }

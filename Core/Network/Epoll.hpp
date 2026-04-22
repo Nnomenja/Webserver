@@ -28,6 +28,7 @@ class Epoll
 		bool 								modify(int fd, unsigned int event);
 		bool 								unregister(int fd);
 		void								close( void );
+		void								remove(int fd);
 
 		std::string							read(const int fd, bool *end);
 		void								send(const int fd, const std::string &buff, const size_t lenght);

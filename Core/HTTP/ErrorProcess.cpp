@@ -19,7 +19,8 @@ void    ErrorProcess::processError(const ServerException &e, Client *client)
     {
         if (!ErrorPagePath.size())
             throw std::exception();
-        res->setBody(PathUtils::getFileContentbypath(client->getRequest()->getRootDir() + ErrorPagePath));
+        res->setBody(PathUtils::getFileContentbypath(ErrorPagePath));
+
     }
     catch(const std::exception& e)
     {
