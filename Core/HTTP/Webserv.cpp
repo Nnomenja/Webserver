@@ -622,3 +622,4 @@ void Webserv::simulateClient(Client *client)
 		client->setBuffer(response);
 		client->setBufferSize(response.size());
 }
+

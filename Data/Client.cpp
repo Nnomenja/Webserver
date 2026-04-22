@@ -115,6 +115,13 @@ const std::map<std::string, std::string> &Client::getEnv() const
 	return (_envs);
 }
 
+std::string Client::getCGIbinByExtension(std::string ext) const
+{
+	if (_req->getLocation().CGI.find(ext) != _req->getLocation().CGI.end())
+		return (_req->getLocation().CGI[ext]);
+	return ("");
+}
+
 /**============================================
  *               SETTERS
  *=============================================**/
@@ -221,4 +228,14 @@ void Client::endProcessingCGI()
 void Client::setProcessingCGI(bool value)
 {
 	_processing_cgi = value;
+}
+
+void Client::setCGIbin(std::string &value)
+{
+	_cgi_bin = value;
+}
+
+std::string Client::getCGIbin() const
+{
+	return (_cgi_bin);
 }

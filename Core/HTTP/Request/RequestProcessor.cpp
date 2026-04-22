@@ -58,6 +58,15 @@ LocationType RequestProcessor::detectStategyType(Client *client)
 			std::cout << "Path does not exist: " << fullpath << std::endl;
 			throw NotFound();
 		}
+
+		if (type == DYNAMIC)
+		{
+			std::string ext = req->getPathExtension();
+			std::string cgi_bin = client->getCGIbinByExtension(ext);
+			if (cgi_bin.empty())
+				return (STATIC);
+			client->setCGIbin(cgi_bin);
+		}
 	}
 	return (type);
 }

@@ -12,19 +12,21 @@ class Response;
 class IRequestParseState;
 class Client {
     private:
-        int					_fd;
-        std::string			_buffer;
-		size_t				 _bufferSize;
-        uint64_t			_start_time_ms;
-        UnitConf_t		    _endpoint;
+        int					     _fd;
+        std::string			     _buffer;
+		size_t				      _bufferSize;
+        uint64_t			     _start_time_ms;
+        UnitConf_t		         _endpoint;
 
-        Request		        *_req;
-		Response	        *_res;
-        bool                _parsed;
-        pid_t               _cgi_pid;
-        int                 _cgi_output;
-        bool                _processing_cgi;
-        std::map<std::string, std::string> &_envs;
+        Request		             *_req;
+		Response	             *_res;
+        bool                     _parsed;
+        pid_t                    _cgi_pid;
+        int                      _cgi_output;
+        std::string               _cgi_bin;
+        bool                     _processing_cgi;
+        std::map<std::string\
+            , std::string>      &_envs;
 
         Client(const Client& other);
         Client& operator=(const Client& other);
@@ -61,6 +63,9 @@ class Client {
         void                endProcessingCGI();
         void                setProcessingCGI(bool value);
         void                setEnv(std::string key, std::string value);
+        std::string         getCGIbinByExtension(std::string ext) const;
+        void                setCGIbin(std::string &value);
+        std::string         getCGIbin() const;
         // void                (*registerFd)(int fd);
 };
 

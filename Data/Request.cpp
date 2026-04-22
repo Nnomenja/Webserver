@@ -133,6 +133,11 @@ std::string Request::getRootDir() const
 	return (_location.root);
 }
 
+std::string Request::getPathExtension() const
+{
+	return ("." + _fullpath.substr(_fullpath.find_last_of(".") + 1));
+}
+
 /**============================================
  *               SETTERS
  *=============================================**/

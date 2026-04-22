@@ -75,6 +75,7 @@ class Request {
                                 &getLocationDefaultIndex() const;
         std::string             getFullPath() const;
         std::string             getRootDir() const;
+        std::string             getPathExtension() const;
 
         void                    setLocation(t_location &value);
         void                    setLocationType(LocationType value);
