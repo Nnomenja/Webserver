@@ -63,6 +63,10 @@ void Config::parseFileContent()
                 continue;
             }
         }
+        // if (line.size()== 0)
+        // {
+        //     continue;
+        // }
         if (line == "server:")
         {
             i++;
@@ -391,7 +395,8 @@ void Config::parseLocationBlock(std::string locationBlock, int i, int j)
                 }
                 if (currentKey == "error_pages")
                 {
-
+                    if (wordCount < 3)
+                        throw ConfigException("error_pages should have at least a code and a path");
                     if (k < wordCount - 1 && k > 0)
                     {
                         if (!Validator::isErrorCode(word))

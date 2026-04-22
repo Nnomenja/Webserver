@@ -1,12 +1,12 @@
 server:
     port 2000
-    host 0.0.0.0
-    root /home/nnomenja/Desktop/42/webserv/websites/website00
+    host 127.1.1.1
+    root /home/toloandr/Music/Webserver_implement/websites/website00
     location:
         path /
-        root /home/nnomenja/Desktop/42/webserv/websites/website00
+        root /home/toloandr/Music/Webserver_implement/websites/website00
         auto_index off
-        methods GET POST
+        methods GET
         error_pages 404 /error/404.html
         error_pages 400 /error/400.html
     #location:
@@ -29,6 +29,11 @@ server:
     #    error_pages 400 401 /4xx.html
     #    error_pages 500 501 /5xx.html
     #    CGI .py /usr/bin/python3
+
+
+
+
+#CGI
 server:
     port 2001
     host 0.0.0.0
@@ -42,7 +47,7 @@ server:
     root .
     location:
         path /up
-        root /home/nnomenja/Desktop/42/webserv/websites/website00
+        root /home/toloandr/Music/Webserver_implement/websites/website00
         methods GET POST
         error_pages 404 /error/404.html
         error_pages 400 /error/400.html
@@ -53,7 +58,7 @@ server:
     root .
     location:
         path /cgi
-        root /home/nnomenja/Desktop/42/webserv/websites/website00
+        root /home/toloandr/Music/Webserver_implement/websites/website00
         methods GET POST
         error_pages 404 /error/404.html
         error_pages 400 /error/400.html
