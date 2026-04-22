@@ -2,7 +2,7 @@
 #include "../utils/utils.hpp"
 #include <algorithm>
 
-Client::Client():_start_time_ms(get_time_ms()), _req(new Request()), _res(new Response()), _parsed(false), _cgi_pid(-1), _cgi_output(-1), _processing_cgi(false){
+Client::Client(std::map<std::string, std::string> &envs):_start_time_ms(get_time_ms()), _req(new Request()), _res(new Response()), _parsed(false), _cgi_pid(-1), _cgi_output(-1), _processing_cgi(false), _envs(envs){
   std::cout << "Create client" << std::endl;
 //   this->_start_time_ms = get_time_ms();
 	_req->setRoot(_endpoint.root);
@@ -10,7 +10,7 @@ Client::Client():_start_time_ms(get_time_ms()), _req(new Request()), _res(new Re
 	_buffer = "";
 };
 
-Client::Client(const Client& other){
+Client::Client(const Client& other):_envs(other._envs){
 	std::cout << "Copy client" << std::endl;
 	_fd = other._fd;
     _buffer = other._buffer;
@@ -110,9 +110,9 @@ std::string Client::getDefaultErrorPagePath(int code) const
 	return ("");
 }
 
-char **Client::getEnviron() const
+const std::map<std::string, std::string> &Client::getEnv() const
 {
-	return (_environ);
+	return (_envs);
 }
 
 /**============================================
@@ -153,9 +153,10 @@ bool Client::isCGI() const
 {
 	return (_cgi_pid != -1 && _cgi_output != -1);
 }
-void Client::setEnviron(char **environ)
+void Client::setEnv(std::string key, std::string value)
+
 {
-	_environ = environ;
+	_envs[key] = value;
 }
 
 /**============================================

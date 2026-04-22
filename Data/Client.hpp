@@ -24,12 +24,12 @@ class Client {
         pid_t               _cgi_pid;
         int                 _cgi_output;
         bool                _processing_cgi;
-        char                **_environ;
+        std::map<std::string, std::string> &_envs;
 
         Client(const Client& other);
         Client& operator=(const Client& other);
     public:
-        Client();
+        Client(std::map<std::string, std::string> &envs);
         ~Client();
 
         int			    	getFd() const;
@@ -41,7 +41,7 @@ class Client {
         Request             *getRequest();
         Response            *getResponse();
         std::string			getDefaultErrorPagePath(int code) const;
-        char                **getEnviron() const;
+        const std::map<std::string, std::string> &getEnv() const;
         
         void            	setFd(int fd);
         void				setEndpoint(UnitConf_t  value);
@@ -60,7 +60,7 @@ class Client {
         bool                isProcessingCGI() const;
         void                endProcessingCGI();
         void                setProcessingCGI(bool value);
-        void                setEnviron(char **environ);
+        void                setEnv(std::string key, std::string value);
         // void                (*registerFd)(int fd);
 };
 

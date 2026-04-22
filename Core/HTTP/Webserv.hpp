@@ -39,7 +39,7 @@ class Webserv
         ~Webserv();
 
         Webserv(const std::string& fileConfigName);
-        bool    init( char **environ );
+        bool    init();
         void    run( void );
         void    clear( void );
 
@@ -61,15 +61,16 @@ class Webserv
 
 		void		    simulateClient(Client* client);
 
-        bool                            _isAlreadyInit;
-        std::string                     _fileConfigName;
-        Config                          _config;
-        Epoll                           _epoll;
-        int                             _serverSocketsNumber;
-        std::vector<ServerSocket*>      _serverSockets;
-        std::map<int, Client*>          _clients;
-        Process                         _process;
-        char                            **_environ;
+        bool                                _isAlreadyInit;
+        std::string                         _fileConfigName;
+        Config                              _config;
+        Epoll                               _epoll;
+        int                                 _serverSocketsNumber;
+        std::vector<ServerSocket*>          _serverSockets;
+        std::map<int, Client*>              _clients;
+        Process                             _process;
+         std::map<std::string, std::string> _envs;
+        
 };
 
 #endif /* WEBSERV_HPP */

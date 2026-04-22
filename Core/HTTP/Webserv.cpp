@@ -200,7 +200,7 @@ void initSimulData(std::vector<UnitConf_t> &configsSimul)
 }
 // <- SIMULATION
 
-bool Webserv::init( char **environ )
+bool Webserv::init()
 {
     if (_isAlreadyInit)
         return (true);
@@ -239,7 +239,6 @@ bool Webserv::init( char **environ )
         }
     //=============================================================
     _isAlreadyInit = true;
-	_environ = environ;
     return (true);
 }
 
@@ -376,11 +375,10 @@ void Webserv::run(void)
 				// }
 				
 				std::cout << "--------" << tmp.fd << "---------" << _clients.size() <<std::endl;
-				_clients[tmp.fd] = new Client();
+				_clients[tmp.fd] = new Client(_envs);
 				// sleep(90);
 				std::cout << "-----------------" << _clients.size() << std::endl;
 				_clients[tmp.fd]->setFd(tmp.fd);
-				_clients[tmp.fd]->setEnviron(_environ);
 				std::cout << "---------X--------" <<std::endl;
 				_clients[tmp.fd]->setEndpoint(_config.findEndpointByFd(tmp.serverFd));
 				std::cout << "---------X--------" << _clients.size()<<std::endl;
@@ -450,8 +448,7 @@ void Webserv::run(void)
 							client = _clients[_process.getClientFd(currentFd)];
 							bzero(buff, BODY_MAX_BYTES);
 							ssize_t n = read(client->getCGIOutput(), buff, BODY_MAX_BYTES);
-							std::string response = std::string(buff, n); 
-							if ((client->getResponse()->getCgiResponseSize() + n) > BODY_MAX_BYTES)
+							if (n == -1 || (client->getResponse()->getCgiResponseSize() + n) > BODY_MAX_BYTES)
 								DynamicStrategy::error(client, _epoll, _process, ServerException(502, "Bad Gateway"));
 							else
 								client->getResponse()->addCgiResponse(std::string(buff, n), n);
@@ -487,6 +484,8 @@ void Webserv::run(void)
 				else if (_epoll.getEvents()[i].events & EPOLLOUT)
 				{
 					client = _clients[currentFd];
+					if (client->isProcessingCGI())
+						continue;
 					client->generateResponse();
 					sendHttpResponse(client);
 					removeClientHttp(client->getFd());
