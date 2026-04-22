@@ -407,8 +407,9 @@ void Webserv::run(void)
 						_process.removeProcess(currentFd);
 						_epoll.remove(currentFd);
 						client->endProcessingCGI();
-						if (WIFSIGNALED(status))
+						if ((WIFEXITED(status) && WEXITSTATUS(status) != 0) || WIFSIGNALED(status))
 						{
+							std::cout << RED << "CGI process was killed by signal: " << WTERMSIG(status) << RESET << std::endl;
 							DynamicStrategy::error(client, _epoll, _process, ServerException(504, "Gateway Timeout"));
 							std::cout << YELLOW << "CGI script failed with status: " << WEXITSTATUS(status) << RESET << std::endl;
 							continue;
