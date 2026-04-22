@@ -1,0 +1,171 @@
+-color 140ms ease, background 140ms ease;
+    }
+
+    .pill:hover {
+      transform: translateY(-1px);
+      border-color: var(--brand);
+    }
+
+    .pill.active {
+      background: rgba(209, 73, 31, 0.12);
+      border-color: rgba(209, 73, 31, 0.35);
+      color: var(--brand-strong);
+    }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.4rem;
+    }
+
+    button.primary,
+    button.secondary {
+      border-radius: 999px;
+      border: 0;
+      padding: 0.62rem 1rem;
+      cursor: pointer;
+      font-weight: 700;
+      transition: transform 120ms ease, filter 120ms ease;
+    }
+
+    button.primary {
+      background: var(--brand);
+      color: #fff;
+    }
+
+    button.secondary {
+      background: #eef2f7;
+      color: #2b3440;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.03);
+    }
+
+    .note {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.4;
+      margin-top: 0.55rem;
+    }
+
+    .status-box {
+      border: 1px dashed var(--line);
+      border-radius: var(--radius-md);
+      padding: 0.7rem;
+      margin: 0.75rem 0;
+      font-size: 0.92rem;
+      line-height: 1.5;
+      background: #fffdf9;
+    }
+
+    .status-box.ok {
+      border-color: rgba(27, 122, 79, 0.45);
+      background: rgba(27, 122, 79, 0.06);
+      color: var(--success);
+    }
+
+    .status-box.error {
+      border-color: rgba(176, 58, 46, 0.5);
+      background: rgba(176, 58, 46, 0.08);
+      color: var(--danger);
+    }
+
+    pre {
+      margin: 0;
+      padding: 0.85rem;
+      border-radius: var(--radius-md);
+      border: 1px solid #d2dce8;
+      background: #f5f8fb;
+      color: #1f2a37;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.79rem;
+      line-height: 1.5;
+      overflow: auto;
+      max-height: 300px;
+    }
+
+    .spec-list {
+      margin: 0;
+      padding-left: 1rem;
+      color: #304152;
+      line-height: 1.5;
+      display: grid;
+      gap: 0.45rem;
+    }
+
+    .response-title {
+      margin: 0.5rem 0 0.35rem;
+      font-size: 0.92rem;
+      color: var(--muted);
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    @keyframes reveal {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes slide {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <section class="hero">
+      <h1>Multipart Lab</h1>
+      <p class="subtitle">
+        Outil web pour tester ton serveur HTTP upload avec des requetes POST multipart/form-data,
+        sans utiliser curl ou nc. Tu peux charger des fichiers, envoyer des champs texte, ajouter
+        un bloc JSON, et voir un exemple de requete HTTP brute.
+      </p>
+    </section>
+
+    <section class="layout">
+      <article class="panel">
+        <h2>Generateur de requete</h2>
+
+        <div class="form-row">
+          <label for="endpoint">Endpoint cible (POST)</label>
+          <input id="endpoint" type="url" placeholder="http://localhost:8080/upload" />
+        </div>
+
+        <div class="form-row">
+          <label>Choisir un exemple multipart</label>
+          <div id="examplePills" class="examples"></div>
+        </div>
+
+        <form id="multipartForm" novalidate>
+          <div id="dynamicFields"></div>
+
+          <div class="btn-row">
+            <button type="submit" class="primary">Envoyer la requete</button>
+            <button type="button" id="buildPreview" class="secondary">Generer preview HTTP</button>
+            <button type="button" id="resetForm" class="secondary">Reset</button>
+          </div>
+        </form>
+
+        <p class="note">
+          Important: ne force jamais le header Content-Type pour FormData. Le navigateur ajoute
+          automatiquement la bonne boundary multipart.
+        </p>
+
+        <div id="status" class="status-box">Pret a e

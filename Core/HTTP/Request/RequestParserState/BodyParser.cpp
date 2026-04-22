@@ -12,8 +12,14 @@ void    BodyParser::readBodyThroughContentLength()
 {
     char c;
 
+        std::cout << "############################################Content-lenght: " << _tmp << std::endl;
+    
     for (size_t i = _target->getParserIndex(); i < _target->getBufferSize(); i++)
     {
+        c = _target->getBuffer()[i];
+        _target->addBody(c);
+        _target->incrementParserIndex();
+        _tmp--;
         if (_tmp == 0)
         {
             _end = true;
@@ -22,13 +28,9 @@ void    BodyParser::readBodyThroughContentLength()
             std::cout << "*****************************************" << std::endl;
             // skipCRLF();
 			return;
-        }
-        c = _target->getBuffer()[i];
-        _target->addBody(c);
-        _target->incrementParserIndex();
-        _tmp--;
-        
+        }        
     }
+
     _target->resetParserIndex();
 	throw EagainParser();
 }
