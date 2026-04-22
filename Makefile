@@ -62,7 +62,7 @@ REQUEST_PARSE_STATE = $(addprefix $(CORE_DIR)/$(HTTP_DIR)/Request/RequestParserS
 				HttpVersionParser.cpp \
 				HeaderParser.cpp \
  				BodyParser.cpp \
-				MetadataParser.cpp \
+				MetadataParser.cpp\
 			)
 
 HTTP_SRCS = $(addprefix $(CORE_DIR)/$(HTTP_DIR)/, \

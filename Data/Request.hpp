@@ -19,9 +19,9 @@ typedef enum    s_body_encode
 
 typedef struct s_body
 {
-    std::string     _str_buffer;
-    std::ofstream   _file_buffer;
-    int             _content_length;
+    std::string    _str_buffer;
+    std::fstream   _file_buffer;
+    int            _content_length;
 }   t_body;
 
 class ARequestParserState;
