@@ -543,16 +543,18 @@ void UploadStrategy::handleMultipartUpload(Client* client)
                 std::cout << "Skip Bondary \n";
                 skipBoundary(inputReader);
                 status = 1;
-
+				//fallthrough
             case 1:
                 std::cout << "Get Multipart Header \n";
                 multipartHeader = getMultipartHeader(inputReader);
                 multipartHeader.delim = delim;
                 multipartHeader.endDelim = endDelim;
                 status = 2;
+				//fallthrough
             case 2:
                 std::cout << "write Content Until Boundary\n";
                 status = writeContentUntilBoundary(inputReader, multipartHeader, request);
+				//fallthrough
         }
         if (status == 4)
             break ;
