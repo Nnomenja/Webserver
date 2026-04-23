@@ -27,6 +27,22 @@ RequestProcessor& RequestProcessor::operator=(const RequestProcessor& other){
 
 RequestProcessor::~RequestProcessor(){};
 
+
+std::string RequestProcessor::findDefaultIndex(std::string &fullpath, std::vector<std::string> arr)
+{
+	std::string path;
+	for (std::vector<std::string>::const_iterator it = arr.begin(); it != arr.end(); ++it)
+	{
+		path = fullpath + (*it);
+		if (PathUtils::isPathExist(path))
+		{
+			fullpath = path;
+			return (*it);
+		}
+	}
+	return ("");
+}
+
 LocationType RequestProcessor::detectStategyType(Client *client)
 {
     std::string fullpath;
@@ -38,9 +54,9 @@ LocationType RequestProcessor::detectStategyType(Client *client)
 		req->setFullPath(fullpath);
 		if (PathUtils::isDirectory(fullpath))
 		{
-			if (client->getRequest()->getLocation().index.empty())
+			std::string index = findDefaultIndex(fullpath, client->getRequest()->getLocation().index_vect);
+			if (index.empty())
 			{
-				std::cout << "Directory without index file: " << fullpath << std::endl;
 				if (!client->getRequest()->getLocation().auto_index)
 					throw NotFound();
 				else
@@ -48,8 +64,8 @@ LocationType RequestProcessor::detectStategyType(Client *client)
 			}
 			else
 			{
-				fullpath =  "http://" +req->getHeaderBykey("host")  + req->getPathname() + "/" + req->getLocation().index;
-				req->setRedirectionPath(fullpath);
+				fullpath =  "http://" + req->getHeaderBykey("host")  + req->getPathname() + index;
+				req->setRedirectionPath(fullpath, 302);
 				return (REDIRECTION);
 			}
 		}

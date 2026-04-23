@@ -12,6 +12,7 @@ class RequestProcessor {
 	private:
 		IRequestStrategy*	createStrategy(LocationType type);
 		LocationType		detectStategyType(Client *client);
+		std::string			findDefaultIndex(std::string &fullpath, std::vector<std::string> arr);
 	public:
 		RequestProcessor();
 		RequestProcessor(const RequestProcessor& other);

@@ -247,7 +247,8 @@ void Request::setLocationType(LocationType value)
 {
 	_location.type = value;
 }
-void Request::setRedirectionPath(std::string &value)
+void Request::setRedirectionPath(std::string &value, int code)
 {
-	_location.return_path = value;
+	_location.ret.target = value;
+	_location.ret.code = code;
 }
