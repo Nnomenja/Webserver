@@ -3,6 +3,7 @@ server:
     port 2000
     host 0.0.0.0
     root /home/toloandr/SCHOOL/Webserver/websites/website00
+    error_pages 404 /error/404.html
     location:
         path /
         methods GET POST

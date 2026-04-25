@@ -243,7 +243,8 @@ void Config::parseServerBlock(std::string serverBlock, int j)
                 if (currentKey == "error_pages")
                 {
                     // std::cout << i << " " << word << std::endl;
-                    
+                    if (wordCount < 3)
+                        throw ConfigException("error_pages should have at least a code and a path");
                     if (i < wordCount - 1 && i > 0)
                     {
                         if (!Validator::isErrorCode(word))
@@ -275,7 +276,7 @@ void Config::parseServerBlock(std::string serverBlock, int j)
             }
             i++;
         }
-        printMap(configs[j].error_pages_map);
+        // printMap(configs[j].error_pages_map);
     }
     if (counts["host"] > 1)
         throw ConfigException("duplicate keys -> 'host'");
