@@ -35,6 +35,7 @@ void CgiParser::parseStatusCode(std::string &s)
 
 void CgiParser::addHeader(std::string &key, std::string &value)
 {
+	std::cout << key << "->" << value << std::endl;	
 	if (key == "Status")
 		parseStatusCode(value);
 	else
@@ -70,7 +71,10 @@ void CgiParser::parseHeader()
 				else
 				{
 					if (('\r') && (!key.size() && _s[_i + 1] == '\n'))
+					{
+						_i++;
 						return;
+					}
 					else
 						throw std::exception();
 				}
@@ -84,10 +88,10 @@ void CgiParser::parseHeader()
 				}
 				break;
 			case DELIMITER:
-
 				if (c != '\n')
 					throw std::exception();
 				addHeader(key, value);
+				state = KEY;
 				break;
 
 			default:
@@ -95,8 +99,6 @@ void CgiParser::parseHeader()
 				{
 					if (c == '\r')
 						state = DELIMITER;
-					else if (c == '\n')
-						addHeader(key, value);
 					else
 						throw std::exception();
 				}

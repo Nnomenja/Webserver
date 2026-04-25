@@ -286,7 +286,7 @@ void Webserv::run(void)
 						_process.removeProcess(currentFd);
 						client->endProcessingCGI();
 						std::cout << RED << "WIFEXITED: " << WIFEXITED(status) << " WEXITSTATUS: " << WEXITSTATUS(status) << " WIFSIGNALED: " << WIFSIGNALED(status) << RESET << std::endl;
-						if (WEXITSTATUS(status) == 0)
+						if (WEXITSTATUS(status) == 1)
 						{
 							std::cout << RED << "CGI process was killed by signal: " << WTERMSIG(status) << RESET << std::endl;
 							DynamicStrategy::error(client, _epoll, _process, ServerException(504, "Gateway Timeout"));
@@ -297,6 +297,7 @@ void Webserv::run(void)
 						CgiParser cgi_parser(client->getResponse()->getCgiResponse(), client->getResponse());
 						try
 						{
+							std::cout << GREEN << "CGI parsing" << RESET << std::endl;
 							cgi_parser.parse();
 						}
 						catch(const std::exception& e)
