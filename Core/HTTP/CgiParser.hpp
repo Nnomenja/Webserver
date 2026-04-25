@@ -17,6 +17,7 @@ class CgiParser {
         t_state              _state;
         int                 _i;
         Response            *_res;
+        bool                _has_status_code;
 
         CgiParser();
         void    parseHeader();

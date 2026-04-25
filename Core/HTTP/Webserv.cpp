@@ -268,7 +268,7 @@ void Webserv::run(void)
 			// 2. Socket's type is client
 			else
 			{
-				Client *client;
+				Client *client = NULL;
 				/**============================================
 				 *               SOCKET ERROR
 				 *=============================================**/
@@ -277,7 +277,7 @@ void Webserv::run(void)
 					std::cout << "#### SOCKET ERROR CHECKING ####" << std::endl;
 					if (_process.isProcess(currentFd))
 					{
-						Client *client = _clients[_process.getClientFd(currentFd)];
+						client = _clients[_process.getClientFd(currentFd)];
 						int status;
 
 						waitpid(client->getCGIPid(), &status, WNOHANG);
@@ -286,7 +286,7 @@ void Webserv::run(void)
 						_process.removeProcess(currentFd);
 						client->endProcessingCGI();
 						std::cout << RED << "WIFEXITED: " << WIFEXITED(status) << " WEXITSTATUS: " << WEXITSTATUS(status) << " WIFSIGNALED: " << WIFSIGNALED(status) << RESET << std::endl;
-						if (WEXITSTATUS(status) == 1)
+						if (WIFSIGNALED(status))
 						{
 							std::cout << RED << "CGI process was killed by signal: " << WTERMSIG(status) << RESET << std::endl;
 							DynamicStrategy::error(client, _epoll, _process, ServerException(504, "Gateway Timeout"));
@@ -310,9 +310,7 @@ void Webserv::run(void)
 						// std::cout << YELLOW << client->getResponse()->getCgiResponse() << RESET << std::endl;
 						_epoll.remove(currentFd);
 						_epoll.modify(client->getFd(), EPOLLOUT);
-						std::cout << "-------------CGI RESPONSE----------\n" << YELLOW <<  client->getResponse()->getCgiResponse() << RESET  << std::endl;
-						// simulateClient(client);
-						client->generateResponse();
+						std::cout << "-------------CGI RESPONSE----------\n" << YELLOW <<  client->getResponseHttp() << RESET  << std::endl;
 						std::cout << "Nbr client: " << _clients.size() << std::endl;
 					}
 					else
@@ -335,6 +333,7 @@ void Webserv::run(void)
 					{
 						if (_process.isProcess(currentFd))
 						{
+							client = _clients[_process.getClientFd(currentFd)];
 							std::cout << "######READ CGI#######" << std::endl;
 							DynamicStrategy::readCgiOutput(client);
 							std::cout << YELLOW << client->getResponse()->getCgiResponse() << RESET << std::endl;

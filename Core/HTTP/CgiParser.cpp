@@ -3,7 +3,7 @@
 
 CgiParser::CgiParser(const std::string &s, Response *res):_s(s), _state(HEADER), _i(0),_res(res)
 {
-
+	_has_status_code = false;
 }
 
 void CgiParser::parseStatusCode(std::string &s)
@@ -37,7 +37,10 @@ void CgiParser::addHeader(std::string &key, std::string &value)
 {
 	std::cout << key << "->" << value << std::endl;	
 	if (key == "Status")
+	{
 		parseStatusCode(value);
+		_has_status_code = true;
+	}
 	else
 	{
 		if (!_res->hasHeader(key))
@@ -120,6 +123,10 @@ void CgiParser::parseBody()
 void CgiParser::parse()
 {
 	parseHeader();
+	if (!_has_status_code)
+	{
+		_res->setStatus(200);
+	}
 	parseBody();
 }
 
