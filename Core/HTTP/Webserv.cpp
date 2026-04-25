@@ -2,6 +2,7 @@
 #include "./Request/HttpRequestParser.hpp"
 #include "../../Data/Request.hpp"
 #include "../../Data/Client.hpp"
+#include "../../Exception/RequestTimeout.hpp"
 #include "./Request/RequestProcessor.hpp"
 #include "./Request/RequestProcessStrategy/DynamicStrategy.hpp"
 #include "./CgiParser.hpp"
@@ -382,18 +383,23 @@ void Webserv::run(void)
 		while (!_clients.empty() && it != _clients.end())
 		{
 			int tmp;
+			bool check;
+			ARequestParserState *state = it->second->getRequest()->getParserState();
+			RequestParserStateName stateName = METHOD;
 
-			bool check = verify_deadline_ms(it->second->getStartTime(), 500000); 
+			if (state)
+				stateName = state->getParserStateName();
+			if (stateName != BODY)
+				check = verify_deadline_ms(it->second->getStartTime(), REQUEST_HEADER_TIMEOUT_MS);
+			else
+				check = verify_deadline_ms(it->second->getStartTime(), REQUEST_BODY_TIMEOUT_MS);
 			if (!it->second->isParsed() && check)
 			{
-				std::cout << "nbr: " << _clients.size() << std::endl;
 				tmp = it->first;
-				it++;
-				removeClientHttp(tmp);
-				std::cout << "[" << tmp << "]: timeout" << std::endl;
+				_epoll.modify(it->first, EPOLLOUT);
+				ErrorProcess::processError(RequestTimeout(), _clients[tmp]);
 			}
-			else
-				++it;
+			++it;
 		}		
 	}	
 }
