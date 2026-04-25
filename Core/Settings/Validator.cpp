@@ -208,28 +208,19 @@ bool Validator::validateBoolStr(std::string value)
     return (1);
 }
 
-bool Validator::validateRoot(const std::string root)
+bool Validator::validatePath(const std::string path, std::string &err)
 {
-    if (root.empty())
+    if (path.empty())
+    {
+        err = "path empty";
         return false;
-    if (!isValidPath(root) || root[root.size() - 1] == '/')
+    }   
+    if (!isValidPath(path) || path[path.size() - 1] == '/')
+    {
+        err = "path invalid (should be absolute path without trailing / )";
         return false;
-    return isDirectory(root);
-}
-
-bool Validator::validateLocationRoot(std::string root)
-{
-    if (!isDirectory(root))
-        return (0);
-    return (1);
-}
-
-bool Validator::validateUploads(std::string root, std::string uploads)
-{
-    std::string path = std::string(SUPERROOT) + "/" + root + "/" + uploads;
-    if (!isDirectory(path) || root == "-")
-        return (0);
-    return (1);
+    }
+    return isDirectory(path);
 }
 
 bool Validator::validateIndex(std::string index)

@@ -6,7 +6,15 @@ Config::Config() {}
 
 Config::Config(std::string filename)
 {
-    fileContent = File::getFileContent(filename);
+    try
+    {
+        fileContent = File::getFileContent(filename);
+    }
+    catch(const std::exception& e)
+    {
+        fileContent = "";
+        // std::cerr << e.what() << '\n';
+    }
     parseFileContent();
 }
 
@@ -48,6 +56,8 @@ Config::ConfigException::~ConfigException() throw() {}
 
 void Config::parseFileContent()
 {
+    if (fileContent == "")
+        throw ConfigException("Error opening file");
     int                i = -1;
     std::istringstream iss(fileContent);
     std::string        line;
@@ -63,10 +73,10 @@ void Config::parseFileContent()
                 continue;
             }
         }
-        // if (line.size()== 0)
-        // {
-        //     continue;
-        // }
+        if (line.size()== 0)
+        {
+            continue;
+        }
         if (line == "server:")
         {
             i++;
@@ -213,8 +223,9 @@ void Config::parseServerBlock(std::string serverBlock, int j)
                 }
                 if (currentKey == "root")
                 {
-                    if (!Validator::validateRoot(word))
-                        throw ConfigException("root directory should exist");
+                    std::string err;
+                    if (!Validator::validatePath(word, err))
+                        throw ConfigException(err);
                     configs[j].root = word;
                     if (i > 1)
                         throw ConfigException("root can have only one value");
@@ -431,17 +442,18 @@ void Config::parseLocationBlock(std::string locationBlock, int i, int j)
                 }
                 if (currentKey == "root")
                 {
-                    if (!Validator::validateLocationRoot(word))
-                        throw ConfigException("root directory should exist");
+                    std::string err;
+                    if (!Validator::validatePath(word, err))
+                        throw ConfigException(err);
                     configs[i].locations[j].root = word;
                     if (k > 1)
                         throw ConfigException("root can have only one value");
                 }
                 if (currentKey == "uploads")
                 {
-                    if (!Validator::validateUploads(
-                            configs[i].locations[j].root, word))
-                        throw ConfigException("uploads directory should exist");
+                    std::string err;
+                    if (!Validator::validatePath(word, err))
+                        throw ConfigException(err);
                     configs[i].locations[j].uploads = word;
                     if (k > 1)
                         throw ConfigException(
