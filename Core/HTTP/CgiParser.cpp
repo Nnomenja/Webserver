@@ -15,8 +15,11 @@ void CgiParser::parseStatusCode(std::string &s)
 
 	while (s[i])
 	{
-		if (i == ' ')
+		if (s[i] == ' ')
+		{
+			i++;
 			break;
+		}
 		if (!isdigit(s[i]))
 			throw std::exception();
 		tmp << s[i++];
@@ -35,7 +38,6 @@ void CgiParser::parseStatusCode(std::string &s)
 
 void CgiParser::addHeader(std::string &key, std::string &value)
 {
-	std::cout << key << "->" << value << std::endl;	
 	if (key == "Status")
 	{
 		parseStatusCode(value);
@@ -117,7 +119,9 @@ void CgiParser::parseHeader()
 void CgiParser::parseBody()
 {
 	_res->setBody(&_s[_i]);
-	_res->setContentLength(_res->getBody().size());
+	std::string content_length = "Content-Length";
+	if (!_res->hasHeader(content_length))
+		_res->setContentLength(_res->getBody().size());
 }
 
 void CgiParser::parse()

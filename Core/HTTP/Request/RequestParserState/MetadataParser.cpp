@@ -72,6 +72,24 @@ long MetadataParser::parseContentLength(const std::string& value)
     return (res);
 }
 
+void MetadataParser::parseHostHeader()
+{
+    std::string host = _target->getHeaderBykey("host");
+    std::string server_name;
+
+    if (!host.size())
+        throw BadRequestException();
+
+    if (host.find(':') != std::string::npos)
+        server_name = host.substr(0, host.find(':'));
+    else
+        server_name = host;
+
+     if (server_name.size() > 255)
+        throw BadRequestException();    
+    _target->setServerName(host);
+}
+
 void MetadataParser::matchConfiguredRoute()
 {
     size_t      tmp;
@@ -95,6 +113,8 @@ void MetadataParser::matchConfiguredRoute()
     // 2. Hostname is required
     if (!_target->hasHeader("host"))
         throw BadRequestException();
+
+    parseHostHeader();
 
     // 3. If virtual hosting is enable. So we must verify th hostname 
     if (_endpoint.enable_virtual_hosting)
