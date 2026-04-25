@@ -212,7 +212,7 @@ bool Validator::validateRoot(const std::string root)
 {
     if (root.empty())
         return false;
-    if (root[root.size() - 1] == '/')
+    if (!isValidPath(root) || root[root.size() - 1] == '/')
         return false;
     return isDirectory(root);
 }
