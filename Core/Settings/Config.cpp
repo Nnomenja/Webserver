@@ -525,8 +525,6 @@ void Config::checkLocationBlock(std::vector<t_location>& locations, int j)
             throw ConfigException("methods field should be filled");
         if (locations[j].path == "")
             throw ConfigException("path field should be filled");
-        if (locations[j].root == "")
-            throw ConfigException("root field should be filled");
         if (locations[j].uploads != "")
         {
             if (locations[j].methods != POST)
