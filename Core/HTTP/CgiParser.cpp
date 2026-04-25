@@ -15,8 +15,11 @@ void CgiParser::parseStatusCode(std::string &s)
 
 	while (s[i])
 	{
-		if (i == ' ')
+		if (s[i] == ' ')
+		{
+			i++;
 			break;
+		}
 		if (!isdigit(s[i]))
 			throw std::exception();
 		tmp << s[i++];
