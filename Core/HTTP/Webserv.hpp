@@ -59,7 +59,6 @@ class Webserv
         void            sendHttpResponse(Client* client);
         void            removeClientHttp(int fd);
 
-		void		    simulateClient(Client* client);
 
         bool                                _isAlreadyInit;
         std::string                         _fileConfigName;

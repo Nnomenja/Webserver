@@ -20,7 +20,6 @@
 
 void DynamicStrategy::process(Client *client, Epoll &epoll, Process &process)
 {
-    std::cout << "DynamicStrategy" << std::endl;
     int pipeIn[2];
     int pipeOut[2];
     std::string bin = client->getCGIbin();
@@ -42,32 +41,45 @@ void DynamicStrategy::process(Client *client, Epoll &epoll, Process &process)
     std::stringstream   sy;
 
     char *script = const_cast<char *>(script_path.c_str());
+    
     sy << req->getFullPath();
-    std::string script_name = std::string("SCRIPT_NAME=") + req->getFullPath();
-    std::string script_filename = std::string("SCRIPT_FILENAME=") + req->getFullPath();
+
     std::string method = std::string("REQUEST_METHOD=") + req->getMethodString();
+    std::string server_name = std::string("SERVER_NAME=") + client->getRequest()->getServerName();
+    std::string script_name = std::string("SCRIPT_NAME=") + script_path;
+    std::string script_filename = std::string("SCRIPT_FILENAME=") + script_path;
+    std::string path_info = std::string("PATH_INFO=") + req->getFullPath();
+    std::string request_uri = std::string("REQUEST_URI=") + req->getFullPath();
     std::string host = std::string("HTTP_HOST=") + req->getHeaderBykey("host");
+
     ss << client->getEndpoint().port;
+
     std::string port = std::string("SERVER_PORT=") + ss.str();
+    
     ss.str("");
+    
     std::string query = std::string("QUERY_STRING=") + req->getQuery();
     std::string contentType = std::string("CONTENT_TYPE=") + req->getHeaderBykey("Content-Type");
+    
     ss << req->getContentLength();
+    
     std::string contentLength = std::string("CONTENT_LENGTH=") + ss.str();
-
+    
     char *exec_envp[] = {
         const_cast<char *>(script_filename.c_str()),
         const_cast<char *>(script_name.c_str()),
         const_cast<char *>(method.c_str()),
-        const_cast<char *>("SERVER_NAME=localhost"),
-        const_cast<char *>("SERVER_SOFTWARE=cgi_exec/1.0"),
+        const_cast<char *>(server_name.c_str()),
+        const_cast<char *>("SERVER_SOFTWARE=webserver/1.0"),
         const_cast<char *>("SERVER_PROTOCOL=HTTP/1.1"),
         const_cast<char *>("REDIRECT_STATUS=200"),
         const_cast<char *>("GATEWAY_INTERFACE=CGI/1.1"),
+        const_cast<char *>(path_info.c_str()),
         const_cast<char *>(port.c_str()),
         const_cast<char *>(query.c_str()),
         const_cast<char *>(host.c_str()),
         const_cast<char *>(contentType.c_str()),
+        const_cast<char *>(request_uri.c_str()),
         NULL
     };
 
@@ -101,7 +113,6 @@ void DynamicStrategy::process(Client *client, Epoll &epoll, Process &process)
         
         client->setCGIInfo(pid, pipeOut[0]);
         process.addProcess(pipeOut[0], client->getFd());
-        std::cout << GREEN << "New CGI:" << pipeOut[0] << RESET << std::endl;
         epoll.registerFd(pipeOut[0], EPOLLIN);
         client->setProcessingCGI(true);
         epoll.modify(client->getFd(), (EPOLLOUT | EPOLLHUP));

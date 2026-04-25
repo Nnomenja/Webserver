@@ -43,6 +43,7 @@ class Request {
 
         std::map<std::string, std::string>	_headers;
         t_body_encode                       _body_encode;
+        std::string                         _server_name;
         /*==== Request Body ====*/
         t_body                              _body;
 
@@ -76,6 +77,7 @@ class Request {
         std::string             getFullPath() const;
         std::string             getRootDir() const;
         std::string             getPathExtension() const;
+        const std::string         &getServerName() const;
 
         void                    setLocation(t_location &value);
         void                    setLocationType(LocationType value);
@@ -85,6 +87,7 @@ class Request {
         void                    setMethod(HttpMethod value);
         void                    setFullPath(std::string value);
         void                    setRoot(std::string value);
+        void                    setServerName(std::string value);
         void                    addPathname(char c);
         void                    setBody(std::string value);
         void                    addQuery(char c);

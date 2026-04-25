@@ -12,6 +12,7 @@ class MetadataParser: public ARequestParserState
         void    matchConfiguredRoute();
         long    parseContentLength(const std::string& value);
         void    parseBodyMetadata();
+        void    parseHostHeader();
     public:
         MetadataParser(Request *target, UnitConf_t endpoint);
         ~MetadataParser();

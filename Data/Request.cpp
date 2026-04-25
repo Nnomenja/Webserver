@@ -138,6 +138,11 @@ std::string Request::getPathExtension() const
 	return ("." + _fullpath.substr(_fullpath.find_last_of(".") + 1));
 }
 
+const std::string &Request::getServerName() const
+{
+	return (_server_name);
+}
+
 /**============================================
  *               SETTERS
  *=============================================**/
@@ -251,4 +256,9 @@ void Request::setRedirectionPath(std::string &value, int code)
 {
 	_location.ret.target = value;
 	_location.ret.code = code;
+}
+
+void Request::setServerName(std::string value)
+{
+	_server_name = value;
 }

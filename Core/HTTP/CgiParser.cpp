@@ -38,7 +38,6 @@ void CgiParser::parseStatusCode(std::string &s)
 
 void CgiParser::addHeader(std::string &key, std::string &value)
 {
-	std::cout << key << "->" << value << std::endl;	
 	if (key == "Status")
 	{
 		parseStatusCode(value);

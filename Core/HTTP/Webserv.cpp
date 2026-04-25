@@ -281,8 +281,6 @@ void Webserv::run(void)
 						int status;
 
 						waitpid(client->getCGIPid(), &status, WNOHANG);
-						std::cout << YELLOW << "status code: " << WEXITSTATUS(status) << RESET << std::endl;
-
 						_process.removeProcess(currentFd);
 						client->endProcessingCGI();
 						DynamicStrategy::readCgiOutput(client);
@@ -294,20 +292,15 @@ void Webserv::run(void)
 						CgiParser cgi_parser(client->getResponse()->getCgiResponse(), client->getResponse());
 						try
 						{
-							std::cout << GREEN << "CGI parsing" << RESET << std::endl;
 							cgi_parser.parse();
 						}
 						catch(const std::exception& e)
 						{
-							std::cout << RED << "CGI error" << RESET << std::endl;
 							DynamicStrategy::error(client, _epoll, _process, ServerException(504, "Gateway Timeout"));
 							continue;
 						}
-						
-						// std::cout << YELLOW << client->getResponse()->getCgiResponse() << RESET << std::endl;
 						_epoll.remove(currentFd);
 						_epoll.modify(client->getFd(), EPOLLOUT);
-						std::cout << "-------------CGI RESPONSE----------\n" << YELLOW <<  client->getResponseHttp() << RESET  << std::endl;
 						std::cout << "Nbr client: " << _clients.size() << std::endl;
 					}
 					else
@@ -325,21 +318,16 @@ void Webserv::run(void)
 
 				if (_epoll.getEvents()[i].events & EPOLLIN)
 				{
-					std::cout << "#### READING [" << currentFd << "]####" << std::endl;
 					try
 					{
 						if (_process.isProcess(currentFd))
 						{
 							client = _clients[_process.getClientFd(currentFd)];
-							std::cout << "######READ CGI#######" << std::endl;
 							DynamicStrategy::readCgiOutput(client);
-							std::cout << YELLOW << client->getResponse()->getCgiResponse() << RESET << std::endl;
-							std::cout << "######FINISH READING CGI-> "<< client->isCGIProcessEnd() <<"#######" << std::endl;
 							continue;
 						}
 						else
 						{
-							std::cout << "######READ HTTP REQUEST#######" << std::endl;
 							 client = _clients[currentFd];
 							if (!readtHttpRequest(client))
 								continue;
@@ -349,7 +337,6 @@ void Webserv::run(void)
 					}
 					catch(const ServerException& e)
 					{
-						std::cout << "#####ERROR: " << e.getCode() << " " << e.getName() << std::endl;
 						ErrorProcess::processError(e, _clients[currentFd]);
 					}
 					_epoll.modify(client->getFd(), EPOLLOUT);
@@ -375,7 +362,6 @@ void Webserv::run(void)
 					client->generateResponse();
 					sendHttpResponse(client);
 					removeClientHttp(client->getFd());
-					std::cout << "[" << currentFd << "]: disconnected client size" << _clients.size() << std::endl;
 				}
 			}
 		}
@@ -428,9 +414,7 @@ bool Webserv::readtHttpRequest(Client* client)
 		std::cout << "****************************************" << std::endl;
 		if (data.empty())
 		{
-			std::cout << "Client disconnected: "<< client->getFd()  << std::endl;
 			removeClientHttp(client->getFd());
-			std::cout << "Numbers of client: " << _clients.size() << std::endl;
 			return (false);
 		}
 
@@ -440,14 +424,10 @@ bool Webserv::readtHttpRequest(Client* client)
 		if (parse.finished())
 		{
 			client->parsed();
-			std::cout << "Finished" << std::endl;
 			return (true);
 		}
 		if (end)
-		{
-			std::cout << "End buff,,,,,,," << std::endl;
 			return (false);
-		}
 	}
 	return (true);
 }
@@ -456,54 +436,3 @@ void Webserv::sendHttpResponse(Client *client)
 {
 	_epoll.send(client->getFd(), client->getResponseHttp(), client->getResponseHttpSize());
 }
-
-void Webserv::simulateClient(Client *client)
-{
-		std::ostringstream oss;
-
-		std::string body = 
-			"<!DOCTYPE html>"
-			"<html lang=\"fr\">"
-			"<head>"
-			"<meta charset=\"UTF-8\">"
-			"<title>Webserv - 42 Antananarivo</title>"
-			"<style>"
-			"body{margin:0;padding:0;background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);"
-			"font-family:Arial,sans-serif;color:white;display:flex;justify-content:center;"
-			"align-items:center;height:100vh;}"
-			".card{background:rgba(255,255,255,0.1);backdrop-filter:blur(10px);"
-			"padding:40px;border-radius:15px;text-align:center;"
-			"box-shadow:0 0 30px rgba(0,0,0,0.5);width:500px;}"
-			"h1{margin-bottom:10px;font-size:32px;}"
-			".status{color:#22c55e;font-weight:bold;font-size:20px;}"
-			".info{margin-top:20px;font-size:14px;opacity:0.85;}"
-			".footer{margin-top:30px;font-size:12px;opacity:0.6;}"
-			"</style>"
-			"</head>"
-			"<body>"
-			"<div class=\"card\">"
-			"<h1>Webserv Opérationnel</h1>"
-			"<div class=\"status\">HTTP/1.1 200 OK</div>"
-			"<div class=\"info\">"
-			"<p>Projet: Webserv</p>"
-			"<p>Langage: C++98</p>"
-			"<p>Architecture: epoll event-driven</p>"
-			"<p>Mode: Non-Blocking I/O</p>"
-			"</div>"
-			"<div class=\"footer\">42 Antananarivo - 2026</div>"
-			"</div>"
-			"</body>"
-			"</html>";
-
-		oss << "HTTP/1.1 200 OK\r\n"
-			<< "Content-Type: text/html; charset=UTF-8\r\n"
-			<< "Connection: close\r\n"
-			<< "Content-Length: " << body.size() << "\r\n"
-			<< "\r\n"
-			<< body;
-
-		std::string response = oss.str();
-		client->setBuffer(response);
-		client->setBufferSize(response.size());
-}
-
