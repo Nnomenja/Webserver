@@ -7,7 +7,7 @@ HeaderParser::HeaderParser(Request *target, UnitConf_t endpoint):ARequestParserS
 HeaderParser::~HeaderParser(){
 };
 
-bool HeaderParser::checkHeaderEncode(char c) const
+bool HeaderParser::checkHeaderEncode(char c)
 {
 	std::string other = "!#$%&'*+-.^_|~`";
 	(void)c;

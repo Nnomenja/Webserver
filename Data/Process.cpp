@@ -8,7 +8,6 @@ Process::~Process()
 
 bool Process::isProcess(int fd) const
 {
-    std::cout << "isProcess: " << fd << " size: " << _processes.size() << std::endl;    
     return (_processes.find(fd) != _processes.end());
 }
 

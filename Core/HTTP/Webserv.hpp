@@ -19,7 +19,7 @@
 #include "../../Data/Process.hpp"
 
 #define MAXREADBYTES 1024
-#define BODY_MAX_BYTES 409600
+#define CGI_MAX_OUTPUT_BYTES 409600
 #define CGI_TIMEOUT 50000 // ms
 
 #define GREEN "\033[32m"

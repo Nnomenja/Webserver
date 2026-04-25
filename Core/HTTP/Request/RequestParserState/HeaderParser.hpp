@@ -26,7 +26,7 @@ class HeaderParser: public ARequestParserState {
 		HeaderParser(Request *target, UnitConf_t endpoint);
 		~HeaderParser();
 
-        bool        checkHeaderEncode(char c) const;
+        static bool        checkHeaderEncode(char c);
         std::string &toLowerCase(std::string &src) const;
 
 		bool	completed() const;

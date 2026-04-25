@@ -4,6 +4,7 @@
 #include "../../../../Exception/Forbiden.hpp"
 #include "../../../../utils/PathUtils.hpp"
 #include "../../ErrorProcess.hpp"
+#include "../RequestParserState/HeaderParser.hpp"
 #include <cstdlib>
 #include <cstring>
 #include <cerrno>
@@ -20,12 +21,14 @@
 void DynamicStrategy::process(Client *client, Epoll &epoll, Process &process)
 {
     std::cout << "DynamicStrategy" << std::endl;
-    std::string bin = client->getCGIbin();
-    std::cout << "CGI bin: " << bin << std::endl;
-    if (!PathUtils::isPathExist(bin) || !PathUtils::isExecutable(bin))
-        throw Forbiden();
     int pipeIn[2];
     int pipeOut[2];
+    std::string bin = client->getCGIbin();
+    Request *req = client->getRequest();
+    std::string script_path = req->getFullPath();
+
+    if (!PathUtils::isPathExist(bin) || !PathUtils::isExecutable(bin))
+        throw Forbiden();
 
     if (pipe(pipeIn) == -1)
         throw InternalServerError();
@@ -35,7 +38,44 @@ void DynamicStrategy::process(Client *client, Epoll &epoll, Process &process)
         close(pipeIn[1]);
         throw InternalServerError();
     }
-    setEnv(client);
+    std::stringstream   ss;
+    std::stringstream   sy;
+
+    char *script = const_cast<char *>(script_path.c_str());
+    sy << req->getFullPath();
+    std::string script_name = std::string("SCRIPT_NAME=") + req->getFullPath();
+    std::string script_filename = std::string("SCRIPT_FILENAME=") + req->getFullPath();
+    std::string method = std::string("REQUEST_METHOD=") + req->getMethodString();
+    std::string host = std::string("HTTP_HOST=") + req->getHeaderBykey("host");
+    ss << client->getEndpoint().port;
+    std::string port = std::string("SERVER_PORT=") + ss.str();
+    ss.str("");
+    std::string query = std::string("QUERY_STRING=") + req->getQuery();
+    std::string contentType = std::string("CONTENT_TYPE=") + req->getHeaderBykey("Content-Type");
+    ss << req->getContentLength();
+    std::string contentLength = std::string("CONTENT_LENGTH=") + ss.str();
+
+    char *exec_envp[] = {
+        const_cast<char *>(script_filename.c_str()),
+        const_cast<char *>(script_name.c_str()),
+        const_cast<char *>(method.c_str()),
+        const_cast<char *>("SERVER_NAME=localhost"),
+        const_cast<char *>("SERVER_SOFTWARE=cgi_exec/1.0"),
+        const_cast<char *>("SERVER_PROTOCOL=HTTP/1.1"),
+        const_cast<char *>("REDIRECT_STATUS=200"),
+        const_cast<char *>("GATEWAY_INTERFACE=CGI/1.1"),
+        const_cast<char *>(port.c_str()),
+        const_cast<char *>(query.c_str()),
+        const_cast<char *>(host.c_str()),
+        const_cast<char *>(contentType.c_str()),
+        NULL
+    };
+
+    const char* args[3];
+    args[0] =   bin.c_str();
+    args[1] = script;
+    args[2] = 0;
+
     pid_t pid = fork();
     if (pid == -1)
         throw InternalServerError();
@@ -48,35 +88,23 @@ void DynamicStrategy::process(Client *client, Epoll &epoll, Process &process)
         close(pipeOut[0]);
         close(pipeOut[1]);
 
-        char **envp =  buildEnvp(client->getEnv());
-        char* args[3];
-        args[0] = const_cast<char*>(bin.c_str());
-        args[1] = const_cast<char*>(client->getRequest()->getPathname().c_str());
-        args[2] = NULL;
-        execve(args[0], args, envp);
-
-        // Cleanup on failure
-        // for (int i = 0; i < envCount; i++)
-        // {
-        //     std::cout << "Setting env: " << envp[i] << std::endl;
-        //     delete[] envStrings[i];
-        // }
-        // delete[] envStrings;
-        // delete[] envp;
+        execve(args[0], const_cast<char **>(args), exec_envp);
         exit(EXIT_FAILURE);
     }
     else
     {
         close(pipeIn[0]);
         close(pipeOut[1]);
-        write(pipeIn[1], client->getRequest()->getBody()._str_buffer.c_str(),  client->getRequest()->getBody()._content_length);
+        if (client->getRequest()->getBody()._str_buffer.size())
+            write(pipeIn[1], client->getRequest()->getBody()._str_buffer.c_str(),  client->getRequest()->getBody()._content_length);
         close(pipeIn[1]);
+        
         client->setCGIInfo(pid, pipeOut[0]);
         process.addProcess(pipeOut[0], client->getFd());
         std::cout << GREEN << "New CGI:" << pipeOut[0] << RESET << std::endl;
         epoll.registerFd(pipeOut[0], EPOLLIN);
         client->setProcessingCGI(true);
-        epoll.modify(client->getFd(), EPOLLOUT);
+        epoll.modify(client->getFd(), (EPOLLOUT | EPOLLHUP));
     }
     (void)client;
     (void)epoll;
@@ -85,51 +113,9 @@ void DynamicStrategy::process(Client *client, Epoll &epoll, Process &process)
 
 void DynamicStrategy::error(Client *client, Epoll &epoll, Process &process, ServerException e)
 {
-    process.removeProcess(client->getCGIOutput());
-    epoll.remove(client->getCGIOutput());
+    process.removeProcess(client->getCGIfd());
+    epoll.remove(client->getCGIfd());
     ErrorProcess::processError(e, client);
-}
-
-void DynamicStrategy::setEnv(Client *client)
-{
-    std::stringstream   ss;
-    Request *req = client->getRequest();
-
-    ss << req->getContentLength();
-    client->setEnv("REQUEST_METHOD", req->getMethodString().c_str());
-    client->setEnv("QUERY_STRING", req->getQuery().c_str());
-    client->setEnv("CONTENT_LENGTH", ss.str().c_str());
-    client->setEnv("CONTENT_TYPE", req->getHeaderBykey("Content-Type").c_str());
-    ss.str("");
-    ss << client->getEndpoint().port;
-    client->setEnv("SERVER_PORT", ss.str().c_str());
-    client->setEnv("SCRIPT_NAME", req->getFullPath().c_str());
-}
-
-
-void DynamicStrategy::ParseCGIoutput(Client *client, std::string &response)
-{
-    (void)client;
-    (void)response;
-}
-
-char **DynamicStrategy::buildEnvp(const std::map<std::string, std::string> &env)
-{
-    int    envCount   = env.size();
-    char** envp       = new char*[envCount + 1];
-    char** envStrings = new char*[envCount];
-
-    int idx = 0;
-    for (std::map<std::string, std::string>::const_iterator it = env.begin(); it != env.end(); ++it)
-    {
-        std::string envStr = it->first + "=" + it->second;
-        envStrings[idx]    = new char[envStr.size() + 1];
-        strcpy(envStrings[idx], envStr.c_str());
-        envp[idx] = envStrings[idx];
-        idx++;
-    }
-    envp[envCount] = NULL;
-    return (envp);
 }
 
 void    destroyEnvp(char **envp, int envCount, char **envStrings)
@@ -140,4 +126,26 @@ void    destroyEnvp(char **envp, int envCount, char **envStrings)
     }
     delete[] envStrings;
     delete[] envp;
+}
+
+bool DynamicStrategy::readCgiOutput(Client *client)
+{
+    char buff[CGI_MAX_OUTPUT_BYTES];
+    bzero(buff, CGI_MAX_OUTPUT_BYTES);
+    ssize_t n;
+    
+    while (1)
+    {
+        n = read(client->getCGIfd(), buff, CGI_MAX_OUTPUT_BYTES);
+        if ((n) + client->getResponse()->getCgiResponseSize() >  CGI_MAX_OUTPUT_BYTES)
+            return (false);
+        if (n == -1)
+            return (false);
+        client->getResponse()->addCgiResponse(std::string(buff, n), n);
+        if (n == 0 || n < CGI_MAX_OUTPUT_BYTES)
+            return (true);
+    }
+    if (client->isCGIProcessEnd())
+        client->setCGIOutputReaded();
+    return (true);
 }

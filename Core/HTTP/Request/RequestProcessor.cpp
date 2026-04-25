@@ -45,7 +45,7 @@ std::string RequestProcessor::findDefaultIndex(std::string &fullpath, std::vecto
 
 LocationType RequestProcessor::detectStategyType(Client *client)
 {
-    std::string fullpath;
+    std::string fullpath = "";
 	Request *req = client->getRequest();
 	LocationType type = req->getLocation().type;
 	if (type == STATIC || type == DYNAMIC)
@@ -93,11 +93,6 @@ void RequestProcessor::processRequest(Client *client, Epoll &epoll, Process &pro
 	IRequestStrategy	*strategy = createStrategy(type);
 	strategy->process(client, epoll, process);
 	delete strategy;
-	// client.set
-	// if (client->getRequest())
-	// 	delete  client->getRequest();
-	// if (client->getResponse())
-	// 	delete  client->getResponse();
 }
 
 IRequestStrategy *RequestProcessor::createStrategy(LocationType  type)

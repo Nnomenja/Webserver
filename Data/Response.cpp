@@ -107,7 +107,7 @@ Response::t_status Response::getResponseStatus(int code)
             return ((Response::t_status){code, std::string(status[i].message)});
         }
     }
-	return ((Response::t_status){code, "Unknown Status Code"});
+	return ((Response::t_status){code, ""});
 }
 void Response::setStatus(int code)
 {
@@ -143,7 +143,7 @@ std::string Response::getBody() const
 	return (_body);
 }
 
-std::string Response::getCgiResponse() const
+const std::string &Response::getCgiResponse() const
 {
     return (_cgi_response.value);
 }
@@ -167,7 +167,6 @@ const std::map<std::string, std::string> &Response::getHeaders() const
 void Response::setBody(const std::string &body)
 {
 	_body = body;
-    _contentType = _body.size();
 }
 
 void Response::addHeader(std::string key, std::string value)
@@ -191,4 +190,9 @@ void Response::addCgiResponse(const std::string &response, size_t size)
 {
     _cgi_response.value += response;
     _cgi_response.size += size;
+}
+
+bool Response::hasHeader(std::string &key) const
+{
+    return (_headers.find(key) != _headers.end());
 }

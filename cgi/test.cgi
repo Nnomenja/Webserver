@@ -5,6 +5,9 @@
 echo "Content-Type: text/html"
 echo "Status: 200 OK"
 echo "----"
+
+sleep 4
+
 echo "METHOD: $REQUEST_METHOD"
 echo "PORT: $SERVER_PORT"
 echo "QUERY: $QUERY_STRING"

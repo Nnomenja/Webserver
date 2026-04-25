@@ -4,6 +4,7 @@
 #include "../../Data/Client.hpp"
 #include "./Request/RequestProcessor.hpp"
 #include "./Request/RequestProcessStrategy/DynamicStrategy.hpp"
+#include "./CgiParser.hpp"
 #include <signal.h>
 #include <string.h>
 #include "ErrorProcess.hpp"
@@ -78,126 +79,6 @@ void Webserv::removeClientHttp(int fd)
 	_clients.erase(fd);
 	_epoll.unregister(fd);
 }
-
-// SIMULATION ->
-
-void initSimulData(std::vector<UnitConf_t> &configsSimul)
-{
-
-	/**========================================================================
-	 *                           STATIC WEBSITE
-	 * - GET : render index.hml
-	 * - POST : 405 Method Not Allowed
-	 * - DELETE : 405 Method Not Allowed
-	 *========================================================================**/
-
-	{
-		UnitConf_t u;
-		t_location l;
-
-		u.host = "0.0.0.0";
-		u.port = 2000;
-		u.enable_virtual_hosting = false;
-		u.methods = GET + POST + DELETE;
-		u.method_arr.push_back("GET");
-		u.method_arr.push_back("POST");
-		u.method_arr.push_back("DELETE");
-		// u.type = STATIC;
-		u.max_body_size = 10000000;
-
-		l.type = DYNAMIC;
-
-	l.path = "/site";
-	u.root = "/home/nnomenja/Desktop/42/webserver/www";
-	l.root ="/home/nnomenja/Desktop/42/webserver/www";
-	l.auto_index = true;
-	// 400
-	t_error_page error1;
-	error1.codes.push_back(400);
-	error1.path = "/error/400.html";
-	u.error_pages.push_back(error1);
-	// 404
-	t_error_page error2;
-	error2.codes.push_back(404);
-	error2.path = "/error/404.html";
-	u.error_pages.push_back(error2);
-	// l.index = "index.html";
-	u.locations.push_back(l);
-	
-    configsSimul.push_back(u);
-
-	/**========================================================================
-	 *                           REDIRECTION
-	 * - GET : redirect 3xx
-	 * - POST : 405 Method Not Allowed
-	 * - DELETE : 405 Method Not Allowed
-	 *========================================================================**/
-
-	{
-		UnitConf_t u;
-		t_location l;
-
-		u.host = "0.0.0.0";
-		u.port = 2001;
-		// u.type = REDIRECTION;
-		u.method_arr.push_back("GET");
-		u.method_arr.push_back("POST");
-		u.method_arr.push_back("DELETE");
-		u.methods = GET + POST + DELETE;
-		u.max_body_size = 100000;
-
-		l.path ="/redirection";
-		l.type = REDIRECTION;
-		l.return_path = "https:google.com";
-		l.root = "";
-		l.auto_index = true;
-		l.index = "";
-		u.locations.push_back(l);
-		configsSimul.push_back(u);
-	}
-
-	/**========================================================================
-	 *                           UPLOAD
-	 * - GET : 
-	 * - POST : 
-	 * - DELETE : 
-	 *========================================================================**/
-
-	{
-		UnitConf_t u;
-		t_location l;
-
-		u.host = "0.0.0.0";
-		u.port = 2002;
-
-		u.method_arr.push_back("GET");
-		u.method_arr.push_back("POST");
-		u.method_arr.push_back("DELETE");
-		
-		u.methods = GET + POST + DELETE;
-		u.max_body_size = 1000000000;
-
-		l.path = "/up";
-		l.type = UPLOAD;
-		l.return_path = "";
-		l.root = "/home/aravelom/Project/current/webserver/www";
-		l.auto_index = true;
-		l.index = "";
-
-		// error:
-			// 405 Method Not Allowed
-			t_error_page error1;
-			error1.codes.push_back(405);
-			error1.path = "/error/405.html";
-			l.error_pages.push_back(error1);
-
-		// save l and u
-		u.locations.push_back(l);
-		configsSimul.push_back(u);
-	}
-}
-}
-// <- SIMULATION
 
 bool Webserv::init()
 {
@@ -316,7 +197,6 @@ bool Webserv::createServerSockets( void )
 
 void  Webserv::clear( void )
 {
-    _epoll.close();
     _serverSocketsNumber = 0;
     for (size_t i = 0; i < _serverSockets.size(); i++)
     {
@@ -366,7 +246,7 @@ void Webserv::run(void)
 				tmp = serverSocket->accept();
 				if (tmp.fd < 0)
 					return ;
-				_epoll.registerFd(tmp.fd, EPOLLIN | EPOLLET);
+				_epoll.registerFd(tmp.fd, EPOLLIN);
 				// {
 				// 	std::cout << "---------x--------" <<std::endl;
 				// 	_clients[tmp.fd];
@@ -399,33 +279,44 @@ void Webserv::run(void)
 					{
 						Client *client = _clients[_process.getClientFd(currentFd)];
 						int status;
-	
+
 						waitpid(client->getCGIPid(), &status, WNOHANG);
 						std::cout << YELLOW << "status code: " << WEXITSTATUS(status) << RESET << std::endl;
 
 						_process.removeProcess(currentFd);
-						_epoll.remove(currentFd);
 						client->endProcessingCGI();
-						if ((WIFEXITED(status) && WEXITSTATUS(status) != 0) || WIFSIGNALED(status))
+						std::cout << RED << "WIFEXITED: " << WIFEXITED(status) << " WEXITSTATUS: " << WEXITSTATUS(status) << " WIFSIGNALED: " << WIFSIGNALED(status) << RESET << std::endl;
+						if (WEXITSTATUS(status) == 0)
 						{
 							std::cout << RED << "CGI process was killed by signal: " << WTERMSIG(status) << RESET << std::endl;
 							DynamicStrategy::error(client, _epoll, _process, ServerException(504, "Gateway Timeout"));
 							std::cout << YELLOW << "CGI script failed with status: " << WEXITSTATUS(status) << RESET << std::endl;
 							continue;
 						}
-						std::cout << "CGI RESPONSE SIZE \n" << YELLOW <<  client->getResponse()->getCgiResponse() << RESET  << std::endl;
-						simulateClient(client);
+						DynamicStrategy::readCgiOutput(client);
+						CgiParser cgi_parser(client->getResponse()->getCgiResponse(), client->getResponse());
+						try
+						{
+							cgi_parser.parse();
+						}
+						catch(const std::exception& e)
+						{
+							std::cout << RED << "CGI error" << RESET << std::endl;
+							DynamicStrategy::error(client, _epoll, _process, ServerException(504, "Gateway Timeout"));
+							continue;
+						}
 						
+						// std::cout << YELLOW << client->getResponse()->getCgiResponse() << RESET << std::endl;
+						_epoll.remove(currentFd);
+						_epoll.modify(client->getFd(), EPOLLOUT);
+						std::cout << "-------------CGI RESPONSE----------\n" << YELLOW <<  client->getResponse()->getCgiResponse() << RESET  << std::endl;
+						// simulateClient(client);
+						client->generateResponse();
 						std::cout << "Nbr client: " << _clients.size() << std::endl;
 					}
 					else
 					{
-						if (_clients[currentFd]->isCGI())
-						{
-							std::cout << RED << "Killing CGI process for client fd: " << currentFd << RESET << std::endl;
-							Client *client = _clients[currentFd];
-							kill(client->getCGIPid(), SIGKILL);
-						}
+						std::cout << RED << "A client was an error" << RESET << std::endl;
 						removeClientHttp(currentFd);
 					}
 					std::cout << "[" << currentFd << "]: disconnected" << std::endl;
@@ -444,27 +335,15 @@ void Webserv::run(void)
 						if (_process.isProcess(currentFd))
 						{
 							std::cout << "######READ CGI#######" << std::endl;
-							char buff[BODY_MAX_BYTES];
-							client = _clients[_process.getClientFd(currentFd)];
-							bzero(buff, BODY_MAX_BYTES);
-							ssize_t n = read(client->getCGIOutput(), buff, BODY_MAX_BYTES);
-							if (n == -1 || (client->getResponse()->getCgiResponseSize() + n) > BODY_MAX_BYTES)
-								DynamicStrategy::error(client, _epoll, _process, ServerException(502, "Bad Gateway"));
-							else
-								client->getResponse()->addCgiResponse(std::string(buff, n), n);
-							std::cout << "######FINISH READING CGI#######" << std::endl;
+							DynamicStrategy::readCgiOutput(client);
+							std::cout << YELLOW << client->getResponse()->getCgiResponse() << RESET << std::endl;
+							std::cout << "######FINISH READING CGI-> "<< client->isCGIProcessEnd() <<"#######" << std::endl;
 							continue;
 						}
 						else
 						{
-							 client = _clients[currentFd];
-							if (client->isProcessingCGI())
-							{
-								if (_process.isTimeout(CGI_TIMEOUT, client->getCGIOutput()) || read(client->getFd(), NULL, 1) == -1)
-									kill(client->getCGIPid(), SIGKILL);
-								continue;
-							}
 							std::cout << "######READ HTTP REQUEST#######" << std::endl;
+							 client = _clients[currentFd];
 							if (!readtHttpRequest(client))
 								continue;
 							RequestProcessor	process;
@@ -485,7 +364,15 @@ void Webserv::run(void)
 				{
 					client = _clients[currentFd];
 					if (client->isProcessingCGI())
-						continue;
+					{
+						if (_process.isTimeout(CGI_TIMEOUT, client->getCGIfd()))
+						{
+							kill(client->getCGIPid(), SIGKILL);
+							DynamicStrategy::error(client, _epoll, _process, ServerException(504, "Gateway Timeout"));
+						}
+						else
+							continue;
+					}			
 					client->generateResponse();
 					sendHttpResponse(client);
 					removeClientHttp(client->getFd());
@@ -533,7 +420,6 @@ bool Webserv::readtHttpRequest(Client* client)
 	std::string		data;
 	std::string		contents;
 
-	std::cout <<  "read client fd: " << client->getFd() << std::endl;
 	while (true)
 	{
 		data = _epoll.read(client->getFd(), &end);

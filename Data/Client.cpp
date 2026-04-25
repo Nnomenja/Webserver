@@ -2,12 +2,19 @@
 #include "../utils/utils.hpp"
 #include <algorithm>
 
-Client::Client(std::map<std::string, std::string> &envs):_start_time_ms(get_time_ms()), _req(new Request()), _res(new Response()), _parsed(false), _cgi_pid(-1), _cgi_output(-1), _processing_cgi(false), _envs(envs){
+Client::Client(std::map<std::string, std::string> &envs):_start_time_ms(get_time_ms()), _req(new Request()), _res(new Response()), _parsed(false),_envs(envs){
   std::cout << "Create client" << std::endl;
 //   this->_start_time_ms = get_time_ms();
 	_req->setRoot(_endpoint.root);
 	_bufferSize = 0;
 	_buffer = "";
+
+	// cgi
+	_cgi_pid = -1;
+	_cgi_output = -1;
+	_cgi_processing = false;
+	_cgi_processing_end = false;
+	_cgi_output_readed = false;
 };
 
 Client::Client(const Client& other):_envs(other._envs){
@@ -75,9 +82,14 @@ Response *Client::getResponse()
 	return (_res);
 }
 
-int Client::getCGIOutput() const
+int Client::getCGIfd() const
 {
 	return (_cgi_output);
+}
+
+std::string Client::getCGIOutput() const
+{
+	return (_res->getCgiResponse());
 }
 
 pid_t Client::getCGIPid() const
@@ -216,18 +228,18 @@ void	Client::generateResponse()
 
 bool Client::isProcessingCGI() const
 {
-	return (_processing_cgi);
+	return (_cgi_processing);
 }
 
 void Client::endProcessingCGI()
 {
-	_processing_cgi = false;
+	_cgi_processing = false;
 }
 
 
 void Client::setProcessingCGI(bool value)
 {
-	_processing_cgi = value;
+	_cgi_processing = value;
 }
 
 void Client::setCGIbin(std::string &value)
@@ -238,4 +250,24 @@ void Client::setCGIbin(std::string &value)
 std::string Client::getCGIbin() const
 {
 	return (_cgi_bin);
+}
+
+void Client::setCGIOutputReaded()
+{
+	_cgi_output_readed = true;
+}
+
+bool Client::isCGIOutputReaded() const
+{
+	return (_cgi_output_readed);
+}
+
+bool Client::isCGIProcessEnd()
+{
+	return (_cgi_processing_end);
+}
+
+void Client::setCGICGIProcessEnd()
+{
+	_cgi_processing_end = true;
 }

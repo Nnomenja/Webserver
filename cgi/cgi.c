@@ -23,9 +23,9 @@ int main(void)
     printf("QUERY: %s\n", query ? query : "");
     printf("CONTENT_LENGTH: %d\n", content_length);
     printf("CONTENT_TYPE: %s\n", content_type ? content_type : "");
-
+    putchar('\0');
+    sleep(4);
     printf("---- BODY ----\n");
-
     /* --- READ BODY FROM STDIN --- */
     if (content_length > 0)
     {
@@ -54,9 +54,13 @@ int main(void)
     {
         printf("(no body)\n");
     }
-
+    printf("---- finished waitting 4s ----\n");
     printf("----------------\n");
-    printf("<html><body><h1>Hello from C CGI!</h1></body></html>\n");
-
+    printf("----------------\n");
+    printf("----------------\n");
+    printf("----------------\n");
+    printf("----------------\n");
+    printf("----------------\n");
+    printf("----------------\n");
     return 0;
 }

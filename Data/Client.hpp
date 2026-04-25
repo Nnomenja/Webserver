@@ -21,10 +21,13 @@ class Client {
         Request		             *_req;
 		Response	             *_res;
         bool                     _parsed;
-        pid_t                    _cgi_pid;
-        int                      _cgi_output;
-        std::string               _cgi_bin;
-        bool                     _processing_cgi;
+
+        pid_t                   _cgi_pid;
+        int                     _cgi_output;
+        std::string				_cgi_bin;
+        bool                    _cgi_processing;
+        bool                    _cgi_processing_end;
+        bool                    _cgi_output_readed;
         std::map<std::string\
             , std::string>      &_envs;
 
@@ -57,7 +60,8 @@ class Client {
         void                generateResponse();
         void                setCGIInfo(pid_t pid, int output_fd);
         bool                isCGI() const;
-        int                 getCGIOutput() const;
+        int                 getCGIfd() const;
+        std::string         getCGIOutput() const;
         pid_t               getCGIPid() const;
         bool                isProcessingCGI() const;
         void                endProcessingCGI();
@@ -66,6 +70,10 @@ class Client {
         std::string         getCGIbinByExtension(std::string ext) const;
         void                setCGIbin(std::string &value);
         std::string         getCGIbin() const;
+        void                setCGIOutputReaded();
+        void                setCGICGIProcessEnd();
+        bool                isCGIOutputReaded() const;
+		bool				isCGIProcessEnd();
         // void                (*registerFd)(int fd);
 };
 

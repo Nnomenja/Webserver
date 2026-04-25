@@ -114,6 +114,9 @@ void MetadataParser::parseBodyMetadata()
     if (hasContentLength && hasTransferEncoding)
         throw BadRequestException();
 
+    if (_target->getMethod() == POST && !hasContentLength && !hasTransferEncoding)
+        throw BadRequestException();
+
     if (hasTransferEncoding)
     {
         std::string transferEncoding = _target->getHeaderBykey("transfer-encoding");

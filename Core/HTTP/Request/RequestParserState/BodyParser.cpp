@@ -11,8 +11,6 @@ BodyParser::~BodyParser(){
 void    BodyParser::readBodyThroughContentLength()
 {
     char c;
-
-        std::cout << "############################################Content-lenght: " << _tmp << std::endl;
     
     for (size_t i = _target->getParserIndex(); i < _target->getBufferSize(); i++)
     {

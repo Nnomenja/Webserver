@@ -27,7 +27,6 @@ class Response {
             std::string message;
         }   t_status;
         
-        t_status    getResponseStatus(const int code);
     public:
         Response();
         Response(const Response& other);
@@ -48,8 +47,11 @@ class Response {
         void            addHeader(std::string key, std::string value);
         void            setCgiResponse(const std::string &response);
         void            addCgiResponse(const std::string &response, size_t size);
-        std::string     getCgiResponse(void) const;
+        const std::string     &getCgiResponse(void) const;
         size_t          getCgiResponseSize(void) const;
+        bool            hasHeader(std::string &key) const;
+        static t_status    getResponseStatus(const int code);
+        
 };
 
 #endif

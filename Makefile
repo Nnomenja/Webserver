@@ -70,6 +70,7 @@ HTTP_SRCS = $(addprefix $(CORE_DIR)/$(HTTP_DIR)/, \
 				ErrorProcess.cpp \
 				MimeTypes.cpp \
 				Template.cpp \
+				CgiParser.cpp \
 			)
 
 SRC = main.cpp
