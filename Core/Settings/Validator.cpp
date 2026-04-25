@@ -208,13 +208,13 @@ bool Validator::validateBoolStr(std::string value)
     return (1);
 }
 
-bool Validator::validateRoot(std::string root)
+bool Validator::validateRoot(const std::string root)
 {
-    // std::string path = std::string(SUPERROOT) + "/" + root;
-    // if (!isDirectory(path))
-    if (!isDirectory(root))
-        return (0);
-    return (1);
+    if (root.empty())
+        return false;
+    if (root[root.size() - 1] == '/')
+        return false;
+    return isDirectory(root);
 }
 
 bool Validator::validateLocationRoot(std::string root)
