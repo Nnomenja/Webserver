@@ -48,9 +48,12 @@ LocationType RequestProcessor::detectStategyType(Client *client)
     std::string fullpath = "";
 	Request *req = client->getRequest();
 	LocationType type = req->getLocation().type;
+	std::string root = client->getRequest()->getLocation().root;
+	if (root.empty())
+		root = client->getEndpoint().root;
 	if (type == STATIC || type == DYNAMIC)
 	{    
-		fullpath = client->getEndpoint().root + client->getRequest()->getPathname();
+		fullpath = root + client->getRequest()->getPathname();
 		req->setFullPath(fullpath);
 		if (PathUtils::isDirectory(fullpath))
 		{
