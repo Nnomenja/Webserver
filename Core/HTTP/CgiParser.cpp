@@ -120,7 +120,9 @@ void CgiParser::parseHeader()
 void CgiParser::parseBody()
 {
 	_res->setBody(&_s[_i]);
-	_res->setContentLength(_res->getBody().size());
+	std::string content_length = "Content-Length";
+	if (!_res->hasHeader(content_length))
+		_res->setContentLength(_res->getBody().size());
 }
 
 void CgiParser::parse()
