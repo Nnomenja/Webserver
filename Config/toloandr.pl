@@ -18,15 +18,15 @@ server:
 
 #REDIRECTION
 server:
-    port 2001
+    port                        2001
 
-    host 0.0.0.0
+    host         0.0.0.0
 
-    root /home/toloandr/SCHOOL/Webserver/websites/website00
+    root                    /home/toloandr/SCHOOL/Webserver/websites/website00
 
     location:
         path /redirection
-        return 302 https://google.com
+        return               302              https://google.com
 
 
 

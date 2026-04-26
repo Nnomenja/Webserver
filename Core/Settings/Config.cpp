@@ -175,7 +175,8 @@ void Config::parseServerBlock(std::string serverBlock, int j)
         std::vector<std::string> error_pages_words;
 
         // <- error
-        while (std::getline(iss_, word, ' '))
+        // while (std::getline(iss_, word, ' '))
+        while (iss_ >> word)
         {
             if (i == 0)
             {
@@ -373,7 +374,8 @@ void Config::parseLocationBlock(std::string locationBlock, int i, int j)
         std::string        currentKey;
 
         k = 0;
-        while (std::getline(iss_, word, ' '))
+        // while (std::getline(iss_, word, ' '))
+        while (iss_ >> word)
         {
             if (k == 0)
             {
