@@ -42,9 +42,7 @@ class Validator
     static bool validatePort(std::string port);
     static bool validateMethod(std::string method);
     static bool validateBoolStr(std::string value);
-    static bool validateRoot(std::string root);
-    static bool validateLocationRoot(std::string root);
-    static bool validateUploads(std::string root, std::string uploads);
+    static bool validatePath(std::string root, std::string &err);
     static bool validateIndex(std::string index);
     static bool validateMaxBodySize(std::string maxBodySize);
     static bool validateCode(const std::string& code);

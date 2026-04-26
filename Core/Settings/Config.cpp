@@ -6,7 +6,15 @@ Config::Config() {}
 
 Config::Config(std::string filename)
 {
-    fileContent = File::getFileContent(filename);
+    try
+    {
+        fileContent = File::getFileContent(filename);
+    }
+    catch(const std::exception& e)
+    {
+        fileContent = "";
+        // std::cerr << e.what() << '\n';
+    }
     parseFileContent();
 }
 
@@ -48,6 +56,8 @@ Config::ConfigException::~ConfigException() throw() {}
 
 void Config::parseFileContent()
 {
+    if (fileContent == "")
+        throw ConfigException("Error opening file");
     int                i = -1;
     std::istringstream iss(fileContent);
     std::string        line;
@@ -63,10 +73,10 @@ void Config::parseFileContent()
                 continue;
             }
         }
-        // if (line.size()== 0)
-        // {
-        //     continue;
-        // }
+        if (line.size()== 0)
+        {
+            continue;
+        }
         if (line == "server:")
         {
             i++;
@@ -214,8 +224,9 @@ void Config::parseServerBlock(std::string serverBlock, int j)
                 }
                 if (currentKey == "root")
                 {
-                    if (!Validator::validateRoot(word))
-                        throw ConfigException("root directory should exist");
+                    std::string err;
+                    if (!Validator::validatePath(word, err))
+                        throw ConfigException(err);
                     configs[j].root = word;
                     if (i > 1)
                         throw ConfigException("root can have only one value");
@@ -233,7 +244,8 @@ void Config::parseServerBlock(std::string serverBlock, int j)
                 if (currentKey == "error_pages")
                 {
                     // std::cout << i << " " << word << std::endl;
-                    
+                    if (wordCount < 3)
+                        throw ConfigException("error_pages should have at least a code and a path");
                     if (i < wordCount - 1 && i > 0)
                     {
                         if (!Validator::isErrorCode(word))
@@ -265,7 +277,7 @@ void Config::parseServerBlock(std::string serverBlock, int j)
             }
             i++;
         }
-        printMap(configs[j].error_pages_map);
+        // printMap(configs[j].error_pages_map);
     }
     if (counts["host"] > 1)
         throw ConfigException("duplicate keys -> 'host'");
@@ -433,17 +445,18 @@ void Config::parseLocationBlock(std::string locationBlock, int i, int j)
                 }
                 if (currentKey == "root")
                 {
-                    if (!Validator::validateLocationRoot(word))
-                        throw ConfigException("root directory should exist");
+                    std::string err;
+                    if (!Validator::validatePath(word, err))
+                        throw ConfigException(err);
                     configs[i].locations[j].root = word;
                     if (k > 1)
                         throw ConfigException("root can have only one value");
                 }
                 if (currentKey == "uploads")
                 {
-                    if (!Validator::validateUploads(
-                            configs[i].locations[j].root, word))
-                        throw ConfigException("uploads directory should exist");
+                    std::string err;
+                    if (!Validator::validatePath(word, err))
+                        throw ConfigException(err);
                     configs[i].locations[j].uploads = word;
                     if (k > 1)
                         throw ConfigException(
@@ -527,8 +540,6 @@ void Config::checkLocationBlock(std::vector<t_location>& locations, int j)
             throw ConfigException("methods field should be filled");
         if (locations[j].path == "")
             throw ConfigException("path field should be filled");
-        if (locations[j].root == "")
-            throw ConfigException("root field should be filled");
         if (locations[j].uploads != "")
         {
             if (locations[j].methods != POST)
