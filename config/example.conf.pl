@@ -2,10 +2,10 @@
 server:
     port 2000
     host 0.0.0.0
-    root ./www/
+    #root  
     location:
         path /
-        root ./www/
+        #root  
         methods GET POST
         error_pages 404 /error/404.html
         error_pages 400 /error/400.html
@@ -14,7 +14,6 @@ server:
 server:
     port 2001
     host 0.0.0.0
-    root .
     location:
         path /redirection
         return 302 https://google.com
@@ -22,10 +21,10 @@ server:
 server:
     port 2003
     host 0.0.0.0
-    root /home/nnomenja/Desktop/42/webserver/websites/CGI
+    #root 
     location:
         path /
-        root /home/nnomenja/Desktop/42/webserver/websites/CGI
+        #root
         methods GET POST
         error_pages 404 /error/404.html
         error_pages 400 /error/400.html
