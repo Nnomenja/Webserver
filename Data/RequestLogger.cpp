@@ -21,7 +21,7 @@ RequestLogger::RequestLogger(const std::string& method,
                              const std::string& path,
                              int status,
                              const std::string& clientIp,
-                             double responseTime)
+                             uint64_t responseTime)
     : _method(method),
       _path(path),
       _status(status),
@@ -77,12 +77,12 @@ void RequestLogger::setStatus(int status) {
     _hasStatus = true;
 }
 
-void RequestLogger::setIp(struct in_addr addr) {
-    _clientIp = inet_ntoa(addr);
+void RequestLogger::setIp(std::string ip) {
+    _clientIp = ip;
     _hasIp = true;
 }
 
-void RequestLogger::setResponseTime(double time) {
+void RequestLogger::setResponseTime(uint64_t time) {
     _responseTime = time;
     _hasResponseTime = true;
 }
@@ -123,10 +123,10 @@ static const char* getColor(int status) {
 }
 
 void RequestLogger::log() const {
-    // if (!isComplete()) {
-    //     std::cerr << RED << "[LOGGER ERROR] Incomplete log data" << RESET << std::endl;
-    //     return;
-    // }
+    if (!isComplete()) {
+        std::cerr << RED << "[LOGGER ERROR] Incomplete log data" << RESET << std::endl;
+        return;
+    }
 
     const char* color = getColor(_status);
 

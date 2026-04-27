@@ -4,7 +4,7 @@
 
 Client::Client(std::map<std::string, std::string> &envs):_start_time_ms(get_time_ms()), _req(new Request()), _res(new Response()), _parsed(false),_envs(envs){
   std::cout << "Create client" << std::endl;
-//   this->_start_time_ms = get_time_ms();
+  this->_start_time_ms = get_time_ms();
 	_req->setRoot(_endpoint.root);
 	_bufferSize = 0;
 	_buffer = "";
@@ -38,11 +38,12 @@ Client& Client::operator=(const Client& other){
 };
 
 Client::~Client(){
+	
 	_logger.setMethod(_req->getMethodString());
-	// _logger.setIp();
+	_logger.setIp(_ip);
 	_logger.setPath(_req->getPathname());
 	_logger.setStatus(_res->getStatusCode());
-	// _logger.
+	_logger.setResponseTime(get_time_ms() - _start_time_ms);
 	_logger.log();
 
 	if (_req)

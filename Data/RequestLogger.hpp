@@ -10,7 +10,7 @@ private:
     std::string _path;
     int         _status;
     std::string _clientIp;
-    double      _responseTime;
+    uint64_t      _responseTime;
 
     bool _hasMethod;
     bool _hasPath;
@@ -25,7 +25,7 @@ public:
               const std::string& path,
               int status,
               const std::string& clientIp,
-              double responseTime);
+              uint64_t responseTime);
     RequestLogger(const RequestLogger& other);
     RequestLogger& operator=(const RequestLogger& other);
     ~RequestLogger();
@@ -34,8 +34,8 @@ public:
     void setMethod(const std::string& method);
     void setPath(const std::string& path);
     void setStatus(int status);
-    void setIp(struct in_addr addr);
-    void setResponseTime(double time);
+    void setIp(std::string ip);
+    void setResponseTime(uint64_t time);
 
     // Utils
     bool        isComplete() const;
