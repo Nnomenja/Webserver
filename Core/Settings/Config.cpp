@@ -9,6 +9,7 @@ Config::Config() {
 Config::Config(std::string filename)
 {
     serverParsed = -1;
+    locationParsed = -1;
     try
     {
         fileContent = File::getFileContent(filename);
@@ -47,8 +48,8 @@ Config& Config::operator=(const Config& other)
     return *this;
 }
 
-Config::ConfigException::ConfigException(const std::string& msg, int serverParsed)
-    : message("ConfigException: " + msg), serverParsed(serverParsed)
+Config::ConfigException::ConfigException(const std::string& msg, int serverParsed, int locationParsed)
+    : message("ConfigException: " + msg), serverParsed(serverParsed), locationParsed(locationParsed)
 {
 }
 
@@ -57,9 +58,14 @@ const char* Config::ConfigException::what() const throw()
     return (message.c_str());
 }
 
-int Config::ConfigException::getserverParsed() const throw()
+int Config::ConfigException::getServerParsed() const throw()
 {
     return (serverParsed);
+}
+
+int Config::ConfigException::getLocationParsed() const throw()
+{
+    return (locationParsed);
 }
 
 Config::ConfigException::~ConfigException() throw() {}
@@ -67,7 +73,7 @@ Config::ConfigException::~ConfigException() throw() {}
 void Config::parseFileContent()
 {
     if (fileContent == "")
-        throw ConfigException("Error opening file", serverParsed);
+        throw ConfigException("Error opening file", serverParsed, locationParsed);
     int                i = -1;
     std::istringstream iss(fileContent);
     std::string        line;
@@ -99,11 +105,11 @@ void Config::parseFileContent()
         }
         if (i == -1)
         {
-            throw ConfigException("unexpected line ->'" + line + "'", serverParsed);
+            throw ConfigException("unexpected line ->'" + line + "'", serverParsed, locationParsed);
         }
     }
     if (i == -1)
-        throw ConfigException("No 'server:' keyword", serverParsed);
+        throw ConfigException("No 'server:' keyword", serverParsed, locationParsed);
     n = i + 1;
     for (int j = 0; j < n; j++)
     {
@@ -123,17 +129,18 @@ void Config::parseFileContent()
     }
     for (int i = 0; i < n; i++)
     {
+        locationParsed = -1;
         // std::cout << extractMainConfig(serverBlocks[i]) << std::endl;
         getLocationBlocks(i);
     }
     for (int j = 0; j < n; j++)
     {
         if (configs[j].host == "-")
-            throw ConfigException("host field should be filled", serverParsed);
+            throw ConfigException("host field should be filled", serverParsed, locationParsed);
         if (configs[j].port == -1)
-            throw ConfigException("port field should be filled", serverParsed);
+            throw ConfigException("port field should be filled", serverParsed, locationParsed);
         if (configs[j].root == "")
-            throw ConfigException("root field should be filled", serverParsed);
+            throw ConfigException("root field should be filled", serverParsed, locationParsed);
         // here
     }
 
@@ -171,7 +178,6 @@ void Config::parseServerBlock(std::string serverBlock, int j)
 
     // here
 
-    
     int i;
     while (std::getline(iss, line))
     {
@@ -196,7 +202,7 @@ void Config::parseServerBlock(std::string serverBlock, int j)
                     word != "server_name")
                 // here
                 {
-                    throw ConfigException("wrong key -> '" + word + "'", serverParsed);
+                    throw ConfigException("wrong key -> '" + word + "'", serverParsed, locationParsed);
                 }
                 counts[word]++;
                 currentKey = word;
@@ -206,67 +212,67 @@ void Config::parseServerBlock(std::string serverBlock, int j)
                 if (currentKey == "host")
                 {
                     if (!Validator::validateHost(word))
-                        throw ConfigException("wrong value -> '" + word + "'", serverParsed);
+                        throw ConfigException("wrong value -> '" + word + "'", serverParsed, locationParsed);
                     configs[j].host = word;
                     if (i > 1)
-                        throw ConfigException("host can have only one value", serverParsed);
+                        throw ConfigException("host can have only one value", serverParsed, locationParsed);
                 }
                 if (currentKey == "port")
                 {
                     if (!Validator::validatePort(word))
-                        throw ConfigException("wrong value -> '" + word + "'", serverParsed);
+                        throw ConfigException("wrong value -> '" + word + "'", serverParsed, locationParsed);
                     configs[j].port = std::atoi(word.c_str());
                     if (i > 1)
-                        throw ConfigException("port can have only one value", serverParsed);
+                        throw ConfigException("port can have only one value", serverParsed, locationParsed);
                 }
                 if (currentKey == "enable_virtual_hosting")
                 {
                     if (!Validator::validateBoolStr(word))
                         throw ConfigException("enable_virtual_hosting should "
-                                              "be on/ON or off/OFF", serverParsed);
+                                              "be on/ON or off/OFF", serverParsed, locationParsed);
                     if (word == "ON" || word == "on")
                         configs[j].enable_virtual_hosting = 1;
                     if (word == "off" || word == "OFF")
                         configs[j].enable_virtual_hosting = 0;
                     if (i != 1)
                         throw ConfigException(
-                            "enable_virtual_hosting can have only one value", serverParsed);
+                            "enable_virtual_hosting can have only one value", serverParsed, locationParsed);
                 }
                 if (currentKey == "root")
                 {
                     std::string err;
                     if (!Validator::validatePath(word, err))
-                        throw ConfigException(err, serverParsed);
+                        throw ConfigException(err, serverParsed, locationParsed);
                     configs[j].root = word;
                     if (i > 1)
-                        throw ConfigException("root can have only one value", serverParsed);
+                        throw ConfigException("root can have only one value", serverParsed, locationParsed);
                 }
                 if (currentKey == "max_body_size")
                 {
                     if (!Validator::validateMaxBodySize(word))
                         throw ConfigException(
-                            "max_body_size should be less than 52428800", serverParsed);
+                            "max_body_size should be less than 52428800", serverParsed, locationParsed);
                     configs[j].max_body_size = std::atoi(word.c_str());
                     if (i != 1)
                         throw ConfigException(
-                            "max_body_size can have only one value", serverParsed);
+                            "max_body_size can have only one value", serverParsed, locationParsed);
                 }
                 if (currentKey == "error_pages")
                 {
                     // std::cout << i << " " << word << std::endl;
                     if (wordCount < 3)
-                        throw ConfigException("error_pages should have at least a code and a path", serverParsed);
+                        throw ConfigException("error_pages should have at least a code and a path", serverParsed, locationParsed);
                     if (i < wordCount - 1 && i > 0)
                     {
                         if (!Validator::isErrorCode(word))
-                            throw ConfigException("invalid error code", serverParsed);
+                            throw ConfigException("invalid error code", serverParsed, locationParsed);
                         error_pages_words.push_back(word);
                     }
                     if (i == wordCount - 1 && i > 0)
                     {
                         if (!Validator::validateURI(word))
                             throw ConfigException("invalid URI -> '" + word +
-                                                  "'", serverParsed);
+                                                  "'", serverParsed, locationParsed);
                         fillMap(configs[j].error_pages_map, word, error_pages_words);
                         fillVect(configs[j].error_pages, word, error_pages_words);
                         error_pages_words.clear();
@@ -276,34 +282,34 @@ void Config::parseServerBlock(std::string serverBlock, int j)
                 if (currentKey == "server_name")
                 {
                     if (!Validator::validateServerName(word))
-                        throw ConfigException("invalid server name", serverParsed);
+                        throw ConfigException("invalid server name", serverParsed, locationParsed);
                     configs[j].server_name = word;
                     if (i > 1)
                         throw ConfigException(
-                            "server_name can have only one value", serverParsed);
+                            "server_name can have only one value", serverParsed, locationParsed);
                 }
                 // here
                 // std::cout << word << std::endl;
             }
             i++;
             
-        } 
-        serverParsed = j;     
+        }    
         // printMap(configs[j].error_pages_map);
     }
     if (counts["host"] > 1)
-        throw ConfigException("duplicate keys -> 'host'", serverParsed);
+        throw ConfigException("duplicate keys -> 'host'", serverParsed, locationParsed);
     if (counts["port"] > 1)
-        throw ConfigException("duplicate keys -> 'port'", serverParsed);
+        throw ConfigException("duplicate keys -> 'port'", serverParsed, locationParsed);
     if (counts["enable_virtual_hosting"] > 1)
-        throw ConfigException("duplicate keys -> 'enable_virtual_hosting'", serverParsed);
+        throw ConfigException("duplicate keys -> 'enable_virtual_hosting'", serverParsed, locationParsed);
     if (counts["root"] > 1)
-        throw ConfigException("duplicate keys -> 'root'", serverParsed);
+        throw ConfigException("duplicate keys -> 'root'", serverParsed, locationParsed);
     if (counts["max_body_size"] > 1)
-        throw ConfigException("duplicate keys -> 'max_body_size'", serverParsed);
+        throw ConfigException("duplicate keys -> 'max_body_size'", serverParsed, locationParsed);
     if (counts["server_name"] > 1)
-        throw ConfigException("duplicate keys -> 'server_name'", serverParsed);
+        throw ConfigException("duplicate keys -> 'server_name'", serverParsed, locationParsed);
     // here
+    serverParsed = j;
 }
 
 void Config::getLocationBlocks(int i)
@@ -341,6 +347,7 @@ void Config::getLocationBlocks(int i)
         l.CGI["status"] = "OFF";
         configs[i].locations.push_back(l);
         parseLocationBlock(serverBlockIdToLocationBlocks[i][j], i, j);
+        locationParsed = j;
         // std::cout << serverBlockIdToLocationBlocks[i][j] << std::endl;
         // printVector(configs[i].locations[j].index);
     }
@@ -380,7 +387,7 @@ void Config::parseLocationBlock(std::string locationBlock, int i, int j)
     {
         int wordCount = countWords(line);
         if (wordCount == 1)
-            throw ConfigException("invalid synthax-> '" + line + "'", serverParsed);
+            throw ConfigException("invalid synthax-> '" + line + "'", serverParsed, locationParsed);
         std::istringstream iss_(line);
         std::string        word;
         std::string        currentKey;
@@ -397,7 +404,7 @@ void Config::parseLocationBlock(std::string locationBlock, int i, int j)
                     word != "return" && word != "CGI")
                 // here
                 {
-                    throw ConfigException("wrong key -> '" + word + "'", serverParsed);
+                    throw ConfigException("wrong key -> '" + word + "'", serverParsed, locationParsed);
                 }
                 counts[word]++;
                 currentKey = word;
@@ -409,7 +416,7 @@ void Config::parseLocationBlock(std::string locationBlock, int i, int j)
                 {
                     if (!Validator::validateMethod(word))
                         throw ConfigException(
-                            "method should be GET , POST or DELETE", serverParsed);
+                            "method should be GET , POST or DELETE", serverParsed, locationParsed);
                     if (word == "GET")
                         configs[i].locations[j].methods |= GET;
                     if (word == "POST")
@@ -418,23 +425,23 @@ void Config::parseLocationBlock(std::string locationBlock, int i, int j)
                         configs[i].locations[j].methods |= DELETE;
                     if (k > 3)
                         throw ConfigException(
-                            "methods can have only three values", serverParsed);
+                            "methods can have only three values", serverParsed, locationParsed);
                 }
                 if (currentKey == "error_pages")
                 {
                     if (wordCount < 3)
-                        throw ConfigException("error_pages should have at least a code and a path", serverParsed);
+                        throw ConfigException("error_pages should have at least a code and a path", serverParsed, locationParsed);
                     if (k < wordCount - 1 && k > 0)
                     {
                         if (!Validator::isErrorCode(word))
-                            throw ConfigException("invalid error code", serverParsed);
+                            throw ConfigException("invalid error code", serverParsed, locationParsed);
                         error_pages_words.push_back(word);
                     }
                     if (k == wordCount - 1 && k > 0)
                     {
                         if (!Validator::validateURI(word))
                             throw ConfigException("invalid URI -> '" + word +
-                                                  "'", serverParsed);
+                                                  "'", serverParsed, locationParsed);
                         fillMap(configs[i].locations[j].error_pages_map, word, error_pages_words);
                         fillVect(configs[i].locations[j].error_pages, word, error_pages_words);
                         error_pages_words.clear();
@@ -444,15 +451,15 @@ void Config::parseLocationBlock(std::string locationBlock, int i, int j)
                 if (currentKey == "path")
                 {
                     if (!Validator::validateURI(word))
-                        throw ConfigException("invalid URI -> '" + word + "'", serverParsed);
+                        throw ConfigException("invalid URI -> '" + word + "'", serverParsed, locationParsed);
                     configs[i].locations[j].path = word;
                     if (k > 1)
-                        throw ConfigException("path can have only one value", serverParsed);
+                        throw ConfigException("path can have only one value", serverParsed, locationParsed);
                 }
                 if (currentKey == "index")
                 {
                     if (!Validator::validateIndex(word))
-                        throw ConfigException("invalid index", serverParsed);
+                        throw ConfigException("invalid index", serverParsed, locationParsed);
                     configs[i].locations[j].index_vect.push_back(word);
                     configs[i].locations[j].index = word;
                 }
@@ -460,72 +467,72 @@ void Config::parseLocationBlock(std::string locationBlock, int i, int j)
                 {
                     std::string err;
                     if (!Validator::validatePath(word, err))
-                        throw ConfigException(err, serverParsed);
+                        throw ConfigException(err, serverParsed, locationParsed);
                     configs[i].locations[j].root = word;
                     if (k > 1)
-                        throw ConfigException("root can have only one value", serverParsed);
+                        throw ConfigException("root can have only one value", serverParsed, locationParsed);
                 }
                 if (currentKey == "upload_store")
                 {
                     std::string err;
                     if (!Validator::validatePath(word, err))
-                        throw ConfigException(err, serverParsed);
+                        throw ConfigException(err, serverParsed, locationParsed);
                     configs[i].locations[j].upload_store = word;
                     if (k > 1)
                         throw ConfigException(
-                            "upload_store can have only one value", serverParsed);
+                            "upload_store can have only one value", serverParsed, locationParsed);
                 }
                 if (currentKey == "auto_index")
                 {
                     if (!Validator::validateBoolStr(word))
                         throw ConfigException("auto_index should "
-                                              "be on/ON or off/OFF", serverParsed);
+                                              "be on/ON or off/OFF", serverParsed, locationParsed);
                     if (word == "ON" || word == "on")
                         configs[i].locations[j].auto_index = 1;
                     if (word == "off" || word == "OFF")
                         configs[i].locations[j].auto_index = 0;
                     if (k != 1)
                         throw ConfigException(
-                            "auto_index can have only one value", serverParsed);
+                            "auto_index can have only one value", serverParsed, locationParsed);
                 }
                 if (currentKey == "return")
                 {
                     if (k == 1)
                     {
                         if (!Validator::isRedirectCode(word))
-                            throw ConfigException("invalid return code", serverParsed);
+                            throw ConfigException("invalid return code", serverParsed, locationParsed);
                         configs[i].locations[j].ret.code =
                             std::atoi(word.c_str());
                     }
                     if (k == 2)
                     {
                         if (!Validator::isValidRedirectTarget(word))
-                            throw ConfigException("invalid return target", serverParsed);
+                            throw ConfigException("invalid return target", serverParsed, locationParsed);
                         configs[i].locations[j].ret.target = word;
                         configs[i].locations[j].return_path = word;
                     }
                     if (k > 2)
-                        throw ConfigException("return can have only two value", serverParsed);
+                        throw ConfigException("return can have only two value", serverParsed, locationParsed);
                 }
                 if (currentKey == "CGI")
                 {
                     if (k == 1)
                     {
                         if (!Validator::isValidCgiExtension(word))
-                            throw ConfigException("invalid CGI extension", serverParsed);
+                            throw ConfigException("invalid CGI extension", serverParsed, locationParsed);
                         extension = word;
                     }
                     if (k == 2)
                     {
                         if (!Validator::isExecutable(word))
-                            throw ConfigException("invalid CGI interpreter", serverParsed);
+                            throw ConfigException("invalid CGI interpreter", serverParsed, locationParsed);
                         configs[i].locations[j].CGI[extension] = word;
                         extension                              = "";
                         configs[i].locations[j].CGI["status"]  = "ON";
                     }
                     if (k > 2)
                         throw ConfigException("CGI can have only 2 values "
-                                              "(file extension, executable)", serverParsed);
+                                              "(file extension, executable)", serverParsed, locationParsed);
                 }
             }
             k++;
@@ -533,17 +540,17 @@ void Config::parseLocationBlock(std::string locationBlock, int i, int j)
         }
     }
     if (counts["methods"] > 1)
-        throw ConfigException("duplicate keys -> 'methods'", serverParsed);
+        throw ConfigException("duplicate keys -> 'methods'", serverParsed, locationParsed);
     if (counts["path"] > 1)
-        throw ConfigException("duplicate keys -> 'path'", serverParsed);
+        throw ConfigException("duplicate keys -> 'path'", serverParsed, locationParsed);
     if (counts["root"] > 1)
-        throw ConfigException("duplicate keys -> 'root'", serverParsed);
+        throw ConfigException("duplicate keys -> 'root'", serverParsed, locationParsed);
     if (counts["upload_store"] > 1)
-        throw ConfigException("duplicate keys -> 'upload_store'", serverParsed);
+        throw ConfigException("duplicate keys -> 'upload_store'", serverParsed, locationParsed);
     if (counts["auto_index"] > 1)
-        throw ConfigException("duplicate keys -> 'auto_index'", serverParsed);
+        throw ConfigException("duplicate keys -> 'auto_index'", serverParsed, locationParsed);
     if (counts["return"] > 1)
-        throw ConfigException("duplicate keys -> 'return'", serverParsed);
+        throw ConfigException("duplicate keys -> 'return'", serverParsed, locationParsed);
 }
 
 void Config::checkLocationBlock(std::vector<t_location>& locations, int j)
@@ -551,28 +558,28 @@ void Config::checkLocationBlock(std::vector<t_location>& locations, int j)
     if (locations[j].ret.code == -1)
     {
         if (locations[j].methods == 0)
-            throw ConfigException("methods field should be filled", serverParsed);
+            throw ConfigException("methods field should be filled", serverParsed, locationParsed);
         if (locations[j].path == "")
-            throw ConfigException("path field should be filled", serverParsed);
+            throw ConfigException("path field should be filled", serverParsed, locationParsed);
         if (locations[j].upload_store != "")
         {
             if (locations[j].methods != POST)
             {
                 throw ConfigException(
-                    "uploads should be made via POST requests only", serverParsed);
+                    "uploads should be made via POST requests only", serverParsed, locationParsed);
             }
             if (locations[j].auto_index)
             {
-                throw ConfigException("auto_index active in mode upload", serverParsed);
+                throw ConfigException("auto_index active in mode upload", serverParsed, locationParsed);
             }
             if (locations[j].index_vect.size() != 0)
             {
-                throw ConfigException("mode upload does not have index files", serverParsed);
+                throw ConfigException("mode upload does not have index files", serverParsed, locationParsed);
             }
             if (locations[j].CGI["status"] == "ON")
             {
                 throw ConfigException(
-                    "mode upload does not match with active CGI", serverParsed);
+                    "mode upload does not match with active CGI", serverParsed, locationParsed);
             }
             locations[j].type = UPLOAD;
             return;
@@ -586,11 +593,11 @@ void Config::checkLocationBlock(std::vector<t_location>& locations, int j)
     else
     {
         if (locations[j].methods != 0)
-            throw ConfigException("methods field should not be filled", serverParsed);
+            throw ConfigException("methods field should not be filled", serverParsed, locationParsed);
         if (locations[j].path == "")
-            throw ConfigException("path field should be filled", serverParsed);
+            throw ConfigException("path field should be filled", serverParsed, locationParsed);
         if (locations[j].root != "")
-            throw ConfigException("root field should not be filled", serverParsed);
+            throw ConfigException("root field should not be filled", serverParsed, locationParsed);
         locations[j].type = REDIRECTION;
         return;
     }
@@ -606,7 +613,7 @@ void Config::checkPaths(const std::vector<t_location>& locations)
     {
         if (!seenPaths.insert(it->path).second)
         {
-            throw ConfigException("duplicate path", serverParsed);
+            throw ConfigException("duplicate path", serverParsed, locationParsed);
         }
     }
 }
@@ -621,7 +628,7 @@ void Config::checkPorts()
         // insert returns pair<iterator, bool>
         if (!seenPorts.insert(it->port).second)
         {
-            throw ConfigException("duplicate port", serverParsed);
+            throw ConfigException("duplicate port", serverParsed, locationParsed);
         }
     }
 }
@@ -638,7 +645,7 @@ void Config::checkServerNames()
             continue;
         if (!seenNames.insert(it->server_name).second)
         {
-            throw ConfigException("duplicate server_name", serverParsed);
+            throw ConfigException("duplicate server_name", serverParsed, locationParsed);
         }
     }
 }
@@ -650,7 +657,7 @@ void Config::checkVirtualHosting()
     {
         if (it->enable_virtual_hosting && it->server_name.empty())
         {
-            throw ConfigException("server_name must be set when virtual hosting is enabled", serverParsed);
+            throw ConfigException("server_name must be set when virtual hosting is enabled", serverParsed, locationParsed);
         }
     }
 }
