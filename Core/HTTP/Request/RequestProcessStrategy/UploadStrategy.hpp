@@ -14,17 +14,25 @@
 
 typedef struct SMultipartHeader
 {
-    std::string name;           // Nom du champ (ex: "file", "caption") - OBLIGATOIRE
-    std::string filename;       // Nom du fichier (ex: "ft_lock.sh") - OBLIGATOIRE pour les fichiers
-    std::string contentType;   // Type MIME (ex: "application/x-sh", "image/png") - OBLIGATOIRE
-    std::string contentTransferEncoding; // Optionnel: "binary", "base64", "7bit", "8bit"
-    std::string contentId;     // Optionnel: identifiant unique pour la partie
-    std::string contentLocation; // Optionnel: URI où trouver le contenu
-    std::map<std::string, std::string> customParams; // Pour extensions futures
+    std::string name;
+    std::string filename;
+    std::string contentType;
+    std::string contentTransferEncoding;
+    std::string contentId;
+    std::string contentLocation;
+    std::map<std::string, std::string> customParams;
     std::string delim;
     std::string endDelim;
     
 } MultipartHeader;
+
+typedef struct SUploadedFile {
+    std::string field;
+    std::string original;
+    std::string saved;
+    size_t      size;
+    std::string status;
+} UploadedFile;
 
 enum DataSource
 {
@@ -55,23 +63,24 @@ class UploadStrategy : public IRequestStrategy
         UploadStrategy();
         ~UploadStrategy();
 
-        void process(Client* client, Epoll &epoll, Process &process);
+        void            process(Client* client, Epoll &epoll, Process &process);
 
     private :
 
-        std::string trimValue(const std::string& s);
-        std::string findValue(const std::string& line, const std::string& key);
+        std::string     trimValue(const std::string& s);
+        std::string     findValue(const std::string& line, const std::string& key);
         MultipartHeader parseMultipartHeader(const std::string& header);
 
-        BodyType bodyTypeDetection(Request* request);
-        std::string creatUploadFileName(Request* request);
-
-        void     handleMultipartUpload(Client* client);
-
-        void    skipBoundary(InputReader& inputReader);
+        BodyType        bodyTypeDetection(Request* request);
+        void            handleMultipartUpload(Client* client);
+        void            skipBoundary(InputReader& inputReader);
         MultipartHeader getMultipartHeader(InputReader& inputReader);
-        int writeContentUntilBoundary(InputReader& inputReader,MultipartHeader& multipartHeader, Request* request);
+        int             writeContentUntilBoundary(InputReader& inputReader,MultipartHeader& multipartHeader);
+        std::string     resolveUploadFilename(MultipartHeader& multipartHeader, std::string& uploadStore);
 
+        std::vector \
+        <UploadedFile>  _uploadedFiles;
+        std::string     _uploadStore;
 };
 
 #endif /* UPLOADSTRATEGY_HPP */

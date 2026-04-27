@@ -10,7 +10,7 @@
 #include "../../../Exception/Forbiden.hpp"
 #include "../../../Exception/InternalServerError.hpp"
 #include "../../../utils/PathUtils.hpp"
-
+#include "../ErrorProcess.hpp"
 RequestProcessor::RequestProcessor(){};
 
 RequestProcessor::RequestProcessor(const RequestProcessor& other){
@@ -94,7 +94,15 @@ void RequestProcessor::processRequest(Client *client, Epoll &epoll, Process &pro
 {
 	LocationType 		type = detectStategyType(client);
 	IRequestStrategy	*strategy = createStrategy(type);
-	strategy->process(client, epoll, process);
+	try
+	{
+		strategy->process(client, epoll, process);		
+	}
+	catch(const ServerException& e)
+	{
+
+		ErrorProcess::processError(e, client);
+	}
 	delete strategy;
 }
 
