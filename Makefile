@@ -8,6 +8,7 @@ OBJS_DIR = objs
 HTTP_DIR = HTTP
 UTILS_DIR = utils
 EXCEPTION_DIR = Exception
+REQUEST_TMP_DIR = .tmp
 
 UTILS_SRCS = $(addprefix $(UTILS_DIR)/, \
 			getFileContent.cpp \
@@ -89,6 +90,7 @@ OBJS = $(SRC:%.cpp=$(OBJS_DIR)/%.o)
 all: $(NAME)
 
 $(NAME): $(OBJS)
+	@mkdir $(REQUEST_TMP_DIR)
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
 $(OBJS_DIR)/%.o: %.cpp
@@ -100,6 +102,7 @@ clean:
 
 fclean: clean
 	rm -rf $(NAME)
+	rm -rf $(REQUEST_TMP_DIR)
 
 re: fclean all
 
