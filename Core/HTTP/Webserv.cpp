@@ -80,7 +80,8 @@ bool Webserv::init()
     }
     catch(const Config::ConfigException& e)
     {
-        std::cerr << "Error: " << e.what() << std::endl;
+        std::cerr << "Error: " << e.what() << " ";
+		std::cerr << "serverParsed: " << e.getserverParsed() << std::endl;
         return (false);
     }
 	// <- REAL
@@ -224,6 +225,8 @@ void Webserv::run(void)
 				_clients[tmp.fd] = new Client(_envs);
 				_clients[tmp.fd]->setFd(tmp.fd);
 				_clients[tmp.fd]->setEndpoint(_config.findEndpointByFd(tmp.serverFd));
+
+				_clients[tmp.fd]->setIp(tmp.addr);
 			}
 
 			// 2. Socket's type is client

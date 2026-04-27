@@ -42,6 +42,7 @@ DATA_SRCS = $(addprefix $(DATA_DIR)/, \
 				Request.cpp \
 				Response.cpp \
 				Process.cpp \
+				RequestLogger.cpp \
 			)
 
 EXCEPTION_SRC = $(addprefix $(EXCEPTION_DIR)/, \

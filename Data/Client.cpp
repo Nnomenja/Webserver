@@ -2,7 +2,9 @@
 #include "../utils/utils.hpp"
 #include <algorithm>
 
-Client::Client(std::map<std::string, std::string> &envs):_start_time_ms(get_time_ms()), _req(new Request()), _res(new Response()), _parsed(false),_envs(envs){
+Client::Client(std::map<std::string, std::string> &envs):_start_time_ms(get_time_ms()), _req(new Request()), _res(new Response()), _parsed(false),_envs(envs)
+{
+	this->_start_time_ms = get_time_ms();
 	_req->setRoot(_endpoint.root);
 	_bufferSize = 0;
 	_buffer = "";
@@ -31,6 +33,14 @@ Client& Client::operator=(const Client& other){
 };
 
 Client::~Client(){
+	
+	_logger.setMethod(_req->getMethodString());
+	_logger.setIp(_ip);
+	_logger.setPath(_req->getPathname());
+	_logger.setStatus(_res->getStatusCode());
+	_logger.setResponseTime(get_time_ms() - _start_time_ms);
+	_logger.log();
+
 	if (_req)
 		delete  _req;
 	if (_res)
@@ -264,3 +274,31 @@ void Client::setCGICGIProcessEnd()
 {
 	_cgi_processing_end = true;
 }
+
+// NEW ->
+std::string Client::my_inet_ntoa(sockaddrIn addr) {
+    unsigned long ip = ntohl(addr.sin_addr.s_addr);
+
+    std::ostringstream oss;
+    oss << ((ip >> 24) & 0xFF) << "."
+        << ((ip >> 16) & 0xFF) << "."
+        << ((ip >> 8) & 0xFF) << "."
+        << (ip & 0xFF);
+
+    return oss.str();
+}
+
+void Client::setIp(sockaddrIn addr) {
+    _ip = my_inet_ntoa(addr);
+}
+
+std::string         Client::getIp() const
+{
+	return _ip;
+}
+
+RequestLogger &Client::getLogger()
+{
+	return _logger;
+}
+// <- NEW

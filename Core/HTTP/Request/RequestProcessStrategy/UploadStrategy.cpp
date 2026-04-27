@@ -38,7 +38,7 @@ void UploadStrategy::process(Client *client, Epoll &epoll, Process &process)
 
     BodyType bodyType = bodyTypeDetection(request);
 
-    _uploadStore = client->getRequest()->getLocation().uploads;
+    _uploadStore = client->getRequest()->getLocation().upload_store;
 
     switch (bodyType)
     {

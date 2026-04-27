@@ -180,6 +180,7 @@ bool Validator::validateHost(const std::string host)
     {
         if (!validateServerName(host))
             return false;
+        return false;
     }
     return true;
 }
