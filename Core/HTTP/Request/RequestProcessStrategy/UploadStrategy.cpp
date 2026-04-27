@@ -12,7 +12,7 @@
 #include "../../../../Exception/BadRequestException.hpp"
 #include "../../../../Exception/UnsupportedMediaType.hpp"
 #include "../../../../Exception/InternalServerError.hpp"
-
+#include "../../../../Core/HTTP/Webserv.hpp"
 
 UploadStrategy::UploadStrategy()
 { }
@@ -33,11 +33,12 @@ void UploadStrategy::process(Client *client, Epoll &epoll, Process &process)
         throw MethodNotAllowed();
     }
 
-
     (void)epoll;
     (void)process;
 
     BodyType bodyType = bodyTypeDetection(request);
+
+    _uploadStore = client->getRequest()->getLocation().uploads;
 
     switch (bodyType)
     {
@@ -232,7 +233,9 @@ MultipartHeader UploadStrategy::getMultipartHeader(InputReader& inputReader)
         while (true)
         {
             if (!std::getline(fd, line))
+            {
                 throw BadRequestException();
+            }
 
             if (!line.empty() && line[line.size() - 1] == '\r')
                 line.erase(line.size() - 1);
@@ -250,156 +253,102 @@ MultipartHeader UploadStrategy::getMultipartHeader(InputReader& inputReader)
     return (parseMultipartHeader(header));
 }
 
-// int UploadStrategy::writeContentUntilBoundary(InputReader& inputReader, MultipartHeader& multipartHeader, Request* request)
-// {
-//     const std::string& delim    = multipartHeader.delim;
-//     const std::string& endDelim = multipartHeader.endDelim;
-//     std::ofstream outFile;
+bool fileExists(const std::string &path)
+{
+    struct stat buffer;
+    return (stat(path.c_str(), &buffer) == 0);
+}
 
-//     if (!multipartHeader.filename.empty())
-//     {
-//         std::string filePath;
+std::string generateUniqueFilename(const std::string &dir, const std::string &filename)
+{
+    std::string base;
+    std::string ext;
 
-//         filePath = request->getRootDir() + request->getLocation().path + "/" + multipartHeader.filename + ".";
+    size_t dot = filename.find_last_of('.');
+    if (dot != std::string::npos)
+    {
+        base = filename.substr(0, dot);
+        ext = filename.substr(dot);
+    }
+    else
+    {
+        base = filename;
+        ext = "";
+    }
 
-//         {
-//             std::stringstream ss;
-//             ss << std::time(NULL);
+    int counter = 1;
+    std::string finalName = filename;
 
-//             filePath += ss.str();
-//         }
+    while (fileExists(dir + "/" + finalName))
+    {
+        std::stringstream ss;
+        ss << base << "(" << counter << ")" << ext;
+        finalName = ss.str();
+        counter++;
+    }
 
-//         outFile.open(filePath.c_str(), std::ios::binary);
-//         if (!outFile.is_open())
-//         {
-//             throw InternalServerError();  
-//         }
-//     }
-//     std::string overlap;
+    return (finalName);
+}
 
-//     if (inputReader.dataSource == FROM_MEMORY)
-//     {
-//         const std::string& buff = inputReader.body->_str_buffer;
-//         size_t& i = inputReader.index;
+std::string sanitizeFilename(const std::string &filename) {
+    std::string clean;
 
-//         // {
-//         //     size_t posEnd = buff.find(endDelim, i);
-//         //     size_t posDelim = buff.find(delim, i);
-//         // }
+    for (size_t i = 0; i < filename.size(); ++i)
+    {
+        char c = filename[i];
 
-//         std::string window = buff.substr(i);
+        if (c == '/')
+            throw BadRequestException();
+        if (std::isalnum(c) || c == '.' || c == '_' || c == '-')
+        {
+            clean += c;
+        }
+    }
+    if (clean.empty() || clean == "." || clean == "..")
+        clean = "file";
 
-//         size_t posEnd = window.find(endDelim);
-//         size_t posDelim = window.find(delim);
+    return clean;
+}
 
-//         if (posEnd != std::string::npos &&
-//             (posDelim == std::string::npos || posEnd <= posDelim))
-//         {
-//             if (outFile.is_open())
-//                 outFile.write(window.c_str(), posEnd);
-//             return (4);
-//         }
+std::string UploadStrategy::resolveUploadFilename(MultipartHeader& multipartHeader, std::string& uploadStore)
+{
+    std::string original = multipartHeader.filename;
+    std::string safeName = sanitizeFilename(original);
+    std::string finalName = generateUniqueFilename(uploadStore, safeName);
 
-//         if (posDelim != std::string::npos)
-//         {
-//             if (outFile.is_open())
-//                 outFile.write(window.c_str(), posDelim);
-//             i += posDelim;
-//             return 0;
-//         }
+    return (finalName);
+}
 
-//         size_t safeLen = (window.size() > endDelim.size() - 1) ?
-//                 (window.size() - (endDelim.size() - 1)) :
-//                 0;
-//         if (outFile.is_open())
-//             outFile.write(window.c_str(), safeLen);
-//         overlap = window.substr(safeLen);
-//         inputReader.dataSource = FROM_FD;
-//     }
-
-//     if (inputReader.dataSource == FROM_FD)
-//     {
-//         std::fstream& fd = inputReader.body->_file_buffer;
-
-//         const size_t sizeChunk = 1024;
-//         char chunk[sizeChunk];
-
-//         while (fd.read(chunk, sizeChunk) || fd.gcount() > 0)
-//         {
-//             size_t n = fd.gcount();
-//             std::string window = overlap + std::string(chunk, n);
-
-//             size_t posEnd   = window.find(endDelim);
-//             size_t posDelim = window.find(delim);
-
-//             if (posEnd != std::string::npos)
-//             {
-//                 if (outFile.is_open())
-//                     outFile.write(window.c_str(), posEnd - 2);
-//                 return 4;
-//             }
-//             if (posDelim != std::string::npos)
-//             {
-//                 if (outFile.is_open())
-//                     outFile.write(window.c_str(), posDelim);
-//                 std::streamoff back = (std::streamoff)(window.size() - posDelim);
-//                 if (back > 0)
-//                 {
-//                     fd.seekg(-back, std::ios::cur);
-//                 }
-//                 return 0;
-//             }
-
-//             size_t safeLen = (window.size() > endDelim.size() - 1) ?
-//                     (window.size() - (endDelim.size() - 1)) :
-//                     0;
-//             if (outFile.is_open())
-//                 outFile.write(window.c_str(), safeLen);
-//             overlap = window.substr(safeLen);
-//         }
-
-//         if (!overlap.empty())
-//         {
-//             if (outFile.is_open())
-//                 outFile.write(overlap.c_str(), overlap.size());
-//         }
-//         throw BadRequestException();
-//     }
-
-//     return (0);
-// }
-
-
-
-int UploadStrategy::writeContentUntilBoundary(InputReader& inputReader, MultipartHeader& multipartHeader, Request* request)
+int UploadStrategy::writeContentUntilBoundary(InputReader& inputReader, MultipartHeader& multipartHeader)
 {
     const std::string& delim    = multipartHeader.delim;
     const std::string& endDelim = multipartHeader.endDelim;
     std::ofstream outFile;
     bool    hasFile;
+    UploadedFile uploadedFile;
+    size_t      totalWritten = 0;
 
     if (!multipartHeader.filename.empty())
     {
-        std::string filePath;
+        std::string filename = resolveUploadFilename(multipartHeader, _uploadStore);
 
-        filePath = request->getRootDir() + request->getLocation().path + "/" + multipartHeader.filename + ".";
-
-        {
-            std::stringstream ss;
-            ss << std::time(NULL);
-
-            filePath += ss.str();
-        }
-
-        outFile.open(filePath.c_str(), std::ios::binary);
+        outFile.open((_uploadStore + "/" + filename).c_str(), std::ios::binary);
         if (!outFile.is_open())
         {
             throw InternalServerError();  
         }
+        std::cout << RED << "filename creat: " << (_uploadStore + "/" + filename) << RESET << std::endl; 
         hasFile = true;
+        uploadedFile.field = multipartHeader.name;
+        uploadedFile.original = multipartHeader.filename;
+        uploadedFile.saved = filename;
     }
     else
+    {
+        uploadedFile.field = multipartHeader.name;
+        uploadedFile.status = "ok";
         hasFile = false;
+    }
 
     std::string overlap;
 
@@ -413,26 +362,34 @@ int UploadStrategy::writeContentUntilBoundary(InputReader& inputReader, Multipar
 
         if (posDelim != std::string::npos)
         {
-            if (buff.size() > (posDelim + delim.size() + 2))
+            size_t start = posDelim + delim.size();
+
+            if (buff.size() >= start + 2 &&
+                buff[start] == '-' &&
+                buff[start + 1] == '-')
             {
-                if (buff[posDelim + delim.size() + 1] == '-'
-                && buff[posDelim + delim.size() + 2] == '-')
-                {
-                    posEnd = posDelim;
-                    posDelim = std::string::npos;
-                }
+                posEnd = posDelim;
+                posDelim = std::string::npos;
             }
         }
 
         if (posEnd != std::string::npos)
         {
             if (hasFile) outFile.write(buff.c_str() + i, posEnd - i - 2);
+            totalWritten += (posEnd - i - 2);
+            uploadedFile.size = totalWritten;
+            uploadedFile.status = "ok";
+            _uploadedFiles.push_back(uploadedFile);
             return (4);
         }
         if (posDelim != std::string::npos)
         {
             if (hasFile) outFile.write(buff.c_str() + i, posDelim - i);
             i = posDelim;
+            totalWritten += (posDelim - i);
+            uploadedFile.size = totalWritten;
+            uploadedFile.status = "ok";
+            _uploadedFiles.push_back(uploadedFile);
             return 0;
         }
         size_t safeLen = ((buff.size() - i) > endDelim.size() - 1) ?
@@ -466,20 +423,24 @@ int UploadStrategy::writeContentUntilBoundary(InputReader& inputReader, Multipar
 
             if (posDelim != std::string::npos)
             {
-                if (window.size() > (posDelim + delim.size() + 2))
+                size_t start = posDelim + delim.size();
+
+                if (window.size() >= start + 2 &&
+                    window[start] == '-' &&
+                    window[start + 1] == '-')
                 {
-                    if (window[posDelim + delim.size() + 1] == '-'
-                    && window[posDelim + delim.size() + 2] == '-')
-                    {
-                        posEnd = posDelim;
-                        posDelim = std::string::npos;
-                    }
+                    posEnd = posDelim;
+                    posDelim = std::string::npos;
                 }
             }
 
             if (posEnd != std::string::npos)
             {
                 if (hasFile) outFile.write(window.c_str(), posEnd - 2);
+                totalWritten += (posEnd - 2);
+                uploadedFile.size = totalWritten;
+                uploadedFile.status = "ok";
+                _uploadedFiles.push_back(uploadedFile);
                 return 4;
             }
             if (posDelim != std::string::npos)
@@ -490,6 +451,10 @@ int UploadStrategy::writeContentUntilBoundary(InputReader& inputReader, Multipar
                 {
                     fd.seekg(-back, std::ios::cur);
                 }
+                totalWritten += posDelim;
+                uploadedFile.size = totalWritten;
+                uploadedFile.status = "ok";
+                _uploadedFiles.push_back(uploadedFile);
                 return 0;
             }
 
@@ -507,6 +472,9 @@ int UploadStrategy::writeContentUntilBoundary(InputReader& inputReader, Multipar
         }
         throw BadRequestException();
     }
+    uploadedFile.size = totalWritten;
+    uploadedFile.status = "fail";
+    _uploadedFiles.push_back(uploadedFile);
     return (0);
 }
 
@@ -553,19 +521,45 @@ void UploadStrategy::handleMultipartUpload(Client* client)
 				//fallthrough
             case 2:
                 std::cout << "write Content Until Boundary\n";
-                status = writeContentUntilBoundary(inputReader, multipartHeader, request);
-				//fallthrough
+                status = writeContentUntilBoundary(inputReader, multipartHeader);
+                std::cout << RED << "status = " << status << RESET << std::endl;
         }
         if (status == 4)
             break ;
     }
    
+    std::stringstream body;
+
+    body << "{";
+    body << "\"status\":\"success\",";
+    body << "\"uploaded\":" << _uploadedFiles.size() << ",";
+    body << "\"files\":[";
+
+    for (size_t i = 0; i < _uploadedFiles.size(); i++)
+    {
+        body << "{";
+        body << "\"field\":\"" << _uploadedFiles[i].field << "\",";
+        body << "\"original_name\":\"" << _uploadedFiles[i].original << "\",";
+        body << "\"saved_as\":\"" << _uploadedFiles[i].saved << "\",";
+        body << "\"size\":" << _uploadedFiles[i].size << ",";
+        body << "\"status\":\"" << _uploadedFiles[i].status << "\"";
+        body << "}";
+
+        if (i + 1 < _uploadedFiles.size())
+            body << ",";
+    }
+
+    body << "]";
+    body << "}";
+
     response->setStatusCode(201);
     response->setStatusName("Created");
 
     response->addHeader("Server", "Webserver/1.0");
+    response->addHeader("Content-Type", "application/json");
     response->addHeader("Location", request->getLocation().path);
 
-    response->setBody(" hello 201 hahahahahahaha ");
+    response->setBody(body.str());
+    std::cout << GREEN << body.str() << RESET << std::endl;
 }
 
