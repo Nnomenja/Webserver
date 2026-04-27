@@ -93,7 +93,8 @@ bool Webserv::init()
     }
     catch(const Config::ConfigException& e)
     {
-        std::cerr << "Error: " << e.what() << std::endl;
+        std::cerr << "Error: " << e.what() << " ";
+		std::cerr << "LineParsed: " << e.getLineParsed() << std::endl;
         return (false);
     }
 	// <- REAL

@@ -18,7 +18,7 @@ server:
     #    path /up
     #    methods POST
     #    root test
-    #    uploads uploads
+    #    upload_store upload_store
     #location:
     #    path /redirection
     #    return 302 https://google.com

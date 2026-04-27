@@ -47,7 +47,7 @@ typedef struct s_location
     bool                        auto_index;
     std::vector<std::string>                index_vect;
     std::string index;
-    std::string uploads;
+    std::string upload_store;
     t_return ret;
 
     // key is not in config file yet ->
@@ -88,6 +88,7 @@ private:
     std::map<int, std::vector<std::string> > serverBlockIdToLocationBlocks;
     std::vector<UnitConf_t> configs;
     std::map<int, UnitConf_t>   _endpoints;
+    int lineParsed;
 
 public:
     Config();
@@ -101,10 +102,12 @@ public:
     {
       private:
         std::string message;
+        int lineParsed;
 
       public:
-        ConfigException(const std::string& msg);
+        ConfigException(const std::string& msg, int lineParsed);
         virtual const char* what() const throw();
+        virtual int getLineParsed() const throw();
         virtual ~ConfigException() throw();
     };
     std::string extractMainConfig(std::string serverBlock);
