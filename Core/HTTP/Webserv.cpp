@@ -269,8 +269,8 @@ void Webserv::run(void)
 
 				// NEW ->
 				_clients[tmp.fd]->setIp(tmp.addr);
-				RequestLogger logger = _clients[tmp.fd]->getLogger();
-				logger.log();
+				// RequestLogger logger = _clients[tmp.fd]->getLogger();
+				// logger.log();
 
 				// <- NEW
 			}

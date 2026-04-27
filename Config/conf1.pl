@@ -47,7 +47,7 @@ server:
         CGI .py /usr/bin/python3
         methods GET POST
     location:
-        path redirection
+        path /redirection
         return 302 https://google.com
 # server:
 #     port 2002
