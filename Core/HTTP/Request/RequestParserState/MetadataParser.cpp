@@ -158,5 +158,4 @@ void MetadataParser::execute()
 {
     matchConfiguredRoute();
     parseBodyMetadata();
-	std::cout << "...................." << std::endl;
 }

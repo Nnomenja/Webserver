@@ -337,7 +337,6 @@ int UploadStrategy::writeContentUntilBoundary(InputReader& inputReader, Multipar
         {
             throw InternalServerError();  
         }
-        std::cout << RED << "filename creat: " << (_uploadStore + "/" + filename) << RESET << std::endl; 
         hasFile = true;
         uploadedFile.field = multipartHeader.name;
         uploadedFile.original = multipartHeader.filename;
@@ -508,21 +507,17 @@ void UploadStrategy::handleMultipartUpload(Client* client)
         switch (status)
         {
             case 0:
-                std::cout << "Skip Bondary \n";
                 skipBoundary(inputReader);
                 status = 1;
 				//fallthrough
             case 1:
-                std::cout << "Get Multipart Header \n";
                 multipartHeader = getMultipartHeader(inputReader);
                 multipartHeader.delim = delim;
                 multipartHeader.endDelim = endDelim;
                 status = 2;
 				//fallthrough
             case 2:
-                std::cout << "write Content Until Boundary\n";
                 status = writeContentUntilBoundary(inputReader, multipartHeader);
-                std::cout << RED << "status = " << status << RESET << std::endl;
         }
         if (status == 4)
             break ;
@@ -560,6 +555,5 @@ void UploadStrategy::handleMultipartUpload(Client* client)
     response->addHeader("Location", request->getLocation().path);
 
     response->setBody(body.str());
-    std::cout << GREEN << body.str() << RESET << std::endl;
 }
 

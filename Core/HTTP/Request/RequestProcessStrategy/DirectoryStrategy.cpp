@@ -23,7 +23,6 @@ void DirectoryStrategy::process(Client *client, Epoll &epoll, Process &process)
     if (dir == NULL)
         throw Forbiden();
 
-    std::cout << "*********************DirectoryStrategy implemented*******************" << std::endl;
 
     // back
     tmp.name = "..";
@@ -62,7 +61,6 @@ void DirectoryStrategy::process(Client *client, Epoll &epoll, Process &process)
     client->getResponse()->setStatus(200);
     client->getResponse()->setBody(Template::DirectoryListing(data));
     client->getResponse()->addHeader("Content-Type", "text/html; charset=UTF-8");
-    std::cout << "*******************************************************" << std::endl;
     (void)client;
     (void)epoll;
     (void)process;

@@ -21,9 +21,6 @@ void    BodyParser::readBodyThroughContentLength()
         if (_tmp == 0)
         {
             _end = true;
-            std::cout << "***************BODY TOP***********************" << std::endl;
-            std::cout << _target->getBody()._str_buffer << std::endl; 
-            std::cout << "*****************************************" << std::endl;
 			return;
         }        
     }
@@ -135,16 +132,9 @@ void	BodyParser::handleFinalChunkDelimiterChar(char c)
     }
 }
 
-/**==============================================
- * todo                  TODO
- *   - read body as chuck 
- *   - verify if the size exceeds the limit.
- *
- *=============================================**/
 void    BodyParser::readBodyAsChuncked()
 {
     char	c;
-    std::cout << "...BodyParser executing chunked..." << std::endl;
     for (size_t i = _target->getParserIndex(); i < _target->getBufferSize(); i++)
     {
         c = _target->getBuffer()[i];
@@ -171,9 +161,6 @@ void    BodyParser::readBodyAsChuncked()
         _target->incrementParserIndex();
         if (_end)
         {
-            std::cout << "***************BODY BOTTOM***********************" << std::endl;
-            std::cout << _target->getBody()._str_buffer << std::endl; 
-            std::cout << "*****************************************" << std::endl;
             return;
         }
     }
@@ -183,7 +170,6 @@ void    BodyParser::readBodyAsChuncked()
 
 void BodyParser::execute()
 {
-	std::cout << "...BodyParser executing..." << std::endl;
 	if (_target->getBodyEncode() == BODY_CONTENT_LENGTH)
 	{
 		if (!_end)
@@ -193,5 +179,4 @@ void BodyParser::execute()
 	}
 	else
         readBodyAsChuncked();
-	std::cout << "...................." << std::endl;
 }

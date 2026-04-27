@@ -3,8 +3,6 @@
 #include <algorithm>
 
 Client::Client(std::map<std::string, std::string> &envs):_start_time_ms(get_time_ms()), _req(new Request()), _res(new Response()), _parsed(false),_envs(envs){
-  std::cout << "Create client" << std::endl;
-//   this->_start_time_ms = get_time_ms();
 	_req->setRoot(_endpoint.root);
 	_bufferSize = 0;
 	_buffer = "";
@@ -18,11 +16,9 @@ Client::Client(std::map<std::string, std::string> &envs):_start_time_ms(get_time
 };
 
 Client::Client(const Client& other):_envs(other._envs){
-	std::cout << "Copy client" << std::endl;
 	_fd = other._fd;
     _buffer = other._buffer;
     _start_time_ms = other._start_time_ms;
-	// *this = other;
 };
 
 Client& Client::operator=(const Client& other){
@@ -30,10 +26,7 @@ Client& Client::operator=(const Client& other){
     _fd = other._fd;
     _buffer = other._buffer;
     _start_time_ms = other._start_time_ms;
-    // req = other.req;
-    // res = other.res;
   }
-	std::cout << "Copy Assignmnt" << std::endl;
   return *this;
 };
 

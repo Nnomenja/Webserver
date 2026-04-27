@@ -31,7 +31,6 @@ void HeaderParser::addHeaderAndReset()
 {
 	if (_target->hasHeader(_key))
 		throw BadRequestException();
-	std::cout << _key << "==> [" << _value << "]" << std::endl;
 	_target->setHeader(toLowerCase(_key), _value);
 	resetStateData();
 }
@@ -59,7 +58,6 @@ void HeaderParser::receivingHeaders()
 {
 	char    c;
 
-	std::cout << "...HeaderParser executing..." << std::endl;
     for (size_t i = _target->getParserIndex(); i < _target->getBufferSize(); i++)
     {
         c = _target->getBuffer()[i];

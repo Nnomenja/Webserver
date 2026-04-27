@@ -18,7 +18,6 @@ ARequestParserState::~ARequestParserState()
 
 void ARequestParserState::skipSeparator()
 {
-	std::cout << "...Skip separator  executing..." << std::endl;
   for (size_t i = _target->getParserIndex(); i < _target->getBufferSize(); i++)
   {
     if (_target->getBuffer()[i] != ' ')
@@ -46,7 +45,6 @@ void ARequestParserState::skipCRLF()
 			}
 			else
 			{
-				std::cout << "Expected CRLF, but got: " << static_cast<int>(c) << std::endl;
 				throw BadRequestException();
 			}
 		}
@@ -60,7 +58,6 @@ void ARequestParserState::skipCRLF()
 			}
 			else
 			{
-				std::cout << "Expected CRLF, but got: " << c << std::endl;
 				throw BadRequestException();
 			}
 		}

@@ -12,7 +12,7 @@ HttpVersionParser::~HttpVersionParser(){
 
 void HttpVersionParser::execute()
 {
-	std::cout << "HttpVersionParser executing..." << std::endl;
+
 
     char c;
     std::vector<std::string>::iterator it;
@@ -48,7 +48,6 @@ void HttpVersionParser::execute()
             {
                 if ((*it)[_j] == c && (*it)[_j + 1] == '\0' && _versions.size() == 1)
                 {
-                    std::cout << "Http version Done: " << (*it) << " at: " << _target->getBuffer()[i] << std::endl;
                     _target->incrementParserIndex();
                     _finished = true;
                     if (!_target->getBuffer()[_target->getParserIndex()])
@@ -74,6 +73,5 @@ void HttpVersionParser::execute()
     }
     _target->resetParserIndex();
     throw EagainParser();
-	std::cout << "...................." << std::endl;
 
 }

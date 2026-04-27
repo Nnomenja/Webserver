@@ -78,7 +78,6 @@ void HttpRequestParser::parse(Request *req, UnitConf_t endpoint)
 	}
 	catch(const ARequestParserState::EagainParser& e)
 	{
-		std::cout << e.what() << std::endl;
 		return;
 	}
 }

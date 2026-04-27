@@ -74,7 +74,6 @@ LocationType RequestProcessor::detectStategyType(Client *client)
 		}
 		else if (!PathUtils::isPathExist(fullpath))
 		{
-			std::cout << "Path does not exist: " << fullpath << std::endl;
 			throw NotFound();
 		}
 

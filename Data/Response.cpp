@@ -4,7 +4,6 @@
 #include <sstream>
 
 Response::Response():_status_code(0){
-	std::cout << "Response called" << std::endl;
     _cgi_response.size = 0;
     _cgi_response.value = "";
 };

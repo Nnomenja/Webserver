@@ -11,12 +11,10 @@ Request::Request():_index(0), _parserState(NULL), _method(GET){
 };
 
 Request::Request(const Request& other){
-  std::cout << "Copy" << std::endl;
   *this = other; 
 };
 
 Request& Request::operator=(const Request& other){
-  std::cout << "Copy assignment" << std::endl;
   if (this != &other) {
   }
   return *this;

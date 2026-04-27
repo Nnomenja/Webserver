@@ -37,13 +37,9 @@ Webserv::~Webserv()
 {
 	if (_clients.size())
 	{
-		std::cout << "closing" << std::endl;
 		for (std::map<int, Client *>::iterator it = _clients.begin(); it != _clients.end(); ++it)
 		{
-				std::cout << "closing: " << it->second->getFd()<< std::endl;
 				delete it->second;
-			// if (it->second)
-				// delete [] it->second;
 		}
 	}
     this->clear();	
@@ -57,15 +53,6 @@ Webserv::Webserv(const std::string& fileConfigName)
     :   _isAlreadyInit(false)
         ,_fileConfigName(fileConfigName)
 { }
-
-/* ************************************************************************** */
-/*                                Getters                                     */
-/* ************************************************************************** */
-
-
-/* ************************************************************************** */
-/*                                Setters                                     */
-/* ************************************************************************** */
 
 
 /* ************************************************************************** */
@@ -103,9 +90,6 @@ bool Webserv::init()
         return (false);
 	}
 
-    /*
-        donne tolotra---------------------------------------------
-    */
         // -- epoll
         int maxEvent = MAX_EVENTS;
 
@@ -118,24 +102,16 @@ bool Webserv::init()
             if (!_epoll.registerFd(_serverSockets[i]->getSocketFd(), EPOLLIN))
                 return (false);
         }
-    //=============================================================
     _isAlreadyInit = true;
     return (true);
 }
 
 bool Webserv::createServerSockets( void )
 {
-	// REAL ->
+
     _serverSocketsNumber = _config.getN();
 
 	std::vector<UnitConf_t> configs = _config.getConfigs();
-	// <- REAL
-
-	// SIMULATION ->
-	// _serverSocketsNumber = 3;
-	// std::vector<UnitConf_t> configs;
-	// initSimulData(configs);
-	// <- SIMULATION
 
     for (int i = 0; i < _serverSocketsNumber; i++)
     {
@@ -143,10 +119,6 @@ bool Webserv::createServerSockets( void )
         if (!tmp)
             return (false);
         _serverSockets.push_back(tmp);
-
-        /*
-            donne tolotra---------------------------------------------
-        */
 
             // socket -----------------------
         int domain = AF_INET;
@@ -248,22 +220,10 @@ void Webserv::run(void)
 				if (tmp.fd < 0)
 					return ;
 				_epoll.registerFd(tmp.fd, EPOLLIN);
-				// {
-				// 	std::cout << "---------x--------" <<std::endl;
-				// 	_clients[tmp.fd];
- 				// 	std::cout << "-----------x------" <<std::endl;
-				// }
-				
-				std::cout << "--------" << tmp.fd << "---------" << _clients.size() <<std::endl;
+
 				_clients[tmp.fd] = new Client(_envs);
-				// sleep(90);
-				std::cout << "-----------------" << _clients.size() << std::endl;
 				_clients[tmp.fd]->setFd(tmp.fd);
-				std::cout << "---------X--------" <<std::endl;
 				_clients[tmp.fd]->setEndpoint(_config.findEndpointByFd(tmp.serverFd));
-				std::cout << "---------X--------" << _clients.size()<<std::endl;
-				std::cout << "client:" << tmp.fd << " Server: " << serverSocket->getSocketFd() << std::endl;
-				std::cout << "[" << tmp.fd << "]: new client from server fd: " << tmp.serverFd << std::endl;
 			}
 
 			// 2. Socket's type is client
@@ -275,7 +235,6 @@ void Webserv::run(void)
 				 *=============================================**/
 				if ((_epoll.getEvents()[i].events & (EPOLLERR | EPOLLHUP)))
 				{
-					std::cout << "#### SOCKET ERROR CHECKING ####" << std::endl;
 					if (_process.isProcess(currentFd))
 					{
 						client = _clients[_process.getClientFd(currentFd)];
@@ -302,14 +261,11 @@ void Webserv::run(void)
 						}
 						_epoll.remove(currentFd);
 						_epoll.modify(client->getFd(), EPOLLOUT);
-						std::cout << "Nbr client: " << _clients.size() << std::endl;
 					}
 					else
 					{
-						std::cout << RED << "A client was an error" << RESET << std::endl;
 						removeClientHttp(currentFd);
 					}
-					std::cout << "[" << currentFd << "]: disconnected" << std::endl;
 					continue;
 				}
 
@@ -366,18 +322,6 @@ void Webserv::run(void)
 				}
 			}
 		}
-	
-		/**
-		 * To enforce request header and body timeouts, the server iterates over each client, 
-		 * comparing the client's start time with the current time and 
-		 * checking against the configuration parameters (header_timeout and body_timeout).
-		 * Safe client cleanup procedure:
-		*   1. Copy the client's file descriptor to a temporary variable.
-		*      This allows erasing the client without breaking the iteration.
-		*   2. Verify whether the client's deadline (header or body timeout) has been reached.
-		*   3. Erase the client from the container only after the iterator has been
-		*      incremented, preventing undefined behavior.
-		*/
 
 		std::map<int, Client*>::iterator it = _clients.begin();
 		while (!_clients.empty() && it != _clients.end())
@@ -415,9 +359,6 @@ bool Webserv::readtHttpRequest(Client* client)
 	{
 		data = _epoll.read(client->getFd(), &end);
 		client->getRequest()->setBuffer(data);
-		std::cout << "****************************************" << std::endl;
-		std::cout << data << std::endl;
-		std::cout << "****************************************" << std::endl;
 		if (data.empty())
 		{
 			removeClientHttp(client->getFd());

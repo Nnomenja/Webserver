@@ -90,7 +90,7 @@ OBJS = $(SRC:%.cpp=$(OBJS_DIR)/%.o)
 all: $(NAME)
 
 $(NAME): $(OBJS)
-	@mkdir $(REQUEST_TMP_DIR)
+	@mkdir -p $(REQUEST_TMP_DIR)
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
 $(OBJS_DIR)/%.o: %.cpp

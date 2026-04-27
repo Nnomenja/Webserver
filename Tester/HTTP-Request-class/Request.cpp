@@ -351,7 +351,6 @@ void Request::normalizePathname()
 				res << "/";
 		}
 	}
-	// std::cout << "Response: " << res.str() << std::endl;
 	_pathname = res.str();
 }
 
@@ -444,12 +443,6 @@ void Request::readHeader()
 				throw BadRequest();
 			}
 		}
-		// else if (!checkHeaderEncode(c))
-		// {
-		// 	c = readByte();
-		// 	std::cout << "Bug: " << static_cast<char>(c) << std::endl;
-		// 	throw BadRequest();
-		// }
 		else
 			tmp << c;
 	}

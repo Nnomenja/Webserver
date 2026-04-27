@@ -26,7 +26,6 @@ HttpMethod MethodParser::detectMethod(std::string &value) const
 void MethodParser::execute()
 {
 	
-	std::cout << "...MethodParser executing..." << std::endl;
 	std::vector<std::string>::iterator it;
 	HttpMethod method;
 
@@ -42,7 +41,6 @@ void MethodParser::execute()
 		{
 			if ((*it)[_i] == '\0' && _target->getBuffer()[i] == ' ' && _methods.size() == 1)
 			{
-				std::cout << "Accepted method-> " << (*it) << std::endl;
 				method = detectMethod(*it);
 				if ((*it) != "GET" && (*it) != "POST" && (*it) != "DELETE")
 					throw NotImplement();
@@ -65,5 +63,4 @@ void MethodParser::execute()
 	}
 	_target->resetParserIndex();
 	throw EagainParser();
-	std::cout << "...................." << std::endl;
 }

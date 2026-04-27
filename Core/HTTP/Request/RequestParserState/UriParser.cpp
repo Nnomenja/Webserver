@@ -63,7 +63,6 @@ char UriParser::PourcentHexaToChar(char first, char second) const
 
 void UriParser::execute()
 {
-	std::cout << "Uri executing..." << std::endl;
 	char c;
 
 	if (_finished)
@@ -82,8 +81,6 @@ void UriParser::execute()
 				if (_target->getPathname()[0] != '/')
 					throw BadRequestException();
 				_target->setPathname(PathUtils::normalizePathname(_target->getPathname()));
-				std::cout << "-->pathname: [" << _target->getPathname() << "]" << std::endl;
-				std::cout << "-->Query: [" << _target->getQuery() << "]" << std::endl;
 				_finished = true;
 				skipSeparator();
 				return;
@@ -137,5 +134,4 @@ void UriParser::execute()
 	}
 	_target->resetParserIndex();
 	throw EagainParser();
-	std::cout << "...................." << std::endl;
 }
