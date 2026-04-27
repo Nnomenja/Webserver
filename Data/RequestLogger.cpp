@@ -123,6 +123,8 @@ static const char* getColor(int status) {
 }
 
 void RequestLogger::log() const {
+    if (!_status)
+        return;
     if (!isComplete()) {
         std::cerr << RED << "[LOGGER ERROR] Incomplete log data" << RESET << std::endl;
         return;

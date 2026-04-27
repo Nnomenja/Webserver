@@ -40,6 +40,13 @@ server:
     host 0.0.0.0
     root /home/toloandr/Music/Webserver/websites/website00
     location:
+        path /cgi
+        root /home/toloandr/Music/Webserver/websites/website00
+        error_pages 404 /error/404.html
+        error_pages 400 /error/400.html
+        CGI .py /usr/bin/python3
+        methods GET POST
+    location:
         path /redirection
         return 302 https://google.com
 # server:

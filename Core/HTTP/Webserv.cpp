@@ -80,8 +80,9 @@ bool Webserv::init()
     }
     catch(const Config::ConfigException& e)
     {
-        std::cerr << "Error: " << e.what() << " ";
-		std::cerr << "serverParsed: " << e.getserverParsed() << std::endl;
+        std::cerr << "Error: " << e.what() << std::endl;
+		std::cerr << "serverParsed: " << e.getServerParsed() << std::endl;
+		std::cerr << "locationParsed: " << e.getLocationParsed() << std::endl;
         return (false);
     }
 	// <- REAL

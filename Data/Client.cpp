@@ -39,7 +39,8 @@ Client::~Client(){
 	_logger.setPath(_req->getPathname());
 	_logger.setStatus(_res->getStatusCode());
 	_logger.setResponseTime(get_time_ms() - _start_time_ms);
-	_logger.log();
+	if (_res->getStatusCode() != 0)
+		_logger.log();
 
 	if (_req)
 		delete  _req;
