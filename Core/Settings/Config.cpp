@@ -286,8 +286,9 @@ void Config::parseServerBlock(std::string serverBlock, int j)
                 // std::cout << word << std::endl;
             }
             i++;
-        }
-        lineParsed++;
+            
+        } 
+        lineParsed++;     
         // printMap(configs[j].error_pages_map);
     }
     if (counts["host"] > 1)
