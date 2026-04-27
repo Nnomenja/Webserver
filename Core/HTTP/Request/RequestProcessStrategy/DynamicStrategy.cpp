@@ -108,7 +108,23 @@ void DynamicStrategy::process(Client *client, Epoll &epoll, Process &process)
         close(pipeIn[0]);
         close(pipeOut[1]);
         if (client->getRequest()->getBody()._str_buffer.size())
-            write(pipeIn[1], client->getRequest()->getBody()._str_buffer.c_str(),  client->getRequest()->getBody()._content_length);
+            write(pipeIn[1], client->getRequest()->getBody()._str_buffer.c_str(),  client->getRequest()->getBody()._str_buffer.size());
+        if (client->getRequest()->getBody()._file_buffer.is_open())
+        {
+            client->getRequest()->getBody()._file_buffer.seekg(0, std::ios::beg);
+            char buffer[4096];
+
+            while (true)
+            {
+                client->getRequest()->getBody()._file_buffer.read(buffer, sizeof(buffer));
+                std::streamsize n = client->getRequest()->getBody()._file_buffer.gcount();
+
+                if (n <= 0)
+                    break;
+
+                write(pipeIn[1], buffer, n);
+            }
+        }
         close(pipeIn[1]);
         
         client->setCGIInfo(pid, pipeOut[0]);

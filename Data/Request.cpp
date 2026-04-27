@@ -1,11 +1,13 @@
 #include "Request.hpp"
 #include "../Core/HTTP/Request/RequestParserState/MethodParser.hpp"
 #include "../Core/HTTP/Request/RequestParserState/ARequestParserState.hpp"
+#include "../Core/HTTP/Webserv.hpp"
 
 #include <algorithm>
 
 Request::Request():_index(0), _parserState(NULL), _method(GET){
 	_body._content_length = 0;
+	_body._bytes_read = 0;
 };
 
 Request::Request(const Request& other){
@@ -232,16 +234,22 @@ void Request::setBodyEncode(t_body_encode value)
 
 void Request::addBody(char c, bool inc)
 {
-	if (_body._str_buffer.size() < BODY_BUFFER_SIZE_MAX)
+	if (_body._bytes_read < BODY_BUFFER_SIZE_MAX)
 		_body._str_buffer.push_back(c);
 	else
 	{
 		if (!_body._file_buffer.is_open())
-			_body._file_buffer.open("body_tmp", std::ios::out | std::ios::in | std::ios::trunc);
+		{
+			std::stringstream tmpFilePath;
+
+			tmpFilePath << "./.tmp/body_tmp_" << time(NULL);
+			_body._file_buffer.open(tmpFilePath.str().c_str(), std::ios::out | std::ios::in | std::ios::trunc | std::ios::binary | std::ios::ate);
+		}
 		_body._file_buffer.put(c);
 	}
 	if (inc)
 		 _body._content_length++;
+	_body._bytes_read++;
 }
 
 void Request::setLocation(t_location &value)
