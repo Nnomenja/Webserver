@@ -88,7 +88,7 @@ private:
     std::map<int, std::vector<std::string> > serverBlockIdToLocationBlocks;
     std::vector<UnitConf_t> configs;
     std::map<int, UnitConf_t>   _endpoints;
-    int lineParsed;
+    int serverParsed;
 
 public:
     Config();
@@ -102,12 +102,12 @@ public:
     {
       private:
         std::string message;
-        int lineParsed;
+        int serverParsed;
 
       public:
-        ConfigException(const std::string& msg, int lineParsed);
+        ConfigException(const std::string& msg, int serverParsed);
         virtual const char* what() const throw();
-        virtual int getLineParsed() const throw();
+        virtual int getserverParsed() const throw();
         virtual ~ConfigException() throw();
     };
     std::string extractMainConfig(std::string serverBlock);

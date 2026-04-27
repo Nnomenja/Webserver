@@ -38,6 +38,13 @@ Client& Client::operator=(const Client& other){
 };
 
 Client::~Client(){
+	_logger.setMethod(_req->getMethodString());
+	// _logger.setIp();
+	_logger.setPath(_req->getPathname());
+	_logger.setStatus(_res->getStatusCode());
+	// _logger.
+	_logger.log();
+
 	if (_req)
 		delete  _req;
 	if (_res)
@@ -271,3 +278,31 @@ void Client::setCGICGIProcessEnd()
 {
 	_cgi_processing_end = true;
 }
+
+// NEW ->
+std::string Client::my_inet_ntoa(sockaddrIn addr) {
+    unsigned long ip = ntohl(addr.sin_addr.s_addr);
+
+    std::ostringstream oss;
+    oss << ((ip >> 24) & 0xFF) << "."
+        << ((ip >> 16) & 0xFF) << "."
+        << ((ip >> 8) & 0xFF) << "."
+        << (ip & 0xFF);
+
+    return oss.str();
+}
+
+void Client::setIp(sockaddrIn addr) {
+    _ip = my_inet_ntoa(addr);
+}
+
+std::string         Client::getIp() const
+{
+	return _ip;
+}
+
+RequestLogger &Client::getLogger()
+{
+	return _logger;
+}
+// <- NEW

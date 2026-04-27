@@ -94,7 +94,7 @@ bool Webserv::init()
     catch(const Config::ConfigException& e)
     {
         std::cerr << "Error: " << e.what() << " ";
-		std::cerr << "LineParsed: " << e.getLineParsed() << std::endl;
+		std::cerr << "serverParsed: " << e.getserverParsed() << std::endl;
         return (false);
     }
 	// <- REAL
@@ -265,6 +265,13 @@ void Webserv::run(void)
 				std::cout << "---------X--------" << _clients.size()<<std::endl;
 				std::cout << "client:" << tmp.fd << " Server: " << serverSocket->getSocketFd() << std::endl;
 				std::cout << "[" << tmp.fd << "]: new client from server fd: " << tmp.serverFd << std::endl;
+
+				// NEW ->
+				_clients[tmp.fd]->setIp(tmp.addr);
+				RequestLogger logger = _clients[tmp.fd]->getLogger();
+				logger.log();
+
+				// <- NEW
 			}
 
 			// 2. Socket's type is client

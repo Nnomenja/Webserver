@@ -42,6 +42,7 @@ DATA_SRCS = $(addprefix $(DATA_DIR)/, \
 				Request.cpp \
 				Response.cpp \
 				Process.cpp \
+				RequestLogger.cpp \
 			)
 
 EXCEPTION_SRC = $(addprefix $(EXCEPTION_DIR)/, \
@@ -90,6 +91,7 @@ OBJS = $(SRC:%.cpp=$(OBJS_DIR)/%.o)
 all: $(NAME)
 
 $(NAME): $(OBJS)
+	rm -rf $(REQUEST_TMP_DIR)
 	@mkdir $(REQUEST_TMP_DIR)
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
