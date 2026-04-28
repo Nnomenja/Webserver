@@ -44,8 +44,7 @@ bool HeaderParser::endOfHeadersReached()
 	{
 		_target->incrementParserIndex();
 		if (_target->getBuffer()[_target->getParserIndex()] != '\n')
-			throw BadRequestException();
-		_target->incrementParserIndex();
+			_target->incrementParserIndex();
 	}
 	else if (_target->getBuffer()[_target->getParserIndex()] == '\n')
 		_target->incrementParserIndex();
@@ -74,17 +73,20 @@ void HeaderParser::receivingHeaders()
 					_key.push_back(c);
 				else
 				{
-					if ((c == '\n' || c == '\r'))
+					if (c == '\n' || c == '\r')
 					{
 						if (endOfHeadersReached())
 							return;
-						if (c == '\n')
-							addHeaderAndReset();
 						else
-							_state = DELIMITER;
+						{
+							addHeaderAndReset();
+							_state = SEPARATOR;
+						}
 					}
 					else
+					{		
 						throw BadRequestException();
+					}
 				}
 				break;
 
