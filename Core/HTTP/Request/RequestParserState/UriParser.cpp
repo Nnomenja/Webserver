@@ -32,35 +32,6 @@ bool  UriParser::checkQueryPourcentEncoded(char c) const
   return (other.find(c) != std::string::npos);
 }
 
-
-bool UriParser::isHexa(char c) const
-{
-	return (std::isxdigit(static_cast<unsigned char>(c)));
-}
-
-int UriParser::HexaToInt(char c) const
-{
-	if (c >= '0' && c <= '9')
-		return (c - '0');
-	if (c >= 'a' && c <= 'f')
-		return (c - 'a' + 10);
-	if (c >= 'A' && c <= 'F')
-		return (c - 'A' + 10);
-	return (-1);
-}
-
-char UriParser::PourcentHexaToChar(char first, char second) const
-{
-	int		msb;
-	int		lsb;
-
-	msb = HexaToInt(first);
-	lsb = HexaToInt(second);
-	if (msb == -1 || lsb == -1)
-		throw BadRequestException();
-	return (static_cast<unsigned char>((msb << 4 | lsb)));
-}
-
 void UriParser::execute()
 {
 	char c;
@@ -107,13 +78,13 @@ void UriParser::execute()
 		}
 		else
 		{
-			if (!isHexa(c))
+			if (!Encoding::isHexa(c))
 				throw BadRequestException();
 			if (_tmp == -1)
 				_tmp = c;
 			else
 			{
-				c = PourcentHexaToChar(_tmp, c);
+				c = Encoding::PourcentHexaToChar(_tmp, c);
 				if (_hasQuery)
 				{
 					if (!checkQueryPourcentEncoded(c))

@@ -3,6 +3,7 @@
 #include "../../../../Exception/NotFound.hpp"
 #include "../../../../Exception/PayloadTooLarge.hpp"
 #include "../../../../Exception/Forbiden.hpp"
+#include "../../Webserv.hpp"
 
 MetadataParser::MetadataParser(Request *target, UnitConf_t endpoint):ARequestParserState(METADATA, target, endpoint), _longest_matching(0){
 
@@ -151,8 +152,67 @@ void MetadataParser::parseBodyMetadata()
     }
 }
 
+bool    checkCookieKeyChar(char c)
+{
+    std::string other = "!#$%&'*+-.^_|~`=;";
+    return (std::isalnum(static_cast<unsigned char>(c)) || other.find(c) != std::string::npos);
+}
+
+void MetadataParser::parseCookies()
+{
+    const std::string& cookieHeader = _target->getHeaderBykey("cookie");
+    std::string res = "";
+    COOKIE_PARSING_STATE state = KEY;
+    char c;
+
+    for (size_t i = 0; i < cookieHeader.size(); i++)
+    {
+        c = cookieHeader[i];
+        if (!checkCookieKeyChar(c))
+            throw BadRequestException();
+        if (c == '%')
+        {
+            char first = cookieHeader[i + 1];
+            if (!Encoding::isHexa(first))
+                throw BadRequestException();
+            char second = cookieHeader[i + 2];
+            if (!Encoding::isHexa(second))
+                throw BadRequestException();
+            c = Encoding::PourcentHexaToChar(first, second);
+            i += 2;
+        }
+        if (state == KEY)
+        {
+            if (c == '=')
+                state = VALUE;
+        }
+        else if (state == VALUE)
+        {
+            if (c == ';')
+            {
+                state = SEPARATOR;
+            }
+        }
+        else if (state == SEPARATOR)
+        {
+            if (c != ' ')
+            {
+                state = KEY;
+                res.push_back(' ');
+            }
+            else
+                continue;
+        }
+        res.push_back(c);
+    }
+    if (state == SEPARATOR)
+        throw BadRequestException();
+    _target->updateHeaderValue("cookie", res);
+}
+
 void MetadataParser::execute()
 {
     matchConfiguredRoute();
     parseBodyMetadata();
+    parseCookies();
 }
