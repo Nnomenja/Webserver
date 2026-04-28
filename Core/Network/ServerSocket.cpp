@@ -91,7 +91,7 @@ SocketInfo 	ServerSocket::accept( void )
 	SocketInfo info;
 
 	info.fd = -1;
-	info.addrlen = 0;
+	info.addrlen = sizeof(info.addr);
 
 	info.fd = ::accept(_socketFd
 		, reinterpret_cast<sockaddr *>(&info.addr)
