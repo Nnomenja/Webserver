@@ -260,3 +260,7 @@ void Request::setServerName(std::string value)
 {
 	_server_name = value;
 }
+void Request::updateHeaderValue(std::string key, std::string value)
+{
+	_headers[toLowerCase(key)] = value;
+}

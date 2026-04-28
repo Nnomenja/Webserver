@@ -2,6 +2,7 @@
 #define URIPARSER_HPP
 
 #include "./ARequestParserState.hpp"
+#include "../../../../utils/Encoding.hpp"
 
 class UriParser: public ARequestParserState {
 	private:
@@ -14,9 +15,6 @@ class UriParser: public ARequestParserState {
 		bool		checkQueryEncode(char c) const;
 		bool		checkPathPourcentEncoded(char c) const;
 		bool		checkQueryPourcentEncoded(char c) const;
-		bool 		isHexa(char c) const;
-		int 		HexaToInt(char c) const;
-		char 		PourcentHexaToChar(char first, char second) const;
 	public:
 		UriParser(Request *target, UnitConf_t endpoint);
 		~UriParser();

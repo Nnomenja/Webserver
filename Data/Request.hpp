@@ -98,6 +98,7 @@ class Request {
         void                    setRedirectionPath(std::string &value, int code);
         void                    addBody(char c, bool inc);
         std::string             &toLowerCase(std::string &src) const;
+        void                    updateHeaderValue(std::string key, std::string value);
 };
 
 #endif
