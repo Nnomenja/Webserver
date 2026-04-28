@@ -13,7 +13,7 @@ class Process
             int         clientFd;
             uint64_t    time_ms;
         }   t_process;
-        std::map<int, t_process> _processes; // int fd, t_process   
+        std::map<int, t_process> _processes;
     public:
         Process();
         ~Process();

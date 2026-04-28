@@ -18,11 +18,11 @@
 #include "../../Data/Client.hpp"
 #include "../../Data/Process.hpp"
 
-#define REQUEST_HEADER_TIMEOUT_MS 100000 // ms
-#define REQUEST_BODY_TIMEOUT_MS 200000 // ms
+#define REQUEST_HEADER_TIMEOUT_MS 100000
+#define REQUEST_BODY_TIMEOUT_MS 200000
 #define MAXREADBYTES 1024
 #define CGI_MAX_OUTPUT_BYTES 409600
-#define CGI_TIMEOUT 50000 // ms
+#define CGI_TIMEOUT 50000
 
 #define GREEN "\033[32m"
 #define RESET "\033[0m"

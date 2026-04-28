@@ -24,10 +24,6 @@ Request::~Request(){
 	delete _parserState;
 };
 
-/**============================================
- *               GETTERS
- *=============================================**/
-
 ARequestParserState *Request::getParserState() const
 {
   return (_parserState);
@@ -142,10 +138,6 @@ const std::string &Request::getServerName() const
 {
 	return (_server_name);
 }
-
-/**============================================
- *               SETTERS
- *=============================================**/
 
 void Request::incrementParserIndex()
 {
@@ -267,4 +259,8 @@ void Request::setRedirectionPath(std::string &value, int code)
 void Request::setServerName(std::string value)
 {
 	_server_name = value;
+}
+void Request::updateHeaderValue(std::string key, std::string value)
+{
+	_headers[toLowerCase(key)] = value;
 }

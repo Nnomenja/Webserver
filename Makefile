@@ -17,6 +17,7 @@ UTILS_SRCS = $(addprefix $(UTILS_DIR)/, \
 			getListDirectory.cpp \
 			path_utils.cpp \
 			PathUtils.cpp \
+			Encoding.cpp \
 		)
 
 NETWORK_SRCS = $(addprefix $(CORE_DIR)/Network/, \

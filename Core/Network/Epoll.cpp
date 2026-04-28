@@ -6,10 +6,6 @@
 #include "../HTTP/Webserv.hpp"
 #include <sys/socket.h>
 
-/* ************************************************************************** */
-/*                            Canonical Form                                  */
-/* ************************************************************************** */
-
 Epoll::Epoll( )
 	: _epollFd(-1), _maxEvents(MAX_EVENTS)
 { }
@@ -34,10 +30,6 @@ Epoll::~Epoll()
 	this->close();
 }
 
-/* ************************************************************************** */
-/*                             Getters / seters                               */
-/* ************************************************************************** */
-
 int Epoll::getEpollFd( void ) const
 {
 	return (_epollFd);
@@ -52,10 +44,6 @@ std::vector<struct epoll_event>& Epoll::getEvents( void )
 {
 	return (_events);
 }
-
-/* ************************************************************************** */
-/*                             Other Methods                                  */
-/* ************************************************************************** */
 
 bool Epoll::epollCreate( void )
 {
@@ -78,7 +66,6 @@ bool Epoll::registerFd(int fd, unsigned int event)
 	if (epoll_ctl(_epollFd, EPOLL_CTL_ADD, fd, &ev) < 0)
 	{
 		perror("Epoll: registerFd failed");
-        // std::cerr << "Error: Epoll: registerFd failed" << std::endl;
 		return (false);
 	}
 	return (true);

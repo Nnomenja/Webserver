@@ -25,13 +25,11 @@ Response::~Response(){};
 Response::t_status Response::getResponseStatus(int code)
 {
 	Response::t_status status [] = {
-        // 1xx: Informational
         {100, "Continue"},
         {101, "Switching Protocols"},
         {102, "Processing"},
         {103, "Early Hints"},
 
-        // 2xx: Success
         {200, "OK"},
         {201, "Created"},
         {202, "Accepted"},
@@ -43,18 +41,16 @@ Response::t_status Response::getResponseStatus(int code)
         {208, "Already Reported"},
         {226, "IM Used"},
 
-        // 3xx: Redirection
         {300, "Multiple Choices"},
         {301, "Moved Permanently"},
         {302, "Found"},
         {303, "See Other"},
         {304, "Not Modified"},
         {305, "Use Proxy"},
-        {306, "Unused"},          // 306 was "Switch Proxy", now deprecated/unused
+        {306, "Unused"},
         {307, "Temporary Redirect"},
         {308, "Permanent Redirect"},
 
-        // 4xx: Client Errors
         {400, "Bad Request"},
         {401, "Unauthorized"},
         {402, "Payment Required"},
@@ -85,7 +81,6 @@ Response::t_status Response::getResponseStatus(int code)
         {431, "Request Header Fields Too Large"},
         {451, "Unavailable For Legal Reasons"},
 
-        // 5xx: Server Errors
         {500, "Internal Server Error"},
         {501, "Not Implemented"},
         {502, "Bad Gateway"},

@@ -35,17 +35,14 @@ class Request {
         t_location                          _location;
         std::string                         _root;
 
-        /*==== Request line ====*/
         HttpMethod                          _method;
         std::string							_pathname;
         std::string                         _query;
 
-        /*==== Request header ====*/
 
         std::map<std::string, std::string>	_headers;
         t_body_encode                       _body_encode;
         std::string                         _server_name;
-        /*==== Request Body ====*/
         t_body                              _body;
 
         std::string                         _fullpath;
@@ -101,6 +98,7 @@ class Request {
         void                    setRedirectionPath(std::string &value, int code);
         void                    addBody(char c, bool inc);
         std::string             &toLowerCase(std::string &src) const;
+        void                    updateHeaderValue(std::string key, std::string value);
 };
 
 #endif

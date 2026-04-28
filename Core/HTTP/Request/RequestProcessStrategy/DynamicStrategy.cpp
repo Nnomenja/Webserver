@@ -10,13 +10,6 @@
 #include <cerrno>
 #include <unistd.h>
 #include <sys/wait.h>
-/**
- * TODO
- * - fork()
- * - close fd[1]
- * - create CGI
- * - 
- */
 
 void DynamicStrategy::process(Client *client, Epoll &epoll, Process &process)
 {
@@ -51,6 +44,7 @@ void DynamicStrategy::process(Client *client, Epoll &epoll, Process &process)
     std::string path_info = std::string("PATH_INFO=") + req->getFullPath();
     std::string request_uri = std::string("REQUEST_URI=") + req->getFullPath();
     std::string host = std::string("HTTP_HOST=") + req->getHeaderBykey("host");
+    std::string cookie = std::string("HTTP_COOKIE=") + req->getHeaderBykey("cookie");
 
     ss << client->getEndpoint().port;
 
@@ -78,6 +72,7 @@ void DynamicStrategy::process(Client *client, Epoll &epoll, Process &process)
         const_cast<char *>(port.c_str()),
         const_cast<char *>(query.c_str()),
         const_cast<char *>(host.c_str()),
+        const_cast<char *>(cookie.c_str()),
         const_cast<char *>(contentType.c_str()),
         const_cast<char *>(request_uri.c_str()),
         NULL

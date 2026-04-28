@@ -23,8 +23,6 @@ void DirectoryStrategy::process(Client *client, Epoll &epoll, Process &process)
     if (dir == NULL)
         throw Forbiden();
 
-
-    // back
     tmp.name = "..";
     tmp.isDirectory = true;
     if (req->getPathname() == req->getLocation().path)

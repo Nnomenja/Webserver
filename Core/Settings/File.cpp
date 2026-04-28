@@ -13,7 +13,6 @@ File& File::operator=(const File& other)
 {
     if (this != &other)
     {
-        // copy members here
         (void)other;
     }
     return *this;
