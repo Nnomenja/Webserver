@@ -2,11 +2,19 @@
 #define METADATAPARSER_HPP
 
 #include "./ARequestParserState.hpp"
+#include "../../../../utils/Encoding.hpp"
 
 
 class MetadataParser: public ARequestParserState 
 {
     private:
+        typedef enum COOKIE_PARSING_STATE
+        {
+            KEY,
+            VALUE,
+            SEPARATOR
+        }   COOKIE_PARSING_STATE;
+
         size_t  _longest_matching;
 
         void    matchConfiguredRoute();
