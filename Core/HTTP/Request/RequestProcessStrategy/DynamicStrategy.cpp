@@ -45,7 +45,6 @@ void DynamicStrategy::process(Client *client, Epoll &epoll, Process &process)
     std::string request_uri = std::string("REQUEST_URI=") + req->getFullPath();
     std::string host = std::string("HTTP_HOST=") + req->getHeaderBykey("host");
     std::string cookie = std::string("HTTP_COOKIE=") + req->getHeaderBykey("cookie");
-    std::cout << GREEN << "COOKIE: " << cookie << RESET << std::endl;
 
     ss << client->getEndpoint().port;
 
