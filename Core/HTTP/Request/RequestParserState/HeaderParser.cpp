@@ -74,8 +74,15 @@ void HeaderParser::receivingHeaders()
 					_key.push_back(c);
 				else
 				{
-					if ((c == '\n' || c == '\r') && endOfHeadersReached())
-						return;
+					if ((c == '\n' || c == '\r'))
+					{
+						if (endOfHeadersReached())
+							return;
+						if (c == '\n')
+							addHeaderAndReset();
+						else
+							_state = DELIMITER;
+					}
 					else
 						throw BadRequestException();
 				}
