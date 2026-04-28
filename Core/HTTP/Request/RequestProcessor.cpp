@@ -7,6 +7,7 @@
 
 #include "../../../Data/Client.hpp"
 #include "../../../Exception/NotFound.hpp"
+#include "../../../Exception/MethodNotAllowed.hpp"
 #include "../../../Exception/Forbiden.hpp"
 #include "../../../Exception/InternalServerError.hpp"
 #include "../../../utils/PathUtils.hpp"
@@ -51,6 +52,10 @@ LocationType RequestProcessor::detectStategyType(Client *client)
 	std::string root = client->getRequest()->getLocation().root;
 	if (root.empty())
 		root = client->getEndpoint().root;
+	if (!(req->getLocation().methods & req->getMethod()))
+	{
+		throw MethodNotAllowed();
+	}
 	if (type == STATIC || type == DYNAMIC)
 	{    
 		fullpath = root + client->getRequest()->getPathname();
