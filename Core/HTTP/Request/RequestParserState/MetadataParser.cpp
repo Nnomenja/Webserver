@@ -151,6 +151,11 @@ void MetadataParser::parseBodyMetadata()
     }
 }
 
+void MetadataParser::parseCookies()
+{
+    
+}
+
 void MetadataParser::execute()
 {
     matchConfiguredRoute();

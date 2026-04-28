@@ -13,6 +13,8 @@ class MetadataParser: public ARequestParserState
         long    parseContentLength(const std::string& value);
         void    parseBodyMetadata();
         void    parseHostHeader();
+        void    parseCookies();
+
     public:
         MetadataParser(Request *target, UnitConf_t endpoint);
         ~MetadataParser();
