@@ -5,13 +5,11 @@
 #include <iomanip>
 #include <arpa/inet.h>
 
-// ANSI colors
 #define RESET   "\033[0m"
 #define GREEN   "\033[32m"
 #define YELLOW  "\033[33m"
 #define RED     "\033[31m"
 
-// Default constructor
 RequestLogger::RequestLogger()
     : _method(""), _path(""), _status(0), _clientIp(""), _responseTime(0.0),
       _hasMethod(false), _hasPath(false), _hasStatus(false),
@@ -33,12 +31,10 @@ RequestLogger::RequestLogger(const std::string& method,
       _hasIp(true),
       _hasResponseTime(true) {}
 
-// Copy constructor
 RequestLogger::RequestLogger(const RequestLogger& other) {
     *this = other;
 }
 
-// Assignment
 RequestLogger& RequestLogger::operator=(const RequestLogger& other) {
     if (this != &other) {
         _method = other._method;
@@ -56,11 +52,9 @@ RequestLogger& RequestLogger::operator=(const RequestLogger& other) {
     return *this;
 }
 
-// Destructor
 RequestLogger::~RequestLogger() {}
 
 
-// ---------------- SETTERS ----------------
 
 void RequestLogger::setMethod(const std::string& method) {
     _method = method;
@@ -88,7 +82,6 @@ void RequestLogger::setResponseTime(uint64_t time) {
 }
 
 
-// ---------------- UTILS ----------------
 
 bool RequestLogger::isComplete() const {
     return _hasMethod && _hasPath && _hasStatus && _hasIp && _hasResponseTime;
@@ -109,9 +102,6 @@ std::string RequestLogger::getTimestamp() const {
 
     return oss.str();
 }
-
-
-// ---------------- LOGGING ----------------
 
 static const char* getColor(int status) {
     if (status >= 200 && status < 300)

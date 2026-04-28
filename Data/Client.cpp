@@ -8,8 +8,6 @@ Client::Client(std::map<std::string, std::string> &envs):_start_time_ms(get_time
 	_req->setRoot(_endpoint.root);
 	_bufferSize = 0;
 	_buffer = "";
-
-	// cgi
 	_cgi_pid = -1;
 	_cgi_output = -1;
 	_cgi_processing = false;
@@ -47,10 +45,6 @@ Client::~Client(){
 	if (_res)
 		delete _res;
 };
-
-/**============================================
- *               GETTERS
- *=============================================**/
 
 int Client::getFd() const
 {
@@ -138,10 +132,6 @@ std::string Client::getCGIbinByExtension(std::string ext) const
 	return ("");
 }
 
-/**============================================
- *               SETTERS
- *=============================================**/
-
 void Client::setEndpoint(UnitConf_t value)
 {
   _endpoint = value;
@@ -182,10 +172,6 @@ void Client::setEnv(std::string key, std::string value)
 	_envs[key] = value;
 }
 
-/**============================================
- *               UTILS
- *=============================================**/
-
  void Client::refreshStartTime()
 {
   _start_time_ms =  get_time_ms();
@@ -205,7 +191,6 @@ void Client::parsed()
 
 void	Client::generateResponse()
 {
-	/*==== RESPONSE LINE ====*/
 	std::stringstream statusCode;
 
 	statusCode << _res->getStatusCode();
@@ -215,7 +200,6 @@ void	Client::generateResponse()
 	_buffer += _res->getStatusMessage();
 	_buffer += "\r\n";
 
-	/*==== RESPONSE HEADERS ====*/
 	std::map<std::string, std::string>::const_iterator it =  _res->getHeaders().begin();
 	while (it != _res->getHeaders().end())
 	{
@@ -223,11 +207,8 @@ void	Client::generateResponse()
 		++it;
 	}
 	_buffer += "\r\n";
-	/*==== RESPONSE BODY ====*/
 	_buffer += _res->getBody();
 	_bufferSize = _buffer.size();
-	// delete _req;
-	// delete _res;
 }
 
 bool Client::isProcessingCGI() const
@@ -302,4 +283,3 @@ RequestLogger &Client::getLogger()
 {
 	return _logger;
 }
-// <- NEW

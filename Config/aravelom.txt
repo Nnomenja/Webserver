@@ -4,7 +4,7 @@ server:
     host 0.0.0.0
     root /home/aravelom/Project/current/webserver/www
     location:
-        uploads /home/aravelom/Project/current/webserver/www/upload/files
+        upload_store /home/aravelom/Project/current/webserver/www/upload/files
         path /upload
         root /home/aravelom/Project/current/webserver/www
         methods POST

@@ -24,10 +24,6 @@ Request::~Request(){
 	delete _parserState;
 };
 
-/**============================================
- *               GETTERS
- *=============================================**/
-
 ARequestParserState *Request::getParserState() const
 {
   return (_parserState);
@@ -142,10 +138,6 @@ const std::string &Request::getServerName() const
 {
 	return (_server_name);
 }
-
-/**============================================
- *               SETTERS
- *=============================================**/
 
 void Request::incrementParserIndex()
 {

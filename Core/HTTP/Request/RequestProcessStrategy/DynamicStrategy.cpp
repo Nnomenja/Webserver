@@ -10,13 +10,6 @@
 #include <cerrno>
 #include <unistd.h>
 #include <sys/wait.h>
-/**
- * TODO
- * - fork()
- * - close fd[1]
- * - create CGI
- * - 
- */
 
 void DynamicStrategy::process(Client *client, Epoll &epoll, Process &process)
 {

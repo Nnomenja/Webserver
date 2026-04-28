@@ -19,7 +19,6 @@ private:
     bool _hasResponseTime;
 
 public:
-    // Canonical form
     RequestLogger();
     RequestLogger(const std::string& method,
               const std::string& path,
@@ -30,18 +29,15 @@ public:
     RequestLogger& operator=(const RequestLogger& other);
     ~RequestLogger();
 
-    // Setters
     void setMethod(const std::string& method);
     void setPath(const std::string& path);
     void setStatus(int status);
     void setIp(std::string ip);
     void setResponseTime(uint64_t time);
 
-    // Utils
     bool        isComplete() const;
     std::string getTimestamp() const;
 
-    // Logging
     void log() const;
 };
 

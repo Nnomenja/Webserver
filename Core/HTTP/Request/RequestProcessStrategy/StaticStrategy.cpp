@@ -7,19 +7,6 @@
 #include "../../../../Exception/InternalServerError.hpp"
 #include "../../../../utils/PathUtils.hpp"
 
-/**========================================================================
- * todo                             TODO
- *  - Join the pathname with root in order to have the fullpathname
- *  - If it is a directory && if autoindex is on and there is no index file, 
- * change strategy to directory strategy
- *  - Verify that the file exists otherwise throw 404 Not Found
- *   -Verify if file is readable, if not throw 403 Forbidden
- *  - Get the file content and set it in the response body
- *  - Get the file content type and set it in the response header
- *  - Set the response status code to 200
- *   
- *========================================================================**/
-
 void StaticStrategy::process(Client *client, Epoll &epoll, Process &process)
 {
     std::string fullpath = client->getRequest()->getFullPath();

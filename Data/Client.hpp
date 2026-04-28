@@ -7,11 +7,8 @@
 #include "./RequestLogger.hpp"
 #include "../Enum/LocationType.hpp"
 #include "../Core/Settings/Config.hpp"
-
-// NEW ->
 #include <sstream>
 #include <arpa/inet.h>
-// NEW <-
 
 class Request;
 class Response;
@@ -36,12 +33,8 @@ class Client {
         bool                    _cgi_output_readed;
         std::map<std::string\
             , std::string>      &_envs;
-
-        // NEW ->
         std::string _ip;
         RequestLogger _logger;
-        // <- NEW
-
         Client(const Client& other);
         Client& operator=(const Client& other);
     public:
@@ -53,18 +46,14 @@ class Client {
         size_t		    	getResponseHttpSize() const;
         uint64_t	    	getStartTime() const;
         UnitConf_t    		getEndpoint() const;
-
         Request             *getRequest();
         Response            *getResponse();
         std::string			getDefaultErrorPagePath(int code) const;
         const std::map<std::string, std::string> &getEnv() const;
-        
-        // NEW ->
         std::string         getIp() const;
         void setIp(sockaddrIn addr);
         std::string my_inet_ntoa(sockaddrIn addr);
         RequestLogger &getLogger();
-        // <- NEW
 
         void            	setFd(int fd);
         void				setEndpoint(UnitConf_t  value);
@@ -92,7 +81,6 @@ class Client {
         void                setCGICGIProcessEnd();
         bool                isCGIOutputReaded() const;
 		bool				isCGIProcessEnd();
-        // void                (*registerFd)(int fd);
 };
 
 #endif

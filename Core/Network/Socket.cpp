@@ -11,10 +11,6 @@
 # include <unistd.h>
 # include <fcntl.h>
 
-/* ************************************************************************** */
-/*                            Canonical Form                                  */
-/* ************************************************************************** */
-
 Socket::Socket()
 	: _socketFd(-1)
 {
@@ -40,10 +36,6 @@ Socket& Socket::operator=(const Socket& socketType)
 Socket::~Socket()
 { }
 
-/* ************************************************************************** */
-/*                      			Getters                                   */
-/* ************************************************************************** */
-
 int Socket::getSocketFd( void ) const
 {
 	return (_socketFd);
@@ -58,10 +50,6 @@ socklen_t	Socket::AddrLen( void ) const
 {
 	return (_addrLen);
 }
-
-/* ************************************************************************** */
-/*                             Other Methods                                  */
-/* ************************************************************************** */
 
 bool Socket::setsockopt(int level, int optname, unsigned int optlen)
 {
@@ -102,14 +90,6 @@ bool Socket::inetPToN(int domain, const std::string& ipString, uint32_t& ipNum) 
 	ipNum = 0;
     ipNum = (parts[0] << 24) | (parts[1] << 16) | (parts[2] << 8) | parts[3];
 	ipNum = htonl(ipNum);
-
-	// uint32_t truee = 0;
-	// inet_pton(AF_INET, ipString.c_str(), &truee);
-	// if (ipNum == truee)
-	// 	std::cout << "ok: "<< ipNum << "==" << truee << std::endl;
-	// else
-	// 	std::cout << "ko: "<< ipNum << "==" << truee << std::endl;
-
 	return (true);
 }
 
@@ -150,11 +130,6 @@ void	Socket::close( void )
 		_socketFd = -1;
 	}
 }
-
-/* ************************************************************************** */
-/*                             External Fonctions                             */
-/* ************************************************************************** */
-
 
 bool stringToInt(const std::string& str, int& outValue)
 {

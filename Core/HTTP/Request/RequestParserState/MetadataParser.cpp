@@ -96,7 +96,6 @@ void MetadataParser::matchConfiguredRoute()
     t_location  location;
     std::string host;
 
-    // 1. find the longest matching prefix location.
     for (size_t i = 0; i < _endpoint.locations.size(); i++)
     {
         tmp = computeMatchingPrefix(_endpoint.locations[i].path, _target->getPathname());
@@ -109,14 +108,12 @@ void MetadataParser::matchConfiguredRoute()
     _target->setLocation(location);
     if (!_longest_matching)
         throw (NotFound());
-    
-    // 2. Hostname is required
+
     if (!_target->hasHeader("host"))
         throw BadRequestException();
 
     parseHostHeader();
-
-    // 3. If virtual hosting is enable. So we must verify th hostname 
+    
     if (_endpoint.enable_virtual_hosting)
     {
         host = _target->getHeaderBykey("host");

@@ -14,7 +14,6 @@ Validator& Validator::operator=(const Validator& other)
 {
     if (this != &other)
     {
-        // copy members here
         (void)other;
     }
     return *this;
@@ -152,23 +151,22 @@ bool Validator::validateServerName(std::string host)
         char c = host[i];
         if (c == '.')
         {
-            if (labelLength == 0) // empty label
+            if (labelLength == 0)
                 return false;
-            labelLength = 0; // reset for next label
+            labelLength = 0;
         }
         else
         {
-            // check valid characters: a-z, A-Z, 0-9, -
             if (!std::isalnum(c) && c != '-')
                 return false;
-            if (labelLength == 0 && c == '-') // label cannot start with -
+            if (labelLength == 0 && c == '-')
                 return false;
             labelLength++;
-            if (labelLength > 63) // label cannot exceed 63 chars
+            if (labelLength > 63)
                 return false;
         }
     }
-    // last label cannot end with '-'
+
     if (host[host.size() - 1] == '-')
         return false;
     return true;
@@ -244,16 +242,13 @@ bool Validator::validateIndex(std::string index)
         if (extLen >= len)
             continue;
 
-        // Check extension match
         if (index.compare(len - extLen, extLen, ext) == 0)
         {
             std::string name = index.substr(0, len - extLen);
 
-            // Ensure name is not empty
             if (name.empty())
                 return false;
 
-            // Validate characters
             for (size_t j = 0; j < name.length(); ++j)
             {
                 char c = name[j];
@@ -337,11 +332,9 @@ bool Validator::isValidPath(const std::string& path)
     if (path.empty())
         return false;
 
-    // Must start with '/'
     if (path[0] != '/')
         return false;
 
-    // Prevent directory traversal
     if (path.find("..") != std::string::npos)
         return false;
 
@@ -349,16 +342,13 @@ bool Validator::isValidPath(const std::string& path)
     {
         char c = path[i];
 
-        // Disallow spaces
         if (c == ' ')
             return false;
 
-        // Allow only safe characters
         if (!(std::isalnum(c) || c == '/' || c == '_' || c == '-' || c == '.'))
             return false;
     }
 
-    // Optional: reject double slashes
     if (path.find("//") != std::string::npos)
         return false;
 
@@ -374,11 +364,9 @@ bool Validator::isValidRedirectTarget(const std::string& target)
         if (std::isspace(target[i]))
             return false;
 
-    // URL case
     if (target.find("http://") == 0 || target.find("https://") == 0)
         return true;
 
-    // Path case
     if (target[0] == '/')
     {
         if (target.find("..") != std::string::npos)
@@ -420,8 +408,6 @@ bool Validator::isExecutable(const std::string& path)
 
     return (access(path.c_str(), X_OK) == 0);
 }
-
-// here
 
 bool Validator::isInVect(int integer, std::vector<int> vect)
 {

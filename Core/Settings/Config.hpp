@@ -17,9 +17,9 @@
 
 enum HttpMethod
 {
-    GET    = 1,  // 001
-    POST   = 2,  // 010
-    DELETE = 4   // 100
+    GET    = 1,
+    POST   = 2,
+    DELETE = 4 
 };
 
 typedef struct s_return
@@ -50,9 +50,8 @@ typedef struct s_location
     std::string upload_store;
     t_return ret;
 
-    // key is not in config file yet ->
-    std::string return_path; // but has ret.target value
-    // <-
+    
+    std::string return_path;
 
     std::map<std::string, std::string> CGI;
 }   t_location;
@@ -65,10 +64,8 @@ typedef struct UnitConf
     int                         port;
     std::string                 root;    
     
-    // keys are not in config file yet ->
     std::vector<std::string>    method_arr;
     int methods;
-    // <-
 
     int                        max_body_size;
     std::vector<t_error_page>   error_pages;

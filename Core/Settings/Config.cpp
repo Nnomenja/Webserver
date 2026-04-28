@@ -17,7 +17,6 @@ Config::Config(std::string filename)
     catch(const std::exception& e)
     {
         fileContent = "";
-        // std::cerr << e.what() << '\n';
     }
     parseFileContent();
 }
@@ -81,7 +80,7 @@ void Config::parseFileContent()
     while (std::getline(iss, line))
     {
         skipLeadingSpaces(line);
-        // ignore comments
+
         if (line.size() != 0)
         {
             if (line.at(0) == '#')
@@ -120,7 +119,7 @@ void Config::parseFileContent()
         u.root                   = "";
         u.max_body_size          = 52428800;
         u.server_name            = "";
-        // here
+
         configs.push_back(u);
     }
     for (int j = 0; j < n; j++)
@@ -130,7 +129,6 @@ void Config::parseFileContent()
     for (int i = 0; i < n; i++)
     {
         locationParsed = -1;
-        // std::cout << extractMainConfig(serverBlocks[i]) << std::endl;
         getLocationBlocks(i);
     }
     for (int j = 0; j < n; j++)
@@ -141,7 +139,6 @@ void Config::parseFileContent()
             throw ConfigException("port field should be filled", serverParsed, locationParsed);
         if (configs[j].root == "")
             throw ConfigException("root field should be filled", serverParsed, locationParsed);
-        // here
     }
 
     checkPorts();
@@ -176,8 +173,6 @@ void Config::parseServerBlock(std::string serverBlock, int j)
     counts["error_pages"]            = 0;
     counts["server_name"]            = 0;
 
-    // here
-
     int i;
     while (std::getline(iss, line))
     {
@@ -187,11 +182,8 @@ void Config::parseServerBlock(std::string serverBlock, int j)
         std::string        currentKey;
         i = 0;
 
-        // error ->
         std::vector<std::string> error_pages_words;
 
-        // <- error
-        // while (std::getline(iss_, word, ' '))
         while (iss_ >> word)
         {
             if (i == 0)
@@ -200,7 +192,6 @@ void Config::parseServerBlock(std::string serverBlock, int j)
                     word != "enable_virtual_hosting" && word != "root" &&
                     word != "max_body_size" && word != "error_pages" &&
                     word != "server_name")
-                // here
                 {
                     throw ConfigException("wrong key -> '" + word + "'", serverParsed, locationParsed);
                 }
@@ -259,7 +250,6 @@ void Config::parseServerBlock(std::string serverBlock, int j)
                 }
                 if (currentKey == "error_pages")
                 {
-                    // std::cout << i << " " << word << std::endl;
                     if (wordCount < 3)
                         throw ConfigException("error_pages should have at least a code and a path", serverParsed, locationParsed);
                     if (i < wordCount - 1 && i > 0)
@@ -276,7 +266,6 @@ void Config::parseServerBlock(std::string serverBlock, int j)
                         fillMap(configs[j].error_pages_map, word, error_pages_words);
                         fillVect(configs[j].error_pages, word, error_pages_words);
                         error_pages_words.clear();
-                        // std::cout << word << std::endl;
                     }
                 }
                 if (currentKey == "server_name")
@@ -288,13 +277,10 @@ void Config::parseServerBlock(std::string serverBlock, int j)
                         throw ConfigException(
                             "server_name can have only one value", serverParsed, locationParsed);
                 }
-                // here
-                // std::cout << word << std::endl;
             }
             i++;
             
-        }    
-        // printMap(configs[j].error_pages_map);
+        }
     }
     if (counts["host"] > 1)
         throw ConfigException("duplicate keys -> 'host'", serverParsed, locationParsed);
@@ -308,7 +294,6 @@ void Config::parseServerBlock(std::string serverBlock, int j)
         throw ConfigException("duplicate keys -> 'max_body_size'", serverParsed, locationParsed);
     if (counts["server_name"] > 1)
         throw ConfigException("duplicate keys -> 'server_name'", serverParsed, locationParsed);
-    // here
     serverParsed = j;
 }
 
@@ -321,7 +306,6 @@ void Config::getLocationBlocks(int i)
 
     while (std::getline(iss, line))
     {
-        // std::cout << line << std::endl;
         if (line == "location:")
         {
             j++;
@@ -348,18 +332,12 @@ void Config::getLocationBlocks(int i)
         configs[i].locations.push_back(l);
         parseLocationBlock(serverBlockIdToLocationBlocks[i][j], i, j);
         locationParsed = j;
-        // std::cout << serverBlockIdToLocationBlocks[i][j] << std::endl;
-        // printVector(configs[i].locations[j].index);
     }
     for (int j = 0; j < m; j++)
     {
         checkLocationBlock(configs[i].locations, j);
         checkPaths(configs[i].locations);
     }
-    // for (int j = 0; j < m; j++)
-    // {
-    //     printMap(configs[i].locations[j].error_pages);
-    // }
 }
 
 void Config::parseLocationBlock(std::string locationBlock, int i, int j)
@@ -393,7 +371,7 @@ void Config::parseLocationBlock(std::string locationBlock, int i, int j)
         std::string        currentKey;
 
         k = 0;
-        // while (std::getline(iss_, word, ' '))
+
         while (iss_ >> word)
         {
             if (k == 0)
@@ -402,7 +380,6 @@ void Config::parseLocationBlock(std::string locationBlock, int i, int j)
                     word != "path" && word != "index" && word != "root" &&
                     word != "upload_store" && word != "auto_index" &&
                     word != "return" && word != "CGI")
-                // here
                 {
                     throw ConfigException("wrong key -> '" + word + "'", serverParsed, locationParsed);
                 }
@@ -445,7 +422,6 @@ void Config::parseLocationBlock(std::string locationBlock, int i, int j)
                         fillMap(configs[i].locations[j].error_pages_map, word, error_pages_words);
                         fillVect(configs[i].locations[j].error_pages, word, error_pages_words);
                         error_pages_words.clear();
-                        // std::cout << word << std::endl;
                     }
                 }
                 if (currentKey == "path")
@@ -625,7 +601,6 @@ void Config::checkPorts()
     for (std::vector<UnitConf_t>::iterator it = configs.begin();
          it != configs.end(); ++it)
     {
-        // insert returns pair<iterator, bool>
         if (!seenPorts.insert(it->port).second)
         {
             throw ConfigException("duplicate port", serverParsed, locationParsed);
@@ -640,7 +615,6 @@ void Config::checkServerNames()
     for (std::vector<UnitConf_t>::iterator it = configs.begin();
          it != configs.end(); ++it)
     {
-        // skip default / unset server names
         if (it->server_name.empty())
             continue;
         if (!seenNames.insert(it->server_name).second)

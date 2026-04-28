@@ -11,10 +11,6 @@
 #include "ErrorProcess.hpp"
 extern volatile sig_atomic_t stop;
 
-/* ************************************************************************** */
-/*                            Canonical Form                                  */
-/* ************************************************************************** */
-
 Webserv::Webserv()
     : _isAlreadyInit(false)
 { }
@@ -45,20 +41,10 @@ Webserv::~Webserv()
     this->clear();	
 }
 
-/* ************************************************************************** */
-/*                         Specific Constructors                              */
-/* ************************************************************************** */
-
 Webserv::Webserv(const std::string& fileConfigName)
     :   _isAlreadyInit(false)
         ,_fileConfigName(fileConfigName)
 { }
-
-
-/* ************************************************************************** */
-/*                             Other Methods                                  */
-/* ************************************************************************** */
-
 
 void Webserv::removeClientHttp(int fd)
 {
@@ -71,9 +57,10 @@ void Webserv::removeClientHttp(int fd)
 bool Webserv::init()
 {
     if (_isAlreadyInit)
+	{
         return (true);
-	// REAL ->
-    try
+	}
+	try
     {
         Config configTmp(_fileConfigName);
         _config = configTmp;
@@ -85,25 +72,22 @@ bool Webserv::init()
 		std::cerr << "locationParsed: " << e.getLocationParsed() << std::endl;
         return (false);
     }
-	// <- REAL
-
-    if (!createServerSockets())
+	if (!createServerSockets())
 	{
         return (false);
 	}
 
-        // -- epoll
-        int maxEvent = MAX_EVENTS;
+	int maxEvent = MAX_EVENTS;
 
-        if (!_epoll.epollCreate())
-            return (false);        
-        _epoll.setMaxEvent(maxEvent);
+	if (!_epoll.epollCreate())
+		return (false);        
+	_epoll.setMaxEvent(maxEvent);
 
-        for (size_t i = 0; i < _serverSockets.size(); i++)
-        {
-            if (!_epoll.registerFd(_serverSockets[i]->getSocketFd(), EPOLLIN))
-                return (false);
-        }
+	for (size_t i = 0; i < _serverSockets.size(); i++)
+	{
+		if (!_epoll.registerFd(_serverSockets[i]->getSocketFd(), EPOLLIN))
+			return (false);
+	}
     _isAlreadyInit = true;
     return (true);
 }
@@ -122,7 +106,6 @@ bool Webserv::createServerSockets( void )
             return (false);
         _serverSockets.push_back(tmp);
 
-            // socket -----------------------
         int domain = AF_INET;
         int type = SOCK_STREAM;
         int protocol = IPPROTO_TCP;
@@ -130,7 +113,6 @@ bool Webserv::createServerSockets( void )
         if (!tmp->socket(domain, type, protocol))
             return (false);
 
-            // sockopt -----------------------
         int level = SOL_SOCKET;
         int optname = SO_REUSEADDR;
         int optlen = 1;
@@ -138,22 +120,16 @@ bool Webserv::createServerSockets( void )
         if (!tmp->setsockopt(level, optname, optlen))
             return (false);	
 
-            // blocking ----------------------
         bool blocking = false;
 
         if (!tmp->setBlocking(blocking))
             return (false);
-            // bind --------------------------
 
         std::string& host = configs[i].host;
         uint16_t port = configs[i].port;
 
         if (!tmp->bind(host, port))
             return (false);
-
-        /*
-            -------------------------------------------------------------
-        */
 
         int backlog = SOMAXCONN;
         if (!tmp->listen(backlog))
@@ -213,9 +189,6 @@ void Webserv::run(void)
 			int currentFd = _epoll.getEvents()[i].data.fd;
             serverSocket = getServerSocket(currentFd);
 
-			/**============================================
-			 *               SOCKET ACCEPT
-			 *=============================================**/
 			if (serverSocket)
 			{
 				tmp = serverSocket->accept();
@@ -230,13 +203,10 @@ void Webserv::run(void)
 				_clients[tmp.fd]->setIp(tmp.addr);
 			}
 
-			// 2. Socket's type is client
 			else
 			{
 				Client *client = NULL;
-				/**============================================
-				 *               SOCKET ERROR
-				 *=============================================**/
+
 				if ((_epoll.getEvents()[i].events & (EPOLLERR | EPOLLHUP)))
 				{
 					if (_process.isProcess(currentFd))
@@ -273,10 +243,6 @@ void Webserv::run(void)
 					continue;
 				}
 
-				/**============================================
-				 *               SOCKET READ
-				 *=============================================**/
-
 				if (_epoll.getEvents()[i].events & EPOLLIN)
 				{
 					try
@@ -302,9 +268,6 @@ void Webserv::run(void)
 					}
 					_epoll.modify(client->getFd(), EPOLLOUT);
 				}
-				/**============================================
-				 *               SOCKET WRITE
-				 *=============================================**/
 				else if (_epoll.getEvents()[i].events & EPOLLOUT)
 				{
 					if (_clients.find(currentFd) == _clients.end())

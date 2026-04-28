@@ -11,10 +11,6 @@
 # include <unistd.h>
 # include <fcntl.h>
 
-/* ************************************************************************** */
-/*                            Canonical Form                                  */
-/* ************************************************************************** */
-
 ServerSocket::ServerSocket()
 	: Socket()
 { }
@@ -36,10 +32,6 @@ ServerSocket& ServerSocket::operator=(const ServerSocket& serverSocketType)
 
 ServerSocket::~ServerSocket()
 { }
-
-/* ************************************************************************** */
-/*                             Other Methods                                  */
-/* ************************************************************************** */
 
 bool ServerSocket::socket(int domain, int type, int protocol)
 {
@@ -102,4 +94,3 @@ SocketInfo 	ServerSocket::accept( void )
 	info.serverFd = _socketFd;
 	return (info);
 }
-

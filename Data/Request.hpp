@@ -35,17 +35,14 @@ class Request {
         t_location                          _location;
         std::string                         _root;
 
-        /*==== Request line ====*/
         HttpMethod                          _method;
         std::string							_pathname;
         std::string                         _query;
 
-        /*==== Request header ====*/
 
         std::map<std::string, std::string>	_headers;
         t_body_encode                       _body_encode;
         std::string                         _server_name;
-        /*==== Request Body ====*/
         t_body                              _body;
 
         std::string                         _fullpath;

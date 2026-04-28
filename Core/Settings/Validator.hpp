@@ -54,8 +54,6 @@ class Validator
     static bool isValidRedirectTarget(const std::string& target);
     static bool isValidCgiExtension(const std::string& ext);
     static bool isExecutable(const std::string& path);
-    // here
-
     static bool isInVect(int integer, std::vector<int> vect);
     static bool isValidChar(char c);
     
