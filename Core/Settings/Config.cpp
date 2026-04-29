@@ -185,6 +185,8 @@ void Config::parseServerBlock(std::string serverBlock, int j)
     {
         serverLine++;
         int                wordCount = countWords(line);
+        if (wordCount == 1)
+            throw ConfigException("invalid synthax-> '" + line + "'", serverLine, locationLine, "");
         std::istringstream iss_(line);
         std::string        word;
         std::string        currentKey;
