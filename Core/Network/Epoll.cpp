@@ -51,7 +51,7 @@ bool Epoll::epollCreate( void )
 
 	if (_epollFd < 0)
 	{
-		std::cerr << "Error: Epoll: Cannot create Epoll" << std::endl;
+		std::cout << "Error: Epoll: Cannot create Epoll" << std::endl;
 	}
 	return (true);
 }

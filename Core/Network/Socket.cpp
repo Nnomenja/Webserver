@@ -57,7 +57,7 @@ bool Socket::setsockopt(int level, int optname, unsigned int optlen)
 
     if (::setsockopt(_socketFd, level, optname, &opt, sizeof(opt)) < 0)
 	{
-        std::cerr << "Error: setsockopt failed" << std::endl;
+        std::cout << "Error: setsockopt failed" << std::endl;
         return (false);
     }
 	return (true);
@@ -81,7 +81,7 @@ bool Socket::inetPToN(int domain, const std::string& ipString, uint32_t& ipNum) 
 			|| num < 0
 			|| num > 255)
 		{
-			std::cerr << "Error: bad ip addr " << ipString << std::endl;
+			std::cout << "Error: bad ip addr " << ipString << std::endl;
 			return (false);
 		}
         parts.push_back(num);
@@ -107,7 +107,7 @@ bool Socket::setBlocking(bool set)
 	{
 		if (fcntl(_socketFd, F_SETFL, flags & ~O_NONBLOCK) == -1)
 		{
-	        std::cerr << "Error: Can't set flags blocking" << std::endl;
+	        std::cout << "Error: Can't set flags blocking" << std::endl;
 			return (false);
 		}
 	}
@@ -115,7 +115,7 @@ bool Socket::setBlocking(bool set)
 	{
 		if (fcntl(_socketFd, F_SETFL, flags | O_NONBLOCK) == -1)
 		{
-	        std::cerr << "Error: Can't set flags Non-blocking" << std::endl;
+	        std::cout << "Error: Can't set flags Non-blocking" << std::endl;
 			return (false);
 		}
 	}
