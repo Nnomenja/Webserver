@@ -168,7 +168,7 @@ void MetadataParser::parseCookies()
     for (size_t i = 0; i < cookieHeader.size(); i++)
     {
         c = cookieHeader[i];
-        if (!checkCookieKeyChar(c))
+        if (!checkCookieKeyChar(c) && c != ' ' && state != SEPARATOR)
             throw BadRequestException();
         if (c == '%')
         {
