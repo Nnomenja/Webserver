@@ -213,13 +213,22 @@ bool Validator::validatePath(const std::string path, std::string &err)
     {
         err = "path empty";
         return false;
-    }   
-    if (!isValidPath(path) || path[path.size() - 1] == '/')
+    }
+    if (path != "/")
     {
-        err = "path invalid (should be absolute path without trailing / )";
+        if (!isValidPath(path) || path[path.size() - 1] == '/')
+        {
+            err = "path invalid (should be absolute path without trailing / )";
+            return false;
+        }
+    }
+    if (isDirectory(path))
+        return true;
+    else
+    {
+        err = "path does not exist";
         return false;
     }
-    return isDirectory(path);
 }
 
 bool Validator::validateIndex(std::string index)

@@ -2,27 +2,27 @@
 server:
     port 2000
     host 0.0.0.0
-    root  /home/toloandr/SCHOOL/Webserver/www/uploadMultipartOneFile
+    root  /home/toloandr/Music/Apr29/ConfigFinal/www/uploadMultipartOneFile
     location:
         path /
         #root  
         methods POST
-        error_pages 404 /home/toloandr/SCHOOL/Webserver/www/error/404.html
-        error_pages 400 /home/toloandr/SCHOOL/Webserver/www/error/404.html
+        error_pages 404 /home/toloandr/Music/Apr29/ConfigFinal/www/error/404.html
+        error_pages 400 /home/toloandr/Music/Apr29/ConfigFinal/www/error/404.html
         # auto_index on
-        upload_store /home/toloandr/SCHOOL/Webserver/www/uploadMultipartOneFile/uploads
+        upload_store /home/toloandr/Music/Apr29/ConfigFinal/www/uploadMultipartOneFile/uploads
 #REDIRECTION
 server:
     port 2001
     host 0.0.0.0
-    root /home/toloandr/SCHOOL/Webserver/www/uploadMultipartOneFile
-    location:
-        path /
-        #root  
-        methods POST
-        error_pages 404 /home/toloandr/SCHOOL/Webserver/www/error/404.html
-        error_pages 400 /home/toloandr/SCHOOL/Webserver/www/error/404.html
-        index index.html
+    root /home/toloandr/Music/Apr29/ConfigFinal/www/uploadMultipartOneFile
+    # location:
+    #     path /
+    #     #root  
+    #     methods POST
+    #     error_pages 404 /home/toloandr/Music/Apr29/ConfigFinal/www/error/404.html
+    #     error_pages 400 /home/toloandr/Music/Apr29/ConfigFinal/www/error/404.html
+    #     index index.html
     location:
         path /redirection
         return 302 https://google.com
@@ -30,7 +30,7 @@ server:
 server:
     port 2003
     host 0.0.0.0
-    root /home/toloandr/SCHOOL/Webserver/www/uploadMultipartOneFile 
+    root /home/toloandr/Music/Apr29/ConfigFinal/www/uploadMultipartOneFile 
     location:
         path /
         #root
