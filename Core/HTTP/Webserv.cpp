@@ -67,10 +67,10 @@ bool Webserv::init()
     }
     catch(const Config::ConfigException& e)
     {
-        std::cerr << "Error: " << e.what() << std::endl;
-		std::cerr << "serverLine: " << e.getserverLine() << std::endl;
-		std::cerr << "locationLine: " << e.getlocationLine() << std::endl;
-		std::cerr << "info: " << e.getInfo() << std::endl;
+        std::cout << "Error: " << e.what() << std::endl;
+		std::cout << "serverLine: " << e.getserverLine() << std::endl;
+		std::cout << "locationLine: " << e.getlocationLine() << std::endl;
+		std::cout << "info: " << e.getInfo() << std::endl;
         return (false);
     }
 	if (!createServerSockets())

@@ -40,7 +40,7 @@ bool ServerSocket::socket(int domain, int type, int protocol)
 
     if (_socketFd < 0)
 	{
-		std::cerr << "Error: Cannot create socket" << std::endl;
+		std::cout << "Error: Cannot create socket" << std::endl;
         return (false);
 	}
 	return (true);
@@ -62,7 +62,7 @@ bool	ServerSocket::bind(const std::string& host, uint16_t port)
 	}
     if (::bind(_socketFd, reinterpret_cast<struct sockaddr*>(&_addr), sizeof(_addr)) < 0)
 	{
-        std::cerr << "Error: bind failed" << std::endl;
+        std::cout << "Error: bind failed" << std::endl;
         return (false);
     }
 	return (true);
@@ -72,7 +72,7 @@ bool ServerSocket::listen(int backlog)
 {
     if (::listen(_socketFd, backlog) < 0)
 	{
-        std::cerr << "Error: listen failed" << std::endl;
+        std::cout << "Error: listen failed" << std::endl;
         return (false);
     }
 	return (true);
@@ -90,7 +90,7 @@ SocketInfo 	ServerSocket::accept( void )
 		, &info.addrlen);
 
 	if (info.fd < 0)
-        std::cerr << "Error: accept failed" << std::endl;
+        std::cout << "Error: accept failed" << std::endl;
 	info.serverFd = _socketFd;
 	return (info);
 }

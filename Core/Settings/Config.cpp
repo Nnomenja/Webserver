@@ -29,6 +29,7 @@ Config::Config(const Config& other)
     this->configs = other.configs;
     this->serverBlockIdToLocationBlocks = other.serverBlockIdToLocationBlocks;
     this->serverLine = other.serverLine;
+    this->locationLine = other.locationLine;
 }
 
 Config::~Config() {}
@@ -43,6 +44,7 @@ Config& Config::operator=(const Config& other)
         this->configs = other.configs;
         this->serverBlockIdToLocationBlocks = other.serverBlockIdToLocationBlocks;
         this->serverLine = other.serverLine;
+        this->locationLine = other.locationLine;
     }
     return *this;
 }
