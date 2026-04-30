@@ -93,35 +93,6 @@ bool Socket::inetPToN(int domain, const std::string& ipString, uint32_t& ipNum) 
 	return (true);
 }
 
-bool Socket::setBlocking(bool set)
-{
-	if (_socketFd < 0)
-		return (false);
-
-    int flags = fcntl(_socketFd, F_GETFL, 0);
-
-	if (flags == -1)
-        return (false);
-
-	if (set)
-	{
-		if (fcntl(_socketFd, F_SETFL, flags & ~O_NONBLOCK) == -1)
-		{
-	        std::cout << "Error: Can't set flags blocking" << std::endl;
-			return (false);
-		}
-	}
-	else
-	{
-		if (fcntl(_socketFd, F_SETFL, flags | O_NONBLOCK) == -1)
-		{
-	        std::cout << "Error: Can't set flags Non-blocking" << std::endl;
-			return (false);
-		}
-	}
-    return (true);
-}
-
 void	Socket::close( void )
 {
 	if (_socketFd >= 0)

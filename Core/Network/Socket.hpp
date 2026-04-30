@@ -38,7 +38,6 @@ class Socket
 	    bool	setsockopt(int level, int optname, unsigned int optlen);
 		bool	inetPToN(int domain, const std::string& ipString
 		, uint32_t& ipNum) const;
-		bool	setBlocking(bool set);
 		void	close( void );
 
 	protected :
