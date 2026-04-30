@@ -45,6 +45,7 @@ typedef struct s_location
     std::map<int, std::string>   error_pages_map;
     std::string                 root;
     bool                        auto_index;
+    bool auto_index_set;
     std::vector<std::string>                index_vect;
     std::string index;
     std::string upload_store;

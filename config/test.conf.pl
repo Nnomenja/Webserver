@@ -2,14 +2,14 @@
 server:
     port 2000
     host 0.0.0.0
-    # root  /home/toloandr/Music/ConfigFinal/www/uploadMultipartOneFile
+    root  /home/toloandr/Music/ConfigFinal/www/uploadMultipartOneFile
     location:
         path /
         #root  
         methods POST
         error_pages 404 /home/toloandr/Music/ConfigFinal/www/error/404.html
         error_pages 400 /home/toloandr/Music/ConfigFinal/www/error/404.html
-        root  /home/toloandr/Music/ConfigFinal/www/uploadMultipartOneFile
+        # root  /home/toloandr/Music/ConfigFinal/www/uploadMultipartOneFile
         # auto_index on
         upload_store /home/toloandr/Music/ConfigFinal/www/uploadMultipartOneFile/uploads
 #REDIRECTION
