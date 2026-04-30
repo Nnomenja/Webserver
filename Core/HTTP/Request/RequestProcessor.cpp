@@ -52,7 +52,7 @@ LocationType RequestProcessor::detectStategyType(Client *client)
 	std::string root = client->getRequest()->getLocation().root;
 	if (root.empty())
 		root = client->getEndpoint().root;
-	if (!(req->getLocation().methods & req->getMethod()))
+	if ((!(req->getLocation().methods & req->getMethod())) && type != REDIRECTION)
 	{
 		throw MethodNotAllowed();
 	}

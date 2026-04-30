@@ -331,6 +331,7 @@ void Config::getLocationBlocks(int i)
         l.path          = "";
         l.root          = "";
         l.upload_store       = "";
+        l.auto_index_set = false;
         l.auto_index    = false;
         l.ret.code      = -1;
         l.ret.target    = "";
@@ -469,9 +470,16 @@ void Config::parseLocationBlock(std::string locationBlock, int i, int j)
                         throw ConfigException("auto_index should "
                                               "be on/ON or off/OFF", serverLine, locationLine, word);
                     if (word == "ON" || word == "on")
+                    {
                         configs[i].locations[j].auto_index = 1;
+                        configs[i].locations[j].auto_index_set = 1;
+                    }
+                        
                     if (word == "off" || word == "OFF")
+                    {
                         configs[i].locations[j].auto_index = 0;
+                        configs[i].locations[j].auto_index_set = 1;
+                    }
                     if (k != 1)
                         throw ConfigException(
                             "auto_index can have only one value", serverLine, locationLine, word);
@@ -544,7 +552,7 @@ void Config::checkLocationBlock(std::vector<t_location>& locations, int i, int j
             throw ConfigException("path field should be filled", serverLine, locationLine, "");
         if (locations[j].upload_store != "")
         {
-            if (locations[j].auto_index)
+            if (locations[j].auto_index_set)
             {
                 throw ConfigException("auto_index active in mode upload", serverLine, locationLine, "");
             }
@@ -555,7 +563,7 @@ void Config::checkLocationBlock(std::vector<t_location>& locations, int i, int j
             if (locations[j].CGI["status"] == "ON")
             {
                 throw ConfigException(
-                    "mode upload does not match with active CGI", serverLine, locationLine, "");
+                    "mode upload does not match with CGI active", serverLine, locationLine, "");
             }
             locations[j].type = UPLOAD;
             if (configs[i].root == "" && locations[j].root == "")
@@ -569,7 +577,6 @@ void Config::checkLocationBlock(std::vector<t_location>& locations, int i, int j
                 throw ConfigException("root field should be filled", serverLine, locationLine, "");
             return;
         }
-        
     }
     else
     {
@@ -579,6 +586,12 @@ void Config::checkLocationBlock(std::vector<t_location>& locations, int i, int j
             throw ConfigException("path field should be filled", serverLine, locationLine, "");
         if (locations[j].root != "")
             throw ConfigException("root field should not be filled", serverLine, locationLine, "");
+        if (locations[j].upload_store != "")
+            throw ConfigException("upload_store field should not be filled", serverLine, locationLine, "");
+        if (locations[j].auto_index_set)
+            throw ConfigException("auto_index should not be filled", serverLine, locationLine, "");
+        if (locations[j].CGI["status"] == "ON")
+            throw ConfigException("CGI should not be filled", serverLine, locationLine, "");
         locations[j].type = REDIRECTION;
         return;
     }
