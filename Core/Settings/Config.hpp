@@ -58,7 +58,6 @@ typedef struct s_location
 
 typedef struct UnitConf
 {
-    bool isRedir;
     std::string                 host;
     bool                        enable_virtual_hosting;
     std::string server_name;
@@ -119,7 +118,7 @@ public:
     void parseServerBlock(std::string serverBlock, int j);
     void getLocationBlocks(int i);
     void parseLocationBlock(std::string locationBlock, int i, int j);
-    void checkLocationBlock(std::vector<t_location> &locations, int j, bool *isRedir);
+    void checkLocationBlock(std::vector<t_location> &locations, int i, int j);
     void checkPaths(const std::vector<t_location>& locations);
     void checkPorts();
     void checkServerNames();
