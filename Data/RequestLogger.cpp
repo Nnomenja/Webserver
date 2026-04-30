@@ -116,7 +116,7 @@ void RequestLogger::log() const {
     if (!_status)
         return;
     if (!isComplete()) {
-        std::cerr << RED << "[LOGGER ERROR] Incomplete log data" << RESET << std::endl;
+        std::cout << RED << "[LOGGER ERROR] Incomplete log data" << RESET << std::endl;
         return;
     }
 

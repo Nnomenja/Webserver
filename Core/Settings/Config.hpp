@@ -45,6 +45,7 @@ typedef struct s_location
     std::map<int, std::string>   error_pages_map;
     std::string                 root;
     bool                        auto_index;
+    bool auto_index_set;
     std::vector<std::string>                index_vect;
     std::string index;
     std::string upload_store;
@@ -85,8 +86,8 @@ private:
     std::map<int, std::vector<std::string> > serverBlockIdToLocationBlocks;
     std::vector<UnitConf_t> configs;
     std::map<int, UnitConf_t>   _endpoints;
-    int serverParsed;
-    int locationParsed;
+    int serverLine;
+    int locationLine;
 
 public:
     Config();
@@ -100,14 +101,17 @@ public:
     {
       private:
         std::string message;
-        int serverParsed;
-        int locationParsed;
+        int serverLine;
+        int locationLine;
+        std::string info;
 
       public:
-        ConfigException(const std::string& msg, int serverParsed, int locationParsed);
+        ConfigException(const std::string& msg, int serverLine, int locationLine, std::string info);
         virtual const char* what() const throw();
-        virtual int getServerParsed() const throw();
-        virtual int getLocationParsed() const throw();
+        virtual int getserverLine() const throw();
+        virtual int getlocationLine() const throw();
+        virtual std::string getInfo() const throw();
+
         virtual ~ConfigException() throw();
     };
     std::string extractMainConfig(std::string serverBlock);
@@ -115,7 +119,7 @@ public:
     void parseServerBlock(std::string serverBlock, int j);
     void getLocationBlocks(int i);
     void parseLocationBlock(std::string locationBlock, int i, int j);
-    void checkLocationBlock(std::vector<t_location> &locations, int j);
+    void checkLocationBlock(std::vector<t_location> &locations, int i, int j);
     void checkPaths(const std::vector<t_location>& locations);
     void checkPorts();
     void checkServerNames();

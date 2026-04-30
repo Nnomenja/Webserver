@@ -52,7 +52,7 @@ LocationType RequestProcessor::detectStategyType(Client *client)
 	std::string root = client->getRequest()->getLocation().root;
 	if (root.empty())
 		root = client->getEndpoint().root;
-	if (!(req->getLocation().methods & req->getMethod()))
+	if ((!(req->getLocation().methods & req->getMethod())) && type != REDIRECTION)
 	{
 		throw MethodNotAllowed();
 	}
@@ -90,6 +90,17 @@ LocationType RequestProcessor::detectStategyType(Client *client)
 				return (STATIC);
 			client->setCGIbin(cgi_bin);
 		}
+	}
+	else if (type == UPLOAD)
+	{
+		fullpath = root + client->getRequest()->getPathname();
+		req->setFullPath(fullpath);
+		if (PathUtils::isDirectory(fullpath))
+			return (DIRECTORY);
+		else if (!PathUtils::isPathExist(fullpath))
+			throw NotFound();
+		if (req->getMethod() == GET)
+			return (STATIC);
 	}
 	return (type);
 }
