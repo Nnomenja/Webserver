@@ -7,7 +7,6 @@
 #include "../RequestParserState/HeaderParser.hpp"
 #include <cstdlib>
 #include <cstring>
-#include <cerrno>
 #include <unistd.h>
 #include <sys/wait.h>
 
@@ -31,12 +30,9 @@ void DynamicStrategy::process(Client *client, Epoll &epoll, Process &process)
         throw InternalServerError();
     }
     std::stringstream   ss;
-    std::stringstream   sy;
 
     char *script = const_cast<char *>(script_path.c_str());
     
-    sy << req->getFullPath();
-
     std::string method = std::string("REQUEST_METHOD=") + req->getMethodString();
     std::string server_name = std::string("SERVER_NAME=") + client->getRequest()->getServerName();
     std::string script_name = std::string("SCRIPT_NAME=") + script_path;
