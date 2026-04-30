@@ -121,11 +121,6 @@ bool Webserv::createServerSockets( void )
         if (!tmp->setsockopt(level, optname, optlen))
             return (false);	
 
-        bool blocking = false;
-
-        if (!tmp->setBlocking(blocking))
-            return (false);
-
         std::string& host = configs[i].host;
         uint16_t port = configs[i].port;
 
@@ -256,6 +251,11 @@ void Webserv::run(void)
 						}
 						else
 						{
+							if (_clients.find(currentFd) == _clients.end())
+							{
+								std::cout << RED << currentFd << RESET << std::endl;
+								continue;
+							}
 							 client = _clients[currentFd];
 							if (!readtHttpRequest(client))
 								continue;
