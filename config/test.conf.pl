@@ -2,26 +2,27 @@
 server:
     port 2000
     host 0.0.0.0
-    root  /home/toloandr/Music/Apr29/ConfigFinal/www/uploadMultipartOneFile
+    # root  /home/toloandr/Music/ConfigFinal/www/uploadMultipartOneFile
     location:
         path /
         #root  
         methods POST
-        error_pages 404 /home/toloandr/Music/Apr29/ConfigFinal/www/error/404.html
-        error_pages 400 /home/toloandr/Music/Apr29/ConfigFinal/www/error/404.html
+        error_pages 404 /home/toloandr/Music/ConfigFinal/www/error/404.html
+        error_pages 400 /home/toloandr/Music/ConfigFinal/www/error/404.html
+        root  /home/toloandr/Music/ConfigFinal/www/uploadMultipartOneFile
         # auto_index on
-        upload_store /home/toloandr/Music/Apr29/ConfigFinal/www/uploadMultipartOneFile/uploads
+        upload_store /home/toloandr/Music/ConfigFinal/www/uploadMultipartOneFile/uploads
 #REDIRECTION
 server:
     port 2001
     host 0.0.0.0
-    root /home/toloandr/Music/Apr29/ConfigFinal/www/uploadMultipartOneFile
+    # root /home/toloandr/Music/ConfigFinal/www/uploadMultipartOneFile
     # location:
     #     path /
     #     #root  
     #     methods POST
-    #     error_pages 404 /home/toloandr/Music/Apr29/ConfigFinal/www/error/404.html
-    #     error_pages 400 /home/toloandr/Music/Apr29/ConfigFinal/www/error/404.html
+    #     error_pages 404 /home/toloandr/Music/ConfigFinal/www/error/404.html
+    #     error_pages 400 /home/toloandr/Music/ConfigFinal/www/error/404.html
     #     index index.html
     location:
         path /redirection
@@ -30,10 +31,10 @@ server:
 server:
     port 2003
     host 0.0.0.0
-    root /home/toloandr/Music/Apr29/ConfigFinal/www/uploadMultipartOneFile 
+    # root /home/toloandr/Music/ConfigFinal/www/uploadMultipartOneFile 
     location:
         path /
-        #root
+        root /home/toloandr/Music/ConfigFinal/www/uploadMultipartOneFile 
         methods GET POST
         error_pages 404 /error/404.html
         error_pages 400 /error/400.html
