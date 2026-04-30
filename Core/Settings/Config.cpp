@@ -119,7 +119,6 @@ void Config::parseFileContent()
     for (int j = 0; j < n; j++)
     {
         UnitConf_t u;
-        u.isRedir = false;
         u.host                   = "-";
         u.port                   = -1;
         u.enable_virtual_hosting = false;
@@ -143,8 +142,6 @@ void Config::parseFileContent()
             throw ConfigException("host field should be filled", serverLine, locationLine, "");
         if (configs[j].port == -1)
             throw ConfigException("port field should be filled", serverLine, locationLine, "");
-        if (configs[j].root == "" && !configs[j].isRedir)
-            throw ConfigException("root field should be filled", serverLine, locationLine, "");
         // here
     }
 
@@ -343,7 +340,7 @@ void Config::getLocationBlocks(int i)
     }
     for (int j = 0; j < m; j++)
     {
-        checkLocationBlock(configs[i].locations, j, &configs[i].isRedir);
+        checkLocationBlock(configs[i].locations, i, j);
         checkPaths(configs[i].locations);
     }
 }
@@ -537,7 +534,7 @@ void Config::parseLocationBlock(std::string locationBlock, int i, int j)
         throw ConfigException("duplicate keys -> 'return'", serverLine, locationLine, line);
 }
 
-void Config::checkLocationBlock(std::vector<t_location>& locations, int j, bool *isRedir)
+void Config::checkLocationBlock(std::vector<t_location>& locations, int i, int j)
 {
     if (locations[j].ret.code == -1)
     {
@@ -547,11 +544,6 @@ void Config::checkLocationBlock(std::vector<t_location>& locations, int j, bool 
             throw ConfigException("path field should be filled", serverLine, locationLine, "");
         if (locations[j].upload_store != "")
         {
-            if (locations[j].methods != POST)
-            {
-                throw ConfigException(
-                    "uploads should be made via POST requests only", serverLine, locationLine, "");
-            }
             if (locations[j].auto_index)
             {
                 throw ConfigException("auto_index active in mode upload", serverLine, locationLine, "");
@@ -566,13 +558,18 @@ void Config::checkLocationBlock(std::vector<t_location>& locations, int j, bool 
                     "mode upload does not match with active CGI", serverLine, locationLine, "");
             }
             locations[j].type = UPLOAD;
+            if (configs[i].root == "" && locations[j].root == "")
+                throw ConfigException("root field should be filled", serverLine, locationLine, "");
             return;
         }
         if (locations[j].CGI["status"] == "ON")
         {
             locations[j].type = DYNAMIC;
+            if (configs[i].root == "" && locations[j].root == "")
+                throw ConfigException("root field should be filled", serverLine, locationLine, "");
             return;
         }
+        
     }
     else
     {
@@ -583,10 +580,11 @@ void Config::checkLocationBlock(std::vector<t_location>& locations, int j, bool 
         if (locations[j].root != "")
             throw ConfigException("root field should not be filled", serverLine, locationLine, "");
         locations[j].type = REDIRECTION;
-        *isRedir = true;
         return;
     }
     locations[j].type = STATIC;
+    if (configs[i].root == "" && locations[j].root == "")
+        throw ConfigException("root field should be filled", serverLine, locationLine, "");
 }
 
 void Config::checkPaths(const std::vector<t_location>& locations)
