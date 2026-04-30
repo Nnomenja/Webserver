@@ -3,7 +3,8 @@
 import os
 import sys
 
-print("Content-Type: text/html\n")
+print("Content-Type: text/html\r")
+print("\r")
 
 method = os.environ.get("REQUEST_METHOD", "")
 
