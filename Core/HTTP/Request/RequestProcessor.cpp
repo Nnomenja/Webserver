@@ -91,6 +91,17 @@ LocationType RequestProcessor::detectStategyType(Client *client)
 			client->setCGIbin(cgi_bin);
 		}
 	}
+	else if (type == UPLOAD)
+	{
+		fullpath = root + client->getRequest()->getPathname();
+		req->setFullPath(fullpath);
+		if (PathUtils::isDirectory(fullpath))
+			return (DIRECTORY);
+		else if (!PathUtils::isPathExist(fullpath))
+			throw NotFound();
+		if (req->getMethod() == GET)
+			return (STATIC);
+	}
 	return (type);
 }
 

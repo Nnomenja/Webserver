@@ -13,6 +13,7 @@
 #include "../../../../Exception/UnsupportedMediaType.hpp"
 #include "../../../../Exception/InternalServerError.hpp"
 #include "../../../../Core/HTTP/Webserv.hpp"
+#include <cstdio> 
 
 UploadStrategy::UploadStrategy()
 { }
@@ -25,17 +26,16 @@ void UploadStrategy::process(Client *client, Epoll &epoll, Process &process)
 {
     Request     *request = client->getRequest();
 
-    if (request->getMethod() != POST 
-        && request->getMethod() != GET
-        && request->getMethod() != DELETE
-    )
+    if (request->getMethod() == DELETE)
     {
-        throw MethodNotAllowed();
+        std::string fullpath = request->getRootDir() + request->getPathname();
+        if (remove(fullpath.c_str()) != 0)
+        {
+            throw InternalServerError();
+        }
+        client->getResponse()->setStatusCode(204);
+        return;
     }
-
-    (void)epoll;
-    (void)process;
-
     BodyType bodyType = bodyTypeDetection(request);
 
     _uploadStore = client->getRequest()->getLocation().upload_store;
@@ -47,6 +47,8 @@ void UploadStrategy::process(Client *client, Epoll &epoll, Process &process)
         default:
             throw UnsupportedMediaType();
     }
+    (void)epoll;
+    (void)process;
 }
 
 BodyType UploadStrategy::bodyTypeDetection(Request* request)
