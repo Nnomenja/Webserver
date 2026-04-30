@@ -48,10 +48,10 @@ Webserv::Webserv(const std::string& fileConfigName)
 
 void Webserv::removeClientHttp(int fd)
 {
-	::close(fd);
 	delete  _clients[fd];
 	_clients.erase(fd);
 	_epoll.unregister(fd);
+	::close(fd);
 }
 
 bool Webserv::init()
