@@ -87,6 +87,7 @@ void Config::parseFileContent()
     while (std::getline(iss, line))
     {
         skipLeadingSpaces(line);
+        removeTrailingSpaces(line);
         if (line.size() != 0)
         {
             if (line.at(0) == '#')

@@ -9,6 +9,15 @@ void skipLeadingSpaces(std::string& str)
     str.erase(0, i);
 }
 
+void removeTrailingSpaces(std::string &str)
+{
+    std::string::size_type end = str.find_last_not_of(" \t\n\r\f\v");
+    if (end == std::string::npos)
+        str.clear();
+    else
+        str.erase(end + 1);
+}
+
 int countWords(const std::string& str)
 {
     std::istringstream iss(str);
