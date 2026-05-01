@@ -217,7 +217,7 @@ curl http://localhost:8080
 
 # AI Usage
 
-* Quick implementation of validators in Validator.cpp, and Complete implementation on RequestLogger.cpp
+* Quick implementation of helper fucntions
 * Analysing valgrind leaks and fixing them
 * Debugging assistance
 * Concept explanations
