@@ -18,12 +18,10 @@ void    BodyParser::readBodyThroughContentLength()
     if (body._bytes_read <= BODY_BUFFER_SIZE_MAX)
     {
         tmp = _target->getBuffer().substr(_target->getParserIndex(), BODY_BUFFER_SIZE_MAX - body._bytes_read);
-        _target->setBody(tmp);
-        tmp = _target->getBuffer().substr(tmp.size());
-        _target->setBuffer(tmp);
-
+                _target->setBody(tmp);
+        std::string new_body = _target->getBuffer().substr(_target->getParserIndex() + BODY_BUFFER_SIZE_MAX);
+        _target->setBuffer(new_body);
     }
-
     if (!_target->getBuffer().empty())
     {
         if (!body._file_buffer.is_open())

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Webserv | HTTP/1.1 Engine</title>
+    <meta
+      name="description"
+      content="Webserv est un serveur HTTP/1.1 moderne, rapide et leger, concu from scratch par une equipe de developpeurs passionnes."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./assets/styles.css" />
+  </head>
+  <body>
+    <div class="ambient ambient--one" aria-hidden="true"></div>
+    <div class="ambient ambient--two" aria-hidden="true"></div>
+    <div class="ambient ambient--three" aria-hidden="true"></div>
+    <div class="grid-overlay" aria-hidden="true"></div>
+    <div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
+
+    <header class="site-header">
+      <nav class="navbar glass" aria-label="Navigation principale">
+        <a class="logo" href="#home">
+          <span class="logo__dot"></span>
+          <span>Webserv</span>
+        </a>
+        <button class="menu-toggle" id="menuToggle" aria-expanded="false" aria-controls="navLinks">
+          Menu
+        </button>
+        <div class="nav-links" id="navLinks">
+          <a href="#home">Home</a>
+          <a href="#features">Features</a>
+          <a href="#docs">Docs</a>
+          <a href="https://github.com" target="_blank" rel="noopener noreferrer">GitHub</a>
+          <a href="#contact">Contact</a>
+        </div>
+      </nav>
+    </header>
+
+    <main id="home">
+      <section class="hero section reveal">
+        <div class="hero__content">
+          <p class="eyebrow">HTTP/1.1 Custom Engine</p>
+          <h1>Fast. Lightweight. Built from Scratch.</h1>
+          <p class="hero__subtitle">
+            Un serveur HTTP/1.1 concu bas niveau pour la performance, la fiabilite et la clarte d'architecture.
+          </p>
+          <div class="hero__actions">
+            <a class="btn btn--primary" href="#docs">Voir la documentation</a>
+            <a class="btn btn--ghost" href="https://github.com" target="_blank" rel="noopener noreferrer">Explorer GitHub</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="config-section section reveal" id="docs">
+        <div class="config-panel glass">
+          <p class="eyebrow">Server Configuration</p>
+          <h3>Configure Serveur</h3>
+          <form class="config-form" id="serverConfigForm">
+            <div class="config-field">
+              <label for="serverHost">Host / IP Address</label>
+              <input type="text" id="serverHost" name="host" value="localhost" placeholder="localhost ou 127.0.0.1" />
+            </div>
+            <div class="config-field">
+              <label for="serverPort">Port</label>
+              <input type="number" id="serverPort" name="port" value="8080" min="1" max="65535" />
+            </div>
+            <button type="button" class="btn btn--primary" onclick="saveServerConfig()">Enregistrer Configuration</button>
+            <span class="config-status" id="configStatus"></span>
+          </form>
+        </div>
+      </section>
+
+      <section class="terminal section reveal">
+        <div class="terminal-window glass">
+          <div class="terminal-window__top">
+            <div class="controls" aria-hidden="true">
+              <span class="control control--red"></span>
+              <span class="control control--yellow"></span>
+              <span class="control control--green"></span>
+            </div>
+            <p>webserv@runtime:~</p>
+          </div>
+          <pre class="terminal-window__body" id="typedTerminal"></pre>
+        </div>
+      </section>
+
+      <section class="features section" id="features">
+        <div class="section-head reveal">
+          <p class="eyebrow">Core Features</p>
+          <h2>Une architecture orientee performance</h2>
+        </div>
+        <div class="feature-grid">
+          <article class="feature-card glass reveal">
+            <span class="feature-card__icon">01</span>
+            <h3>Lightweight Architecture</h3>
+            <p>Structure modulaire C++ qui minimise la complexite et accelere le debug.</p>
+          </article>
+          <article class="feature-card glass reveal">
+            <span class="feature-card__icon">02</span>
+            <h3>HTTP/1.1 Support</h3>
+            <p>Gestion robuste des requetes, parsing strict et pipeline de reponse propre.</p>
+          </article>
+          <article class="feature-card glass reveal">
+            <span class="feature-card__icon">03</span>
+            <h3>High Performance</h3>
+            <p>Boucle event-driven, multiplexing epoll et latence controlee sous charge.</p>
+          </article>
+          <article class="feature-card glass reveal">
+            <span class="feature-card__icon">04</span>
+            <h3>Keep-Alive Connections</h3>
+            <p>Optimisation des connexions persistantes pour un throughput plus stable.</p>
+          </article>
+          <article class="feature-card glass reveal">
+            <span class="feature-card__icon">05</span>
+            <h3>Fast Request Parsing</h3>
+            <p>State machine dediee pour analyser les requetes rapidement et proprement.</p>
+          </article>
+          <article class="feature-card glass reveal">
+            <span class="feature-card__icon">06</span>
+            <h3>Secure Design</h3>
+            <p>Validation de configuration, gestion d'erreurs et surfaces d'attaque reduites.</p>
+          </article>
+          <article class="feature-card glass reveal">
+            <span class="feature-card__icon">07</span>
+            <h3>Multithreading Ready</h3>
+            <p>Fondations propres pour evoluer vers des modeles de concurrence avances.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="stats section reveal" aria-label="Statistiques techniques">
+        <div class="stat-card glass">
+          <p class="stat-card__value" data-target="42000">0</p>
+          <p class="stat-card__label">Requests / sec</p>
+        </div>
+        <div class="stat-card glass">
+          <p class="stat-card__value" data-target="7">0</p>
+          <p class="stat-card__label">Latency ms</p>
+        </div>
+        <div class="stat-card glass">
+          <p class="stat-card__value" data-target="99.99">0</p>
+          <p class="stat-card__label">Uptime %</p>
+        </div>
+        <div class="stat-card glass">
+          <p class="stat-card__value" data-target="62">0</p>
+          <p class="stat-card__label">Memory MB</p>
+        </div>
+      </section>
+
+      <section class="about section reveal" id="contact">
+        <p class="eyebrow">About The Team</p>
+        <h2>Un projet d'ingenierie backend ambitieux</h2>
+        <p>
+          Webserv est developpe par une petite equipe passionnee par le reseau bas niveau, l'architecture logicielle
+          propre et l'apprentissage par la construction de systemes reels.
+        </p>
+      </section>
+
+      <section class="cta section reveal">
+        <div class="cta-card glass">
+          <h2>Ready to build with Webserv?</h2>
+          <p>Explore la stack, lis les details techniques et contribue au coeur du serveur.</p>
+          <div class="hero__actions">
+            <a class="btn btn--primary" href="#docs">View Documentation</a>
+            <a class="btn btn--ghost" href="https://github.com" target="_blank" rel="noopener noreferrer">Start Building</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>© 2026 Webserv Team</p>
+      <div class="footer-links">
+        <a href="https://github.com" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a href="#docs">Docs</a>
+        <a href="#contact">Team</a>
+      </div>
+    </footer>
+
+    <script src="./assets/script.js"></script>
+  </body>
+</html>
