@@ -552,10 +552,6 @@ void Config::checkLocationBlock(std::vector<t_location>& locations, int i, int j
             throw ConfigException("path field should be filled", serverLine, locationLine, "");
         if (locations[j].upload_store != "")
         {
-            if (locations[j].auto_index_set)
-            {
-                throw ConfigException("auto_index active in mode upload", serverLine, locationLine, "");
-            }
             if (locations[j].index_vect.size() != 0)
             {
                 throw ConfigException("mode upload does not have index files", serverLine, locationLine, "");

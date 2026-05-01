@@ -99,7 +99,11 @@ void DynamicStrategy::process(Client *client, Epoll &epoll, Process &process)
         close(pipeIn[0]);
         close(pipeOut[1]);
         if (client->getRequest()->getBody()._str_buffer.size())
-            write(pipeIn[1], client->getRequest()->getBody()._str_buffer.c_str(),  client->getRequest()->getBody()._str_buffer.size());
+        {
+            int status = write(pipeIn[1], client->getRequest()->getBody()._str_buffer.c_str(),  client->getRequest()->getBody()._str_buffer.size());
+            if (status <= 0)
+                throw InternalServerError();
+        }
         if (client->getRequest()->getBody()._file_buffer.is_open())
         {
             client->getRequest()->getBody()._file_buffer.seekg(0, std::ios::beg);
@@ -112,8 +116,8 @@ void DynamicStrategy::process(Client *client, Epoll &epoll, Process &process)
 
                 if (n <= 0)
                     break;
-
-                write(pipeIn[1], buffer, n);
+                if (write(pipeIn[1], buffer, n) <= 0)
+                    throw InternalServerError();
             }
         }
         close(pipeIn[1]);

@@ -8,8 +8,14 @@
 
 void DirectoryStrategy::process(Client *client, Epoll &epoll, Process &process)
 {
-    DIR*                    dir;
+    
+    
     Request                 *req;
+    req = client->getRequest();
+    if (!req->getLocation().auto_index)
+        throw Forbiden();
+
+    DIR*                    dir;
     std::string             root_dir;
     struct dirent*          entry;
     std::vector<t_dirEntry> data;
@@ -17,7 +23,7 @@ void DirectoryStrategy::process(Client *client, Epoll &epoll, Process &process)
     std::string             element;
     std::string             tmp_path;
 
-    req = client->getRequest();
+    
     dir = opendir(req->getFullPath().c_str());
     root_dir =  req->getRootDir() + req->getLocation().path;
     if (dir == NULL)
