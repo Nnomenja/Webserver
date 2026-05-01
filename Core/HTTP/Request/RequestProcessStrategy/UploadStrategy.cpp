@@ -25,7 +25,7 @@ UploadStrategy::~UploadStrategy()
 void UploadStrategy::process(Client *client, Epoll &epoll, Process &process)
 {
     Request     *request = client->getRequest();
-
+    
     if (request->getMethod() == DELETE)
     {
         std::string fullpath = request->getRootDir() + request->getPathname();

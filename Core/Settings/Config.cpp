@@ -123,7 +123,7 @@ void Config::parseFileContent()
         u.port                   = -1;
         u.enable_virtual_hosting = false;
         u.root                   = "";
-        u.max_body_size          = 52428800;
+        u.max_body_size          = 281552456;
         u.server_name            = "";
         // here
         configs.push_back(u);
@@ -249,7 +249,7 @@ void Config::parseServerBlock(std::string serverBlock, int j)
                 {
                     if (!Validator::validateMaxBodySize(word))
                         throw ConfigException(
-                            "max_body_size should be less than 52428800", serverLine, locationLine, word);
+                            "max_body_size should be less than MAX_BODY_SIZE_LIMITS", serverLine, locationLine, word);
                     configs[j].max_body_size = std::atoi(word.c_str());
                     if (i != 1)
                         throw ConfigException(

@@ -1,6 +1,7 @@
 #include "./BodyParser.hpp"
 #include "../../../../Exception/BadRequestException.hpp"
 #include "../../../../Exception/PayloadTooLarge.hpp"
+#include "../../../../Exception/InternalServerError.hpp"
 
 BodyParser::BodyParser(Request *target, UnitConf_t endpoint):ARequestParserState(BODY, target, endpoint) ,_end(false), _chunkState(CHUNK_SIZE), _chunkBytesRemaining(0), _chunkCR(false){
 	_tmp = _target->getContentLength();
@@ -10,29 +11,46 @@ BodyParser::~BodyParser(){
 
 void    BodyParser::readBodyThroughContentLength()
 {
-    char c;
-    
-    for (size_t i = _target->getParserIndex(); i < _target->getBufferSize(); i++)
+    std::string tmp;
+
+    t_body &body = _target->getBody();
+
+    if (body._bytes_read <= BODY_BUFFER_SIZE_MAX)
     {
-        c = _target->getBuffer()[i];
-        _target->addBody(c, false);
-        _target->incrementParserIndex();
-        _tmp--;
-        if (_tmp == 0)
-        {
-            _end = true;
-			return;
-        }        
+        tmp = _target->getBuffer().substr(_target->getParserIndex(), BODY_BUFFER_SIZE_MAX - body._bytes_read);
+        _target->setBody(tmp);
+        tmp = _target->getBuffer().substr(tmp.size());
+        _target->setBuffer(tmp);
+
     }
 
-    _target->resetParserIndex();
-	throw EagainParser();
+    if (!_target->getBuffer().empty())
+    {
+        if (!body._file_buffer.is_open())
+		{
+			std::stringstream tmpFilePath;
+			tmpFilePath << "./.tmp/body_tmp_" << time(NULL);
+			body._file_buffer.open(tmpFilePath.str().c_str(), std::ios::out | std::ios::in | std::ios::trunc | std::ios::binary | std::ios::ate);
+            if (!body._file_buffer.is_open())
+                throw InternalServerError();
+        }
+        body._file_buffer.write(_target->getBuffer().c_str(), _target->getBufferSize());
+        body._bytes_read += _target->getBuffer().size();
+    }
+ 
+    if (_target->getBody()._bytes_read <_tmp)
+    {
+        _target->resetParserIndex();
+        throw EagainParser();
+    }
+
+    _end = true;
 }
 
 long	BodyParser::parseChunkSize(const std::string &line) const
 {
     std::string	metadata;
-    long		chunkSize;
+    size_t		chunkSize;
     size_t		separator;
     int		digit;
 
@@ -51,7 +69,7 @@ long	BodyParser::parseChunkSize(const std::string &line) const
             digit = metadata[i] - 'A' + 10;
         else
             throw BadRequestException();
-        if (chunkSize > (LONG_MAX - digit) / 16)
+        if (chunkSize > (ULLONG_MAX - digit) / 16)
             throw BadRequestException();
         chunkSize = (chunkSize * 16) + digit;
     }
