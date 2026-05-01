@@ -20,7 +20,7 @@
 
 #define REQUEST_HEADER_TIMEOUT_MS 100000
 #define REQUEST_BODY_TIMEOUT_MS 200000
-#define MAXREADBYTES 1024
+#define MAXREADBYTES 10000
 #define CGI_MAX_OUTPUT_BYTES 409600
 #define CGI_TIMEOUT 50000
 
@@ -28,6 +28,9 @@
 #define RESET "\033[0m"
 #define RED   "\033[31m"
 #define YELLOW "\033[33m"
+
+extern volatile sig_atomic_t stop;
+
 typedef struct  s_child_process
 {
     int     fd_client;
@@ -52,11 +55,6 @@ class Webserv
         
         bool            createServerSockets( void );
         ServerSocket*   getServerSocket(int fd) const;
-
-        /**
-         * @brief Reads stream data from the client and passes it to `HttpRequestParser`.
-         * @return `true` if the request is complete and no errors occur (e.g., parsing or blocking); otherwise `false`.
-        */
         bool            readtHttpRequest(Client* client);
         void            sendHttpResponse(Client* client);
         void            removeClientHttp(int fd);

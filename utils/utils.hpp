@@ -1,33 +1,7 @@
 #ifndef UTILS_HPP
 # define UTILS_HPP
 
-#include <string>
-#include <iostream>
-#include <fstream>
 
-#include <dirent.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <sstream>
-
-#include <cctype>
-#include <ctime>
-#include <stdint.h>
-#include <cstdlib>
-
-#include <sys/stat.h>
-#include <unistd.h>
-
-#include <exception>
-
-std::string getListDirectory(const std::string &host, int port, const std::string &path);
-std::string getFileContent(std::string fileName);
-
-bool isPositiveInt(const std::string &s);
-bool isIpV4(const std::string &s);
-
-bool validDirectory(const std::string& path, std::string& errorMsg);
-bool validFile(const std::string& path, std::string& errorMsg);
 
 /**
  * @brief Retrieves the current monotonic time in milliseconds.

@@ -4,6 +4,7 @@
 #include <iostream>
 #include <unistd.h>
 #include "../HTTP/Webserv.hpp"
+#include "../../Exception/InternalServerError.hpp"
 #include <sys/socket.h>
 
 Epoll::Epoll( )
@@ -121,7 +122,8 @@ std::string Epoll::read(const int fd, bool *end)
 
 void Epoll::send(const int fd,const std::string &buff,const size_t lenght)
 {
-	::send(fd, buff.c_str(), lenght, MSG_DONTWAIT);
+	if (::send(fd, buff.c_str(), lenght, MSG_DONTWAIT) <= 0)
+		throw InternalServerError();
 }
 
 void Epoll::remove(int fd)

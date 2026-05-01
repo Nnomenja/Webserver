@@ -87,6 +87,7 @@ void Config::parseFileContent()
     while (std::getline(iss, line))
     {
         skipLeadingSpaces(line);
+        removeTrailingSpaces(line);
         if (line.size() != 0)
         {
             if (line.at(0) == '#')
@@ -123,7 +124,7 @@ void Config::parseFileContent()
         u.port                   = -1;
         u.enable_virtual_hosting = false;
         u.root                   = "";
-        u.max_body_size          = 52428800;
+        u.max_body_size          = 281552456;
         u.server_name            = "";
         // here
         configs.push_back(u);
@@ -249,7 +250,7 @@ void Config::parseServerBlock(std::string serverBlock, int j)
                 {
                     if (!Validator::validateMaxBodySize(word))
                         throw ConfigException(
-                            "max_body_size should be less than 52428800", serverLine, locationLine, word);
+                            "max_body_size should be less than MAX_BODY_SIZE_LIMITS", serverLine, locationLine, word);
                     configs[j].max_body_size = std::atoi(word.c_str());
                     if (i != 1)
                         throw ConfigException(
@@ -552,10 +553,6 @@ void Config::checkLocationBlock(std::vector<t_location>& locations, int i, int j
             throw ConfigException("path field should be filled", serverLine, locationLine, "");
         if (locations[j].upload_store != "")
         {
-            if (locations[j].auto_index_set)
-            {
-                throw ConfigException("auto_index active in mode upload", serverLine, locationLine, "");
-            }
             if (locations[j].index_vect.size() != 0)
             {
                 throw ConfigException("mode upload does not have index files", serverLine, locationLine, "");
