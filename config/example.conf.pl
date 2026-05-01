@@ -9,6 +9,18 @@ server:
         methods GET POST
         error_pages 404 /error/404.html
         error_pages 400 /error/400.html
+        index index.html
+#DIRECTORY LISTING
+server:
+    port 2000
+    host 0.0.0.0
+    #root  
+    location:
+        path /
+        #root  
+        methods GET POST
+        error_pages 404 /error/404.html
+        error_pages 400 /error/400.html
         auto_index on
 #REDIRECTION
 server:
@@ -30,3 +42,17 @@ server:
         error_pages 400 /error/400.html
         CGI .php /usr/bin/php-cgi
         index index.php
+#UPLOAD
+server:
+    port 2004
+    host 0.0.0.0
+    # root  
+    max_body_size 1000
+    location:         
+        path /  
+        methods GET POST
+        error_pages 404 /error/404.html
+        error_pages 400 /error/400.html
+        # root
+        auto_index on
+        upload_store /uploads
