@@ -3,7 +3,7 @@ server:
     port 2000
     host 0.0.0.0
     root  /home/toloandr/Music/test/www/uploadMultipartOneFile
-    location:
+    location:         
         path /
         #root  
         methods GET POST
@@ -13,7 +13,7 @@ server:
         auto_index on
         upload_store /home/toloandr/Music/test/www/uploadMultipartOneFile/uploads
 #REDIRECTION
-server:
+server:    
     port 2001
     host 0.0.0.0
     # root /home/toloandr/Music/test/www/uploadMultipartOneFile
