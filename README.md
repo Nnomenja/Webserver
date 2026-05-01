@@ -217,7 +217,7 @@ curl http://localhost:8080
 
 # AI Usage
 
-* Quick implementation of helper fucntions
+* Quick implementation of helper functions
 * Analysing valgrind leaks and fixing them
 * Debugging assistance
 * Concept explanations
