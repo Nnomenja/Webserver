@@ -141,6 +141,10 @@ const std::string &Request::getServerName() const
 
 void Request::incrementParserIndex()
 {
+	if (stop)
+	{
+		throw std::exception();
+	}
 	_index++;
 }
 void Request::resetParserIndex()
@@ -191,9 +195,10 @@ void Request::addQuery(char c)
 	_query.push_back(c);
 }
 
-void Request::setBody(std::string value)
+void Request::setBody(std::string &value)
 {
-	_body._str_buffer = value;
+	_body._str_buffer += value;
+	_body._bytes_read += value.size();
 }
 
 std::string &Request::toLowerCase(std::string &src) const

@@ -21,8 +21,8 @@ typedef struct s_body
 {
     std::string    _str_buffer;
     std::fstream   _file_buffer;
-    int            _content_length;
-    int            _bytes_read;
+    size_t            _content_length;
+    size_t            _bytes_read;
 }   t_body;
 
 class ARequestParserState;
@@ -87,7 +87,7 @@ class Request {
         void                    setRoot(std::string value);
         void                    setServerName(std::string value);
         void                    addPathname(char c);
-        void                    setBody(std::string value);
+        void                    setBody(std::string &value);
         void                    addQuery(char c);
 		void					incrementParserIndex();
 		void					resetParserIndex();

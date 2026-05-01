@@ -16,7 +16,7 @@ typedef enum e_chunk_parser_state
 } t_chunk_parser_state;
 class BodyParser: public ARequestParserState {
 	private:
-		long					_tmp;
+		size_t					_tmp;
 		bool					_end;
 		t_chunk_parser_state	_chunkState;
 		std::string				_chunkSizeLine;
