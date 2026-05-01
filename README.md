@@ -217,15 +217,14 @@ curl http://localhost:8080
 
 # AI Usage
 
-> This section will be completed later.
-
-Examples of possible AI-assisted tasks:
-
+* Quick implementation of validators in Validator.cpp, and Complete implementation on RequestLogger.cpp
+* Analysing valgrind leaks and fixing them
 * Debugging assistance
 * Concept explanations
 * Code review suggestions
 * Architecture discussions
 * Documentation writing help
+
 
 ---
 
