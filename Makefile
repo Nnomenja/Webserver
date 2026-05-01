@@ -11,11 +11,7 @@ EXCEPTION_DIR = Exception
 REQUEST_TMP_DIR = .tmp
 
 UTILS_SRCS = $(addprefix $(UTILS_DIR)/, \
-			getFileContent.cpp \
-			number_utils.cpp \
 			time.cpp \
-			getListDirectory.cpp \
-			path_utils.cpp \
 			PathUtils.cpp \
 			Encoding.cpp \
 		)
