@@ -51,7 +51,7 @@ void    trimWhiteSpace(std::string  &s)
 long MetadataParser::parseContentLength(const std::string& value)
 {
 	std::string tmp;
-    long        res;
+    size_t       res;
     char*		endptr;
 
     tmp = value;

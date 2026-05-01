@@ -62,4 +62,5 @@ void DirectoryStrategy::process(Client *client, Epoll &epoll, Process &process)
     (void)client;
     (void)epoll;
     (void)process;
+    closedir(dir);
 }

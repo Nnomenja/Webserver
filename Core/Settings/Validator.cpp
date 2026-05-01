@@ -1,4 +1,5 @@
 #include "Validator.hpp"
+#include "Config.hpp"
 #include <unistd.h>
 
 Validator::Validator() {}
@@ -275,7 +276,7 @@ bool Validator::validateMaxBodySize(std::string maxBodySize)
     if (!isPositiveInt(maxBodySize))
         return (0);
     double value = std::strtod(maxBodySize.c_str(), NULL);
-    if (value > 52428800 + 1)
+    if (value > MAX_BODY_SIZE_LIMITS + 1)
         return (0);
     return (1);
 }

@@ -14,6 +14,7 @@
 #include <map>
 
 
+#define MAX_BODY_SIZE_LIMITS 1073741200
 
 enum HttpMethod
 {
@@ -68,7 +69,7 @@ typedef struct UnitConf
     std::vector<std::string>    method_arr;
     int methods;
 
-    int                        max_body_size;
+    size_t                       max_body_size;
     std::vector<t_error_page>   error_pages;
     std::map<int, std::string>   error_pages_map;
 

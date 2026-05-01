@@ -95,12 +95,14 @@ LocationType RequestProcessor::detectStategyType(Client *client)
 	{
 		fullpath = root + client->getRequest()->getPathname();
 		req->setFullPath(fullpath);
-		if (PathUtils::isDirectory(fullpath))
-			return (DIRECTORY);
-		else if (!PathUtils::isPathExist(fullpath))
-			throw NotFound();
 		if (req->getMethod() == GET)
+		{
+			if (PathUtils::isDirectory(fullpath))
+				return (DIRECTORY);
+			else if (!PathUtils::isPathExist(fullpath))
+				throw NotFound();
 			return (STATIC);
+		}
 	}
 	return (type);
 }

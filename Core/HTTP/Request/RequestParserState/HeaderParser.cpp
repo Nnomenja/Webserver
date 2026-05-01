@@ -44,7 +44,8 @@ bool HeaderParser::endOfHeadersReached()
 	{
 		_target->incrementParserIndex();
 		if (_target->getBuffer()[_target->getParserIndex()] != '\n')
-			_target->incrementParserIndex();
+			throw BadRequestException();
+		_target->incrementParserIndex();
 	}
 	else if (_target->getBuffer()[_target->getParserIndex()] == '\n')
 		_target->incrementParserIndex();

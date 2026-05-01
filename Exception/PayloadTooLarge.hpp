@@ -5,7 +5,7 @@
 
 class PayloadTooLarge: public ServerException {
     public:
-        PayloadTooLarge():ServerException(403, "Payload Too Large"){};
+        PayloadTooLarge():ServerException(413, "Payload Too Large"){};
 };
 
 #endif
