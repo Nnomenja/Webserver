@@ -15,6 +15,7 @@ typedef struct s_error_page
 }   t_error_page;
 
 void skipLeadingSpaces(std::string& str);
+void removeTrailingSpaces(std::string &str);
 int countWords(const std::string &str);
 void fillMap(std::map<std::string, std::string> &m, std::string s);
 void fillMap(std::map<int, std::string>& m,
