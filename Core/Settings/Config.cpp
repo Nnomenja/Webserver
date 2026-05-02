@@ -268,8 +268,8 @@ void Config::parseServerBlock(std::string serverBlock, int j)
                     }
                     if (i == wordCount - 1 && i > 0)
                     {
-                        if (!Validator::validateURI(word))
-                            throw ConfigException("invalid URI -> '" + word +
+                        if (!Validator::isFile(word))
+                            throw ConfigException("invalid file -> '" + word +
                                                   "'", serverLine, locationLine, word);
                         fillMap(configs[j].error_pages_map, word, error_pages_words);
                         fillVect(configs[j].error_pages, word, error_pages_words);
@@ -423,8 +423,8 @@ void Config::parseLocationBlock(std::string locationBlock, int i, int j)
                     }
                     if (k == wordCount - 1 && k > 0)
                     {
-                        if (!Validator::validateURI(word))
-                            throw ConfigException("invalid URI -> '" + word +
+                        if (!Validator::isFile(word))
+                            throw ConfigException("invalid file -> '" + word +
                                                   "'", serverLine, locationLine, word);
                         fillMap(configs[i].locations[j].error_pages_map, word, error_pages_words);
                         fillVect(configs[i].locations[j].error_pages, word, error_pages_words);
