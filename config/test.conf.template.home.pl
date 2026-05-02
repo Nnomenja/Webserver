@@ -7,7 +7,7 @@ server:
     location:         
         path /
         methods GET
-        error_pages 404 /home/toloandr/Webserver/www/error/404.html
+        error_pages 404 /home/toloandr/Webserver/www/ERROR_FILES/error/404.html
         index index.html
 
 #TESTING-LAB
@@ -15,6 +15,17 @@ server:
     port 1235
     host 0.0.0.0
     root  /home/toloandr/Webserver/www/SHOWCASE/testing-lab
+    # max_body_size 1000
+    location:         
+        path /
+        methods GET
+        index index.html
+
+#SITE
+server:
+    port 1236
+    host 0.0.0.0
+    root  /home/toloandr/Webserver/www/OTHERS/site
     # max_body_size 1000
     location:         
         path /
@@ -31,8 +42,8 @@ server:
     location:         
         path /
         methods GET POST
-        error_pages 404 /home/toloandr/Webserver/www/error/404.html
-        error_pages 400 /home/toloandr/Webserver/www/error/404.html
+        error_pages 404 /home/toloandr/Webserver/www/ERROR_FILES/error/404.html
+        error_pages 400 /home/toloandr/Webserver/www/ERROR_FILES/error/404.html
         index index.html
 
 #STATIC
@@ -44,8 +55,8 @@ server:
     location:         
         path /
         methods GET POST
-        error_pages 404 /home/toloandr/Webserver/www/error/404.html
-        error_pages 400 /home/toloandr/Webserver/www/error/404.html
+        error_pages 404 /home/toloandr/Webserver/www/ERROR_FILES/error/404.html
+        error_pages 400 /home/toloandr/Webserver/www/ERROR_FILES/error/400.html
         index index.html
 #DIRECTORY LISTING
 server:
@@ -56,8 +67,8 @@ server:
     location:         
         path /
         methods GET POST
-        error_pages 404 /errors/404.html
-        error_pages 400 /errors/400.html
+        error_pages 404 /home/toloandr/Webserver/www/ERROR_FILES/error/404.html
+        error_pages 400 /home/toloandr/Webserver/www/ERROR_FILES/error/404.html
         auto_index on
         index index.html
 #REDIRECTION
@@ -75,8 +86,8 @@ server:
         path /
         root /home/toloandr/Webserver/www/OTHERS/CGI
         methods GET POST
-        error_pages 404 /error/404.html
-        error_pages 400 /error/400.html
+        error_pages 404 /home/toloandr/Webserver/www/ERROR_FILES/error/404.html
+        error_pages 400 /home/toloandr/Webserver/www/ERROR_FILES/error/400.html
         CGI .php /usr/bin/php-cgi
         index index.php
 #UPLOADS
@@ -84,11 +95,12 @@ server:
     port 2004
     host 0.0.0.0
     root  /home/toloandr/Webserver/www/OTHERS/uploadMultipartOneFile
+    error_pages 404 /home/toloandr/Webserver/www/ERROR_FILES/errors/404.html
     # max_body_size 1048576
     location:         
         path /
         methods GET POST
-        error_pages 404 /home/toloandr/Webserver/www/ERROR_FILES/error/404.html
-        error_pages 400 /home/toloandr/Webserver/www/error/404.html
+        # error_pages 404 /home/toloandr/Webserver/www/ERROR_FILES/error/404.html
+        error_pages 400 /home/toloandr/Webserver/www/ERROR_FILES/error/400.html
         auto_index on
         upload_store /home/toloandr/Webserver/www/OTHERS/uploadMultipartOneFile/uploads
