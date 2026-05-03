@@ -48,6 +48,9 @@ class Webserv
         void    run( void );
         void    clear( void );
 
+        class StopExeption: public std::exception{
+            const char *what() const throw(); 
+        };
     private :
         Webserv();
         Webserv(const Webserv& webservType);
