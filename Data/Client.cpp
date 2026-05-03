@@ -44,7 +44,6 @@ Client::~Client(){
 		delete  _req;
 	if (_res)
 		delete _res;
-	::close(_fd);
 };
 
 int Client::getFd() const
