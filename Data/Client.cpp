@@ -1,6 +1,7 @@
 #include "Client.hpp"
 #include "../utils/utils.hpp"
 #include <algorithm>
+#include "../Core/HTTP/Webserv.hpp"
 
 Client::Client(std::map<std::string, std::string> &envs):_start_time_ms(get_time_ms()), _req(new Request()), _res(new Response()), _parsed(false),_envs(envs)
 {
@@ -39,6 +40,9 @@ Client::~Client(){
 	_logger.setResponseTime(get_time_ms() - _start_time_ms);
 	if (_res->getStatusCode() != 0)
 		_logger.log();
+
+	if (stop)
+		::close(_fd);
 
 	if (_req)
 		delete  _req;
