@@ -143,7 +143,7 @@ void Request::incrementParserIndex()
 {
 	if (stop)
 	{
-		throw std::exception();
+		throw Webserv::StopExeption();
 	}
 	_index++;
 }

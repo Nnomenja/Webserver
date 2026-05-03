@@ -46,6 +46,11 @@ Webserv::Webserv(const std::string& fileConfigName)
         ,_fileConfigName(fileConfigName)
 { }
 
+const char *Webserv::StopExeption::what() const throw()
+{
+	return ("Stop server");
+}
+
 void Webserv::removeClientHttp(int fd)
 {
 	delete  _clients[fd];
@@ -311,7 +316,7 @@ void Webserv::run(void)
 			}		
 		}
 	}
-	catch(const std::exception& e)
+	catch(const StopExeption& e)
 	{
 		return;
 	}
