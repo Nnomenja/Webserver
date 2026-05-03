@@ -18,7 +18,7 @@ void    BodyParser::readBodyThroughContentLength()
     if (body._bytes_read <= BODY_BUFFER_SIZE_MAX)
     {
         tmp = _target->getBuffer().substr(_target->getParserIndex(), BODY_BUFFER_SIZE_MAX - body._bytes_read);
-                _target->setBody(tmp);
+        _target->setBody(tmp);
         std::string new_body = _target->getBuffer().substr(_target->getParserIndex() + tmp.size());
         _target->setBuffer(new_body);
     }
