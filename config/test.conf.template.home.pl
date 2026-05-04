@@ -88,8 +88,8 @@ server:
         methods GET POST
         error_pages 404 /home/toloandr/Webserver/www/ERROR_FILES/error/404.html
         error_pages 400 /home/toloandr/Webserver/www/ERROR_FILES/error/400.html
-        CGI .php /usr/bin/php-cgi
-        index index.php
+        CGI .py /usr/bin/python3
+        index test.py
 #UPLOADS
 server:
     port 2004
