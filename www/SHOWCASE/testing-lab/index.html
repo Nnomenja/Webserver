@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HTTP/1.1 Testing Laboratory | Webserv</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./assets/styles.css" />
+  </head>
+  <body>
+    <div class="bg-ambient" aria-hidden="true"></div>
+    <div class="cursor-follow" id="cursorFollow" aria-hidden="true"></div>
+
+    <nav class="navbar glass-effect">
+      <div class="navbar-container">
+        <a class="navbar-brand" href="#dashboard">
+          <span class="brand-icon">⚡</span>
+          <span>HTTP Lab</span>
+        </a>
+        <div class="server-config-navbar">
+          <input
+            type="text"
+            id="navServerHost"
+            placeholder="Host"
+            class="nav-config-input"
+            value="localhost"
+          />
+          <span class="nav-config-sep">:</span>
+          <input
+            type="number"
+            id="navServerPort"
+            placeholder="Port"
+            class="nav-config-input nav-config-port"
+            value="8080"
+            min="1"
+            max="65535"
+          />
+          <button class="nav-config-btn" onclick="updateServerConfigFromNav()">✓</button>
+        </div>
+        <div class="nav-links">
+          <button class="nav-link active" data-section="dashboard">Dashboard</button>
+          <button class="nav-link" data-section="raw-http">Raw HTTP</button>
+          <button class="nav-link" data-section="upload">Upload Test</button>
+          <button class="nav-link" data-section="logs">Logs</button>
+        </div>
+      </div>
+    </nav>
+
+    <header class="hero-section">
+      <div class="hero-content">
+        <h1 class="hero-title">HTTP/1.1 Testing Laboratory</h1>
+        <p class="hero-subtitle">Debug. Inspect. Understand.</p>
+        <p class="hero-description">
+          A professional platform for testing, debugging, and validating custom HTTP/1.1 server implementations.
+        </p>
+      </div>
+      <div class="hero-shapes" aria-hidden="true">
+        <div class="shape shape--1"></div>
+        <div class="shape shape--2"></div>
+        <div class="shape shape--3"></div>
+      </div>
+    </header>
+
+    <main class="app-container">
+      <!-- DASHBOARD -->
+      <section id="dashboard" class="view active">
+        <div class="dashboard-grid">
+          <div class="config-card glass-effect">
+            <h3>Test Target Configuration</h3>
+            <div class="config-form">
+              <div class="config-field">
+                <label for="dashServerHost">Server Host</label>
+                <input type="text" id="dashServerHost" placeholder="localhost" class="input-field" value="localhost" />
+              </div>
+              <div class="config-field">
+                <label for="dashServerPort">Server Port</label>
+                <input type="number" id="dashServerPort" placeholder="8080" class="input-field" value="8080" min="1" max="65535" />
+              </div>
+              <button class="btn-primary" onclick="updateServerConfig()">Update Target</button>
+            </div>
+          </div>
+
+          <div class="status-card glass-effect">
+            <div class="status-header">
+              <h3>Server Status</h3>
+              <span class="status-indicator online" id="serverStatus"></span>
+            </div>
+            <div class="status-content">
+              <p><strong>Host:</strong> <span id="displayServerHost">localhost</span></p>
+              <p><strong>Port:</strong> <span id="displayServerPort">8080</span></p>
+              <p><strong>Uptime:</strong> <span id="serverUptime">--</span></p>
+              <p><strong>Active Connections:</strong> <span id="activeConns">0</span></p>
+              <p><strong>Total Requests:</strong> <span id="totalRequests">0</span></p>
+              <p><strong>Keep-Alive:</strong> <span style="color: #f87171">Disabled</span></p>
+            </div>
+          </div>
+
+          <div class="stats-card glass-effect">
+            <h3>Request Metrics</h3>
+            <div class="metrics-grid">
+              <div class="metric">
+                <span class="metric-value" id="avgLatency">0</span>
+                <span class="metric-label">avg latency ms</span>
+              </div>
+              <div class="metric">
+                <span class="metric-value" id="rps">0</span>
+                <span class="metric-label">req/s</span>
+              </div>
+              <div class="metric">
+                <span class="metric-value" id="errRate">0%</span>
+                <span class="metric-label">error rate</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="quick-test glass-effect">
+            <h3>Quick Test</h3>
+            <button class="btn-primary" onclick="quickTest()">Send Test Request</button>
+            <div id="quickTestResult" class="test-result"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- RAW HTTP PLAYGROUND -->
+      <section id="raw-http" class="view">
+        <div class="playground-container">
+          <div class="editor-panel glass-effect">
+            <h3>Raw HTTP Request</h3>
+            <textarea
+              id="httpEditor"
+              class="editor-input"
+              placeholder="POST /api HTTP/1.1&#10;Host: localhost:8080&#10;Content-Type: application/json&#10;&#10;{&quot;key&quot;: &quot;value&quot;}"
+            ></textarea>
+            <div class="editor-actions">
+              <button class="btn-primary" onclick="sendRawRequest()">Send Request</button>
+              <button class="btn-secondary" onclick="clearEditor()">Clear</button>
+              <button class="btn-secondary" onclick="loadTemplate()">Load Template</button>
+            </div>
+          </div>
+
+          <div class="response-panel glass-effect">
+            <h3>HTTP Response</h3>
+            <div class="response-tabs">
+              <button class="tab-btn active" onclick="switchTab('raw')">Raw</button>
+              <button class="tab-btn" onclick="switchTab('headers')">Headers</button>
+              <button class="tab-btn" onclick="switchTab('body')">Body</button>
+            </div>
+            <div id="responseBody" class="response-content">
+              <p class="muted">Response will appear here...</p>
+            </div>
+            <div class="response-meta">
+              <span>Status: <strong id="statusCode">--</strong></span>
+              <span>Time: <strong id="responseTime">--</strong>ms</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="parser-panel glass-effect">
+          <h3>Request Parser Visualization</h3>
+          <table class="parser-table">
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>Value</th>
+              </tr>
+            </thead>
+            <tbody id="parserOutput">
+              <tr>
+                <td colspan="2" class="muted">Parse a request to see details</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- UPLOAD TEST -->
+      <section id="upload" class="view">
+        <div class="upload-container glass-effect">
+          <h3>File Upload Testing</h3>
+          <div class="upload-area" id="uploadArea">
+            <p>🔼 Drop files here or click to upload</p>
+          </div>
+          <input type="file" id="fileInput" multiple hidden />
+          <div id="uploadQueue" class="upload-queue"></div>
+
+          <div class="upload-controls">
+            <div class="upload-form">
+              <label for="uploadPath">Upload Path:</label>
+              <input type="text" id="uploadPath" class="input-field" value="/" placeholder="/" />
+
+              <label for="uploadFormName">Form Field Name:</label>
+              <input type="text" id="uploadFormName" class="input-field" value="file" placeholder="file" />
+            </div>
+            <button class="btn-primary" onclick="uploadFiles()" id="uploadBtn" disabled>Upload Files</button>
+          </div>
+        </div>
+
+        <div class="upload-request glass-effect">
+          <h3>Request Preview</h3>
+          <div class="request-tabs">
+            <button class="tab-btn active" onclick="switchUploadTab('preview')">Preview</button>
+            <button class="tab-btn" onclick="switchUploadTab('raw')">Raw Format</button>
+          </div>
+          <div id="uploadRequestPreview" class="request-preview-content">
+            <p class="muted">Select files to preview request...</p>
+          </div>
+        </div>
+
+        <div class="upload-log glass-effect">
+          <h3>Upload Response</h3>
+          <div id="uploadResponse" class="log-content">
+            <p class="muted">Upload response will appear below in the embedded server frame...</p>
+          </div>
+          <iframe id="uploadResponseFrame" name="uploadResponseFrame" class="upload-response-frame" title="Upload response preview"></iframe>
+        </div>
+      </section>
+
+      <!-- LOGS -->
+      <section id="logs" class="view">
+        <div class="logs-container glass-effect">
+          <div class="logs-header">
+            <h3>Request Log</h3>
+            <button class="btn-secondary" onclick="clearLogs()">Clear Logs</button>
+          </div>
+          <div id="requestLog" class="log-terminal">
+            <p class="muted">Requests will be logged here...</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="./assets/script.js"></script>
+  </body>
+</html>
