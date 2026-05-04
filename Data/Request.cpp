@@ -141,10 +141,6 @@ const std::string &Request::getServerName() const
 
 void Request::incrementParserIndex()
 {
-	if (stop)
-	{
-		throw Webserv::StopExeption();
-	}
 	_index++;
 }
 void Request::resetParserIndex()

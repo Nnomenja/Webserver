@@ -35,7 +35,7 @@ Webserv::~Webserv()
 	{
 		for (std::map<int, Client *>::iterator it = _clients.begin(); it != _clients.end(); ++it)
 		{
-				delete it->second;
+			delete it->second;
 		}
 	}
     this->clear();	
@@ -45,11 +45,6 @@ Webserv::Webserv(const std::string& fileConfigName)
     :   _isAlreadyInit(false)
         ,_fileConfigName(fileConfigName)
 { }
-
-const char *Webserv::StopExeption::what() const throw()
-{
-	return ("Stop server");
-}
 
 void Webserv::removeClientHttp(int fd)
 {
@@ -177,148 +172,148 @@ void Webserv::run(void)
 
 	int epollTimeOut 	= 0;
 
-	try
+	while (1)
 	{
-		while (!stop)
+		int nFds = _epoll.wait(epollTimeOut);
+		if (nFds < 0)
 		{
-			int nFds = _epoll.wait(epollTimeOut);
-			if (nFds < 0)
+			this->clear();
+			return ;
+		}
+		if (stop)
+		{
+			if (!_clients.size())
+				return;
+		}
+		for (int i = 0; i < nFds; i++)
+		{
+			int currentFd = _epoll.getEvents()[i].data.fd;
+			serverSocket = getServerSocket(currentFd);
+
+			if (serverSocket)
 			{
-				this->clear();
-				return ;
+				if (stop)
+					continue;
+				tmp = serverSocket->accept();
+				if (tmp.fd < 0)
+					return ;
+				_epoll.registerFd(tmp.fd, EPOLLIN);
+
+				_clients[tmp.fd] = new Client(_envs);
+				_clients[tmp.fd]->setFd(tmp.fd);
+				_clients[tmp.fd]->setEndpoint(_config.findEndpointByFd(tmp.serverFd));
+
+				_clients[tmp.fd]->setIp(tmp.addr);
 			}
-			for (int i = 0; i < nFds; i++)
+
+			else
 			{
-				int currentFd = _epoll.getEvents()[i].data.fd;
-				serverSocket = getServerSocket(currentFd);
+				Client *client = NULL;
 
-				if (serverSocket)
+				if ((_epoll.getEvents()[i].events & (EPOLLERR | EPOLLHUP)))
 				{
-					tmp = serverSocket->accept();
-					if (tmp.fd < 0)
-						return ;
-					_epoll.registerFd(tmp.fd, EPOLLIN);
+					if (_process.isProcess(currentFd))
+					{
+						client = _clients[_process.getClientFd(currentFd)];
+						int status;
 
-					_clients[tmp.fd] = new Client(_envs);
-					_clients[tmp.fd]->setFd(tmp.fd);
-					_clients[tmp.fd]->setEndpoint(_config.findEndpointByFd(tmp.serverFd));
-
-					_clients[tmp.fd]->setIp(tmp.addr);
+						waitpid(client->getCGIPid(), &status, WNOHANG);
+						_process.removeProcess(currentFd);
+						client->endProcessingCGI();
+						DynamicStrategy::readCgiOutput(client);
+						if (!client->getCGIOutput().size() || (WIFSIGNALED(status) && WTERMSIG(status) == SIGKILL))
+						{
+							DynamicStrategy::error(client, _epoll, _process, ServerException(504, "Gateway Timeout"));
+							continue;
+						}
+						CgiParser cgi_parser(client->getResponse()->getCgiResponse(), client->getResponse());
+						try
+						{
+							cgi_parser.parse();
+						}
+						catch(const std::exception& e)
+						{
+							DynamicStrategy::error(client, _epoll, _process, ServerException(504, "Gateway Timeout"));
+							continue;
+						}
+						_epoll.remove(currentFd);
+						_epoll.modify(client->getFd(), EPOLLOUT);
+					}
+					else
+					{
+						removeClientHttp(currentFd);
+					}
+					continue;
 				}
-
-				else
+				if (_epoll.getEvents()[i].events & EPOLLIN)
 				{
-					Client *client = NULL;
-
-					if ((_epoll.getEvents()[i].events & (EPOLLERR | EPOLLHUP)))
+					try
 					{
 						if (_process.isProcess(currentFd))
 						{
 							client = _clients[_process.getClientFd(currentFd)];
-							int status;
-
-							waitpid(client->getCGIPid(), &status, WNOHANG);
-							_process.removeProcess(currentFd);
-							client->endProcessingCGI();
 							DynamicStrategy::readCgiOutput(client);
-							if (!client->getCGIOutput().size() || (WIFSIGNALED(status) && WTERMSIG(status) == SIGKILL))
-							{
-								DynamicStrategy::error(client, _epoll, _process, ServerException(504, "Gateway Timeout"));
-								continue;
-							}
-							CgiParser cgi_parser(client->getResponse()->getCgiResponse(), client->getResponse());
-							try
-							{
-								cgi_parser.parse();
-							}
-							catch(const std::exception& e)
-							{
-								DynamicStrategy::error(client, _epoll, _process, ServerException(504, "Gateway Timeout"));
-								continue;
-							}
-							_epoll.remove(currentFd);
-							_epoll.modify(client->getFd(), EPOLLOUT);
+							continue;
 						}
 						else
 						{
-							removeClientHttp(currentFd);
+							client = _clients[currentFd];
+							if (!readtHttpRequest(client))
+								continue;
+							RequestProcessor	process;
+							process.processRequest(_clients[currentFd], _epoll, _process);
 						}
+					}
+					catch(const ServerException& e)
+					{
+						ErrorProcess::processError(e, _clients[currentFd]);
+					}
+					_epoll.modify(client->getFd(), EPOLLOUT);
+				}
+				else if (_epoll.getEvents()[i].events & EPOLLOUT)
+				{
+					if (_clients.find(currentFd) == _clients.end())
 						continue;
-					}
-					if (_epoll.getEvents()[i].events & EPOLLIN)
+					client = _clients[currentFd];
+					if (client->isProcessingCGI())
 					{
-						try
+						if (_process.isTimeout(CGI_TIMEOUT, client->getCGIfd()))
 						{
-							if (_process.isProcess(currentFd))
-							{
-								client = _clients[_process.getClientFd(currentFd)];
-								DynamicStrategy::readCgiOutput(client);
-								continue;
-							}
-							else
-							{
-								client = _clients[currentFd];
-								if (!readtHttpRequest(client))
-									continue;
-								RequestProcessor	process;
-								process.processRequest(_clients[currentFd], _epoll, _process);
-							}
+							kill(client->getCGIPid(), SIGKILL);
+							DynamicStrategy::error(client, _epoll, _process, ServerException(504, "Gateway Timeout"));
 						}
-						catch(const ServerException& e)
-						{
-							ErrorProcess::processError(e, _clients[currentFd]);
-						}
-						_epoll.modify(client->getFd(), EPOLLOUT);
-					}
-					else if (_epoll.getEvents()[i].events & EPOLLOUT)
-					{
-						if (_clients.find(currentFd) == _clients.end())
+						else
 							continue;
-						client = _clients[currentFd];
-						if (client->isProcessingCGI())
-						{
-							if (_process.isTimeout(CGI_TIMEOUT, client->getCGIfd()))
-							{
-								kill(client->getCGIPid(), SIGKILL);
-								DynamicStrategy::error(client, _epoll, _process, ServerException(504, "Gateway Timeout"));
-							}
-							else
-								continue;
-						}			
-						client->generateResponse();
-						sendHttpResponse(client);
-						removeClientHttp(client->getFd());
-					}
+					}			
+					client->generateResponse();
+					sendHttpResponse(client);
+					removeClientHttp(client->getFd());
 				}
 			}
-
-			std::map<int, Client*>::iterator it = _clients.begin();
-			while (!_clients.empty() && it != _clients.end())
-			{
-				int tmp;
-				bool check;
-				ARequestParserState *state = it->second->getRequest()->getParserState();
-				RequestParserStateName stateName = METHOD;
-
-				if (state)
-					stateName = state->getParserStateName();
-				if (stateName != BODY)
-					check = verify_deadline_ms(it->second->getStartTime(), REQUEST_HEADER_TIMEOUT_MS);
-				else
-					check = verify_deadline_ms(it->second->getStartTime(), REQUEST_BODY_TIMEOUT_MS);
-				if (!it->second->isParsed() && check)
-				{
-					tmp = it->first;
-					_epoll.modify(it->first, EPOLLOUT);
-					ErrorProcess::processError(RequestTimeout(), _clients[tmp]);
-				}
-				++it;
-			}		
 		}
-	}
-	catch(const StopExeption& e)
-	{
-		return;
+
+		std::map<int, Client*>::iterator it = _clients.begin();
+		while (!_clients.empty() && it != _clients.end())
+		{
+			int tmp;
+			bool check;
+			ARequestParserState *state = it->second->getRequest()->getParserState();
+			RequestParserStateName stateName = METHOD;
+
+			if (state)
+				stateName = state->getParserStateName();
+			if (stateName != BODY)
+				check = verify_deadline_ms(it->second->getStartTime(), REQUEST_HEADER_TIMEOUT_MS);
+			else
+				check = verify_deadline_ms(it->second->getStartTime(), REQUEST_BODY_TIMEOUT_MS);
+			if (!it->second->isParsed() && check)
+			{
+				tmp = it->first;
+				_epoll.modify(it->first, EPOLLOUT);
+				ErrorProcess::processError(RequestTimeout(), _clients[tmp]);
+			}
+			++it;
+		}		
 	}
 }
 
@@ -333,7 +328,7 @@ bool Webserv::readtHttpRequest(Client* client)
 	{
 		data = _epoll.read(client->getFd(), &end);
 		client->getRequest()->setBuffer(data);
-		if (data.empty())
+		if (data.empty() || stop)
 		{
 			removeClientHttp(client->getFd());
 			return (false);

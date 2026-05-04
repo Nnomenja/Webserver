@@ -41,9 +41,6 @@ Client::~Client(){
 	if (_res->getStatusCode() != 0)
 		_logger.log();
 
-	if (stop)
-		::close(_fd);
-
 	if (_req)
 		delete  _req;
 	if (_res)
