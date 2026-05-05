@@ -1,5 +1,4 @@
 #include "Validator.hpp"
-#include "Config.hpp"
 #include <unistd.h>
 
 Validator::Validator() {}

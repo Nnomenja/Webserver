@@ -71,7 +71,7 @@ void    BodyParser::readBodyThroughContentLength()
 long	BodyParser::parseChunkSize(const std::string &line) const
 {
     std::string	metadata;
-    size_t		chunkSize;
+    unsigned int		chunkSize;
     size_t		separator;
     int		digit;
 

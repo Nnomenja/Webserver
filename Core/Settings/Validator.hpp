@@ -15,9 +15,7 @@
 #include <string>
 #include <cctype>
 
-
-
-#define SUPERROOT "www"
+#define MAX_BODY_SIZE_LIMITS 1073741200
 
 class Validator
 {
