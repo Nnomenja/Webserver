@@ -3,6 +3,7 @@
 
 #include <string>
 #include <netinet/in.h>
+#include "./Response.hpp"
 
 class RequestLogger {
 private:

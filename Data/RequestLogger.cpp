@@ -128,7 +128,7 @@ void RequestLogger::log() const {
               << _clientIp << " \""
               << _method << " " << _path
               << "\" "
-              << color << _status << RESET << " "
+              << color << _status << " " << Response::getResponseStatus(_status).message << RESET << " "
               << _responseTime << "ms"
               << std::endl;
 }
