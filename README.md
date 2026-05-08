@@ -212,6 +212,7 @@ curl http://localhost:8080
 * https://man7.org/linux/man-pages/man7/epoll.7.html
 * https://beej.us/guide/bgnet/
 * https://en.cppreference.com/
+* https://algomaster.io/learn/lld/course-introduction
 
 ---
 
@@ -230,6 +231,6 @@ curl http://localhost:8080
 
 # Authors
 
-* aravelom
-* nnomenja
-* toloandr
+* [nnomenja](https://www.linkedin.com/in/nirina-mamenosoa-nomenjahanahary-0916a9278/)
+* [aravelom](https://www.linkedin.com/in/ravelomanana-azaria/)
+* [toloandr](https://www.linkedin.com/in/toloandr/)

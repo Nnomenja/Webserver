@@ -70,6 +70,7 @@ void DynamicStrategy::process(Client *client, Epoll &epoll, Process &process)
         const_cast<char *>(host.c_str()),
         const_cast<char *>(cookie.c_str()),
         const_cast<char *>(contentType.c_str()),
+        const_cast<char *>(contentLength.c_str()),
         const_cast<char *>(request_uri.c_str()),
         NULL
     };

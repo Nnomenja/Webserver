@@ -93,7 +93,7 @@ LocationType RequestProcessor::detectStategyType(Client *client)
 	}
 	else if (type == UPLOAD)
 	{
-		fullpath = root + client->getRequest()->getPathname();
+		fullpath = req->getLocation().upload_store + client->getRequest()->getPathname();
 		req->setFullPath(fullpath);
 		if (req->getMethod() == GET)
 		{
