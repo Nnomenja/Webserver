@@ -114,10 +114,10 @@ std::string Client::getDefaultErrorPagePath(int code) const
 
 	path = findDefaultErrorPagePathBySource(code, _req->getLocation().error_pages);
 	if (path.size())
-		return (_req->getLocation().root + path);
+		return (path);
 	path = findDefaultErrorPagePathBySource(code, _endpoint.error_pages);
 	if (path.size())
-		return (_endpoint.root + path);
+		return (path);
 	return ("");
 }
 
