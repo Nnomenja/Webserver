@@ -1,10 +1,3 @@
-/*
-   File: main.cpp
-   By: Azaria
-   Created: 2026/02/26 12:30:39
-*/
-
-
 # include "./Core/HTTP/Webserv.hpp"
 # include "./Core/Network/Signal.hpp"
 
@@ -19,7 +12,10 @@ void handler(int signal)
 int main(int c, char **v)
 {
 	if (c != 2)
+	{
+		std::cout << "Usage: ./webserv [configuration file]" << std::endl;
 		return (1);
+	}
 
 	Signal::set(SIGINT, handler);
 

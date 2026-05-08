@@ -101,3 +101,9 @@ bool PathUtils::isExecutable(const std::string &path)
 {
 	return (access(path.c_str(), X_OK) == 0);
 }
+
+bool PathUtils::isWritable(const std::string &path)
+{
+	return (access(path.c_str(), W_OK) == 0);
+
+}

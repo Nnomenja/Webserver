@@ -9,7 +9,6 @@
 # include <sstream>
 # include <vector>
 # include <unistd.h>
-# include <fcntl.h>
 
 Socket::Socket()
 	: _socketFd(-1)
