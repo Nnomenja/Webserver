@@ -198,7 +198,6 @@ void Webserv::run(void)
 				if (tmp.fd < 0)
 					return ;
 				_epoll.registerFd(tmp.fd, EPOLLIN);
-
 				_clients[tmp.fd] = new Client(_envs);
 				_clients[tmp.fd]->setFd(tmp.fd);
 				_clients[tmp.fd]->setEndpoint(_config.findEndpointByFd(tmp.serverFd));
@@ -260,20 +259,20 @@ void Webserv::run(void)
 							client = _clients[currentFd];
 							if (!readtHttpRequest(client))
 								continue;
+							client->parsed();
 							RequestProcessor	process;
 							process.processRequest(_clients[currentFd], _epoll, _process);
 						}
 					}
 					catch(const ServerException& e)
 					{
+						client->parsed();
 						ErrorProcess::processError(e, _clients[currentFd]);
 					}
 					_epoll.modify(client->getFd(), EPOLLOUT);
 				}
 				else if (_epoll.getEvents()[i].events & EPOLLOUT)
 				{
-					if (_clients.find(currentFd) == _clients.end())
-						continue;
 					client = _clients[currentFd];
 					if (client->isProcessingCGI())
 					{
@@ -306,11 +305,18 @@ void Webserv::run(void)
 				check = verify_deadline_ms(it->second->getStartTime(), REQUEST_HEADER_TIMEOUT_MS);
 			else
 				check = verify_deadline_ms(it->second->getStartTime(), REQUEST_BODY_TIMEOUT_MS);
-			if (!it->second->isParsed() && check)
+			if ((!it->second->isParsed() && check))
 			{
 				tmp = it->first;
 				_epoll.modify(it->first, EPOLLOUT);
 				ErrorProcess::processError(RequestTimeout(), _clients[tmp]);
+			}
+			if (stop && !it->second->isParsed())
+			{
+				std::map<int, Client*>::iterator tmp = it;
+				++it;
+				removeClientHttp(tmp->first);
+				continue;
 			}
 			++it;
 		}		
@@ -336,7 +342,6 @@ bool Webserv::readtHttpRequest(Client* client)
 
 		HttpRequestParser	parse;
 		parse.parse(client->getRequest(), client->getEndpoint());
-
 		if (parse.finished())
 		{
 			client->parsed();
