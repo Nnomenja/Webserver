@@ -1,0 +1,154 @@
+<?php
+http_response_code(404);
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>404 — Lost in Space</title>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        height: 100vh;
+        overflow: hidden;
+        background: radial-gradient(circle at top, #1b2735 0%, #090a0f 100%);
+        color: white;
+        font-family: Arial, sans-serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .stars {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background:
+            radial-gradient(2px 2px at 20px 30px, #fff, transparent),
+            radial-gradient(2px 2px at 40px 70px, #fff, transparent),
+            radial-gradient(1px 1px at 90px 40px, #fff, transparent),
+            radial-gradient(2px 2px at 130px 80px, #fff, transparent),
+            radial-gradient(1px 1px at 160px 120px, #fff, transparent);
+        background-repeat: repeat;
+        background-size: 200px 200px;
+        animation: moveStars 60s linear infinite;
+        opacity: 0.5;
+    }
+
+    @keyframes moveStars {
+        from { transform: translateY(0); }
+        to { transform: translateY(-200px); }
+    }
+
+    .container {
+        position: relative;
+        z-index: 2;
+        max-width: 700px;
+        padding: 40px;
+    }
+
+    .code {
+        font-size: 140px;
+        font-weight: bold;
+        line-height: 1;
+        color: #00d4ff;
+        text-shadow: 0 0 25px rgba(0,212,255,0.8);
+    }
+
+    .title {
+        font-size: 36px;
+        margin-top: 10px;
+    }
+
+    .desc {
+        margin-top: 20px;
+        color: #b0b8c0;
+        line-height: 1.7;
+        font-size: 18px;
+    }
+
+    .btn {
+        display: inline-block;
+        margin-top: 35px;
+        padding: 14px 28px;
+        background: linear-gradient(135deg, #00d4ff, #0077ff);
+        color: white;
+        text-decoration: none;
+        border-radius: 12px;
+        font-weight: bold;
+        transition: 0.3s;
+        box-shadow: 0 0 20px rgba(0,212,255,0.5);
+    }
+
+    .btn:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 0 35px rgba(0,212,255,0.9);
+    }
+
+    .planet {
+        position: absolute;
+        width: 250px;
+        height: 250px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #ff9966, #ff5e62);
+        top: 10%;
+        right: -80px;
+        opacity: 0.2;
+        filter: blur(2px);
+    }
+
+    .astronaut {
+        font-size: 80px;
+        margin-top: 20px;
+        animation: float 4s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0%,100% { transform: translateY(0); }
+        50% { transform: translateY(-12px); }
+    }
+
+    footer {
+        position: absolute;
+        bottom: 20px;
+        width: 100%;
+        text-align: center;
+        color: #667;
+        font-size: 14px;
+    }
+</style>
+</head>
+<body>
+
+<div class="stars"></div>
+<div class="planet"></div>
+
+<div class="container">
+    <div class="code">404</div>
+
+    <div class="astronaut">👨‍🚀</div>
+
+    <h1 class="title">Oops... Page Not Found</h1>
+
+    <p class="desc">
+        The page you are looking for drifted into deep space.<br>
+        Maybe the URL is wrong, or the resource no longer exists.
+    </p>
+
+    <a href="/" class="btn">🚀 Return Home</a>
+</div>
+
+<footer>
+    Powered by PHP CGI • Everything is operational
+</footer>
+
+</body>
+</html>

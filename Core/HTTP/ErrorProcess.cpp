@@ -9,8 +9,11 @@
 
 void    ErrorProcess::processError(const ServerException &e, Client *client)
 {
-    std::string ErrorPagePath = client->getDefaultErrorPagePath(e.getCode());
-
+    std::string root = client->getEndpoint().root;
+    if (client->getRequest()->getLocation().root.size())
+        root = client->getRequest()->getLocation().root;
+    std::string ErrorPagePath =  client->getDefaultErrorPagePath(e.getCode());
+    
     Response *res = client->getResponse();
     std::stringstream ss;
 
@@ -19,7 +22,7 @@ void    ErrorProcess::processError(const ServerException &e, Client *client)
     {
         if (!ErrorPagePath.size())
             throw std::exception();
-        res->setBody(PathUtils::getFileContentbypath(ErrorPagePath));
+        res->setBody(PathUtils::getFileContentbypath(root + ErrorPagePath));
 
     }
     catch(const std::exception& e)
