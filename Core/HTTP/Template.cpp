@@ -66,7 +66,6 @@ std::string Template::Error(int code, std::string message)
 }
 
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
 
 static std::string htmlEscape(const std::string& s)
 {
@@ -92,7 +91,6 @@ static std::string intToStr(std::size_t n)
     return oss.str();
 }
 
-// ── SVG Icons ─────────────────────────────────────────────────────────────────
 
 static std::string iconFolder()
 {

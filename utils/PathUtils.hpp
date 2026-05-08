@@ -19,6 +19,7 @@ class PathUtils
         static std::string  getFileContentbypath(std::string pathname);
         static std::string  normalizePathname(std::string pathname);
         static bool         isExecutable(const std::string& path);
+        static bool         isWritable(const std::string& path);
 
 };
 

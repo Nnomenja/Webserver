@@ -60,7 +60,7 @@ void HttpRequestParser::parse(Request *req, UnitConf_t endpoint)
 				//fallthrough
 			case  METADATA:
 				req->getParserState()->execute();
-				if (req->getMethod() == GET)
+				if (req->getMethod() == GET || req->getMethod() == DELETE)
 				{
 					_finished = true;
 					return;

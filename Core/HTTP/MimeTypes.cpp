@@ -1,13 +1,6 @@
 #include "MimeTypes.hpp"
 
-// ---------------------------------------------------------------------------
-// Static lookup table — one row per extension, alphabetically grouped by
-// category.  Generated from the nginx mime.types list; edit here to add or
-// remove types.
-// ---------------------------------------------------------------------------
-
 const MimeTypes::Entry MimeTypes::TABLE[] = {
-//  ext              mime-type
     { "html",        "text/html" },
     { "htm",         "text/html" },
     { "shtml",       "text/html" },

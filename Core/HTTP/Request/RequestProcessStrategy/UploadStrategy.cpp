@@ -12,6 +12,9 @@
 #include "../../../../Exception/BadRequestException.hpp"
 #include "../../../../Exception/UnsupportedMediaType.hpp"
 #include "../../../../Exception/InternalServerError.hpp"
+#include "../../../../Exception/Forbiden.hpp"
+#include "../../../../Exception/NotFound.hpp"
+#include "../../../../utils/PathUtils.hpp"
 #include "../../../../Core/HTTP/Webserv.hpp"
 #include <cstdio> 
 
@@ -28,7 +31,11 @@ void UploadStrategy::process(Client *client, Epoll &epoll, Process &process)
     
     if (request->getMethod() == DELETE)
     {
-        std::string fullpath = request->getRootDir() + request->getPathname();
+        std::string fullpath = request->getLocation().upload_store + request->getPathname();
+        if (!PathUtils::isPathExist(fullpath))
+            throw NotFound();
+        if (!PathUtils::isWritable(fullpath))
+            throw Forbiden();
         if (remove(fullpath.c_str()) != 0)
         {
             throw InternalServerError();
