@@ -1,19 +1,34 @@
-#!/usr/bin/php
+#!/usr/bin/env php-cgi
 <?php
-$body = file_get_contents('php://stdin');
 
-// Output proper HTTP headers FIRST
-header("Content-Type: text/html");
-header("Content-Length: " . strlen($body));
+header("Content-Type: text/html\r\n\r\n");
 
-// Then output content
+$method = getenv("REQUEST_METHOD");
+
+echo "<html><body>";
+echo "<h2>Method: $method</h2>";
+
+if ($method === "GET") {
+    $query = getenv("QUERY_STRING");
+    echo "<p>Query string: $query</p>";
+}
+
+elseif ($method === "POST") {
+    $length = (int)getenv("CONTENT_LENGTH");
+
+    $body = "";
+    if ($length > 0) {
+        $body = file_get_contents("php://stdin");
+        // optional strict version:
+        $body = substr($body, 0, $length);
+    }
+
+    echo "<p>POST body: $body</p>";
+}
+
+else {
+    echo "<p>Unknown method</p>";
+}
+
+echo "</body></html>";
 ?>
-<!DOCTYPE html>
-<html>
-<head><title>POST Test</title></head>
-<body>
-    <h1>POST Test</h1>
-    <p>Body: <?php echo htmlspecialchars($body); ?></p>
-    <p>Length: <?php echo strlen($body); ?></p>
-</body>
-</html>
