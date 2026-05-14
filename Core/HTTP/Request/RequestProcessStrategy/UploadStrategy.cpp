@@ -383,7 +383,13 @@ int UploadStrategy::writeContentUntilBoundary(InputReader& inputReader, Multipar
 
         if (posEnd != std::string::npos)
         {
-            if (hasFile) outFile.write(buff.c_str() + i, posEnd - i - 2);
+            // if (hasFile) outFile.write(buff.c_str() + i, posEnd - i - 2);
+            if (hasFile)
+            {
+                outFile.write(buff.c_str() + i, posEnd - i - 2);
+                if (outFile.fail() || outFile.bad())
+                    throw InternalServerError();
+            }
             totalWritten += (posEnd - i - 2);
             uploadedFile.size = totalWritten;
             uploadedFile.status = "ok";
@@ -392,7 +398,13 @@ int UploadStrategy::writeContentUntilBoundary(InputReader& inputReader, Multipar
         }
         if (posDelim != std::string::npos)
         {
-            if (hasFile) outFile.write(buff.c_str() + i, posDelim - i);
+            // if (hasFile) outFile.write(buff.c_str() + i, posDelim - i);
+            if (hasFile)
+            {
+                outFile.write(buff.c_str() + i, posDelim - i);
+                if (outFile.fail() || outFile.bad())
+                    throw InternalServerError();
+            }
             i = posDelim;
             totalWritten += (posDelim - i);
             uploadedFile.size = totalWritten;
@@ -403,7 +415,13 @@ int UploadStrategy::writeContentUntilBoundary(InputReader& inputReader, Multipar
         size_t safeLen = ((buff.size() - i) > endDelim.size() - 1) ?
                 (buff.size() - i - (endDelim.size() - 1)) :
                 0;
-        if (hasFile) outFile.write(buff.c_str() + i, safeLen);
+        // if (hasFile) outFile.write(buff.c_str() + i, safeLen);
+        if (hasFile)
+        {
+            outFile.write(buff.c_str() + i, safeLen);
+            if (outFile.fail() || outFile.bad())
+                throw InternalServerError();
+        }
         overlap = buff.substr(buff.size() - (endDelim.size() - 1));
         inputReader.dataSource = FROM_FD;
     }
@@ -444,7 +462,14 @@ int UploadStrategy::writeContentUntilBoundary(InputReader& inputReader, Multipar
 
             if (posEnd != std::string::npos)
             {
-                if (hasFile) outFile.write(window.c_str(), posEnd - 2);
+                // if (hasFile) outFile.write(window.c_str(), posEnd - 2);
+                if (hasFile)
+                {
+                    outFile.write(window.c_str(), posEnd - 2);
+
+                    if (outFile.fail() || outFile.bad())
+                        throw InternalServerError();
+                }
                 totalWritten += (posEnd - 2);
                 uploadedFile.size = totalWritten;
                 uploadedFile.status = "ok";
@@ -453,7 +478,13 @@ int UploadStrategy::writeContentUntilBoundary(InputReader& inputReader, Multipar
             }
             if (posDelim != std::string::npos)
             {
-                if (hasFile) outFile.write(window.c_str(), posDelim);
+                // if (hasFile) outFile.write(window.c_str(), posDelim);
+                if (hasFile)
+                {
+                    outFile.write(window.c_str(), posDelim);
+                    if (outFile.fail() || outFile.bad())
+                        throw InternalServerError();
+                }
                 std::streamoff back = (std::streamoff)(window.size() - posDelim);
                 if (back > 0)
                 {
@@ -469,7 +500,13 @@ int UploadStrategy::writeContentUntilBoundary(InputReader& inputReader, Multipar
             size_t safeLen = (window.size() > endDelim.size() - 1) ?
                     (window.size() - (endDelim.size() - 1)) :
                     0;
-            if (hasFile) outFile.write(window.c_str(), safeLen);
+            // if (hasFile) outFile.write(window.c_str(), safeLen);
+            if (hasFile)
+            {
+                outFile.write(window.c_str(), safeLen);
+                if (outFile.fail() || outFile.bad())
+                    throw InternalServerError();
+            }
             overlap = "";
             overlap.append(window, safeLen, window.size() - safeLen);
         }
@@ -477,6 +514,8 @@ int UploadStrategy::writeContentUntilBoundary(InputReader& inputReader, Multipar
         if (!overlap.empty() && hasFile)
         {
             outFile.write(overlap.c_str(), overlap.size());
+            if (outFile.fail() || outFile.bad())
+                throw InternalServerError();
         }
         throw BadRequestException();
     }
