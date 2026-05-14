@@ -9,6 +9,12 @@ server:
         methods GET
         error_pages 404 /error/404.html
         index index.html
+    location:        
+        root  [webserv path]/www/SHOWCASE 
+        path /testing-lab
+        methods GET
+        error_pages 404 /error/404.html
+        index index.html
 
 #TESTING-LAB
 server:
