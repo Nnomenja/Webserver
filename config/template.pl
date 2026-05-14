@@ -72,8 +72,8 @@ server:
     location:         
         path /
         methods GET
-        error_pages 404 /error/404.html
-        error_pages 400 /error/404.html
+        error_pages 404 /errors/404.html
+        error_pages 400 /errors/404.html
         auto_index on
         index index.html
 server:
