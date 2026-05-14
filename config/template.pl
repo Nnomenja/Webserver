@@ -69,12 +69,20 @@ server:
     port 2000
     host 0.0.0.0
     root  [webserv path]/www/OTHERS/uploadMultipartOneFile
-    max_body_size 1000
     location:         
         path /
-        methods GET POST
+        methods GET
         error_pages 404 /error/404.html
         error_pages 400 /error/404.html
+        auto_index on
+        index index.html
+server:
+    port 2007
+    host 0.0.0.0
+    root  [webserv path]/www/OTHERS
+    location:         
+        path /
+        methods GET
         auto_index on
         index index.html
 #REDIRECTION
