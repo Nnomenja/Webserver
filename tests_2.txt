@@ -1,0 +1,67 @@
+# =========================
+# HOMEPAGE :1234
+# =========================
+GET 1234 127.0.0.1 / EXPECT 302
+GET 1234 127.0.0.1 /index.html EXPECT 200
+GET 1234 127.0.0.1 /doesnotexist EXPECT 404
+
+# =========================
+# TESTING-LAB :1235
+# =========================
+GET 1235 127.0.0.1 / EXPECT 302
+GET 1235 127.0.0.1 /index.html EXPECT 200
+GET 1235 127.0.0.1 /missing EXPECT 404
+
+# =========================
+# SITE :1236
+# =========================
+GET 1236 127.0.0.1 / EXPECT 302
+GET 1236 127.0.0.1 /index.html EXPECT 200
+GET 1236 127.0.0.1 /404 EXPECT 404
+
+# =========================
+# UPLOAD TESTER :2006
+# =========================
+GET 2006 127.0.0.1 / EXPECT 302
+GET 2006 127.0.0.1 /index.html EXPECT 200
+POST 2006 127.0.0.1 / EXPECT 302
+GET 2006 127.0.0.1 /badpage EXPECT 404
+
+# =========================
+# STATIC :2005
+# =========================
+GET 2005 127.0.0.1 / EXPECT 302
+GET 2005 127.0.0.1 /index.html EXPECT 200
+POST 2005 127.0.0.1 / EXPECT 302
+GET 2005 127.0.0.1 /missing.html EXPECT 404
+
+# =========================
+# DIRECTORY LISTING :2000
+# =========================
+GET 2000 127.0.0.1 / EXPECT 302
+GET 2000 127.0.0.1 /uploads/ EXPECT 200
+POST 2000 127.0.0.1 / EXPECT 302
+GET 2000 127.0.0.1 /doesnotexist EXPECT 404
+
+# =========================
+# REDIRECTION :2001
+# =========================
+GET 2001 127.0.0.1 /redirection EXPECT 302
+GET 2001 127.0.0.1 /redirection/ EXPECT 302
+GET 2001 127.0.0.1 /wrongpath EXPECT 404
+
+# =========================
+# CGI :2003
+# =========================
+GET 2003 127.0.0.1 / EXPECT 302
+GET 2003 127.0.0.1 /index.php EXPECT 200
+POST 2003 127.0.0.1 /index.php EXPECT 200
+GET 2003 127.0.0.1 /doesnotexist.php EXPECT 404
+
+# =========================
+# UPLOADS :2004
+# =========================
+GET 2004 127.0.0.1 / EXPECT 200
+POST 2004 127.0.0.1 / EXPECT 415
+GET 2004 127.0.0.1 /uploads/ EXPECT 404
+GET 2004 127.0.0.1 /missing EXPECT 404

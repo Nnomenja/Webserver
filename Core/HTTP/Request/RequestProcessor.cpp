@@ -34,7 +34,7 @@ std::string RequestProcessor::findDefaultIndex(std::string &fullpath, std::vecto
 	std::string path;
 	for (std::vector<std::string>::const_iterator it = arr.begin(); it != arr.end(); ++it)
 	{
-		path = fullpath + (*it);
+		path = fullpath + "/" + (*it);
 		if (PathUtils::isPathExist(path))
 		{
 			fullpath = path;
@@ -72,7 +72,7 @@ LocationType RequestProcessor::detectStategyType(Client *client)
 			}
 			else
 			{
-				fullpath =  "http://" + req->getHeaderBykey("host")  + req->getPathname() + index;
+				fullpath =  "http://" + req->getHeaderBykey("host")  + req->getPathname() + "/" + index;
 				req->setRedirectionPath(fullpath, 302);
 				return (REDIRECTION);
 			}

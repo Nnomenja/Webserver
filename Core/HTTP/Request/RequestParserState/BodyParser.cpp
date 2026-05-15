@@ -56,6 +56,8 @@ void    BodyParser::readBodyThroughContentLength()
                 throw InternalServerError();
         }
         body._file_buffer.write(_target->getBuffer().c_str(), _target->getBufferSize());
+        if (body._file_buffer.fail() || body._file_buffer.bad())
+            throw InternalServerError();
         body._bytes_read += _target->getBuffer().size();
     }
  
